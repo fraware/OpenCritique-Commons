@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: OpenCritique Commons
+message: >-
+  If you use this software, please cite it using the metadata from this file.
+  Do not cite this package as evidence of reviewer precision, recall, or
+  comparative scientific performance.
+type: software
+authors:
+  - name: OpenCritique Commons contributors
+repository-code: https://github.com/fraware/OpenCritique-Commons
+license: Apache-2.0
+version: 0.5.0a1
+abstract: >-
+  Open, system-neutral infrastructure for representing, adjudicating, and
+  evaluating scientific concerns. Recovered v0.5.0a1 source is published for
+  engineering use; scientific performance claims remain unauthorized until
+  rights-cleared natural cases and independent adjudication gates are met.
+keywords:
+  - scientific critique
+  - adjudication
+  - evaluation infrastructure
+  - open science

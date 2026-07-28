@@ -1,0 +1,74 @@
+name: Engineering workstream
+description: Propose engineering, schema, evaluation, or infrastructure work.
+title: "[workstream]: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the work in enough detail for an independent reviewer to
+        reproduce the problem or evaluate the proposed change. Do not request
+        scientific performance claims without an authorized evidence gate.
+  - type: dropdown
+    id: workstream
+    attributes:
+      label: Workstream
+      options:
+        - A — Repository truth / packaging / CI
+        - B — Schema / canonicalization
+        - C — Document graph / anchors
+        - D — Novel determinations / adjudication policy
+        - E — Evaluation / matching / scorecards
+        - F — Adapters / Coarse / conversion loss
+        - G — Signing / trust / security
+        - H — Rights / acquisition / cases
+        - I — Studio / expert program
+        - J — Deployment / ops
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is broken, missing, or underspecified?
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_change
+    attributes:
+      label: Proposed change
+      description: Concrete engineering outcome. Link ADRs if semantics change.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Observable, testable exit conditions.
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What this issue explicitly does not authorize.
+    validations:
+      required: true
+  - type: checkboxes
+    id: claim_boundary
+    attributes:
+      label: Claim boundary
+      options:
+        - label: This issue does not authorize precision/recall/comparative reviewer-quality claims.
+          required: true
+        - label: Any natural-case or rights work will keep manuscript text and confidential material out of public fixtures unless cleared.
+          required: true
+  - type: textarea
+    id: role_overlap
+    attributes:
+      label: Anticipated role overlap (alpha staffing)
+      description: Disclose if the same people may occupy conflicting evaluation roles.
+      placeholder: e.g. adapter author may temporarily also maintain matcher tests; disclosed, not independent.
+    validations:
+      required: false
