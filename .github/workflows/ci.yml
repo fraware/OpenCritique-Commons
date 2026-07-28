@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, repair/publish-v0.5]
+    branches: [main, fix/restore-canonical-source]
   pull_request:
 
 permissions:
@@ -25,3 +25,100 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
       - name: Validate
         run: bash scripts/check.sh
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+      - name: Ruff
+        run: |
+          ruff check \
+            src/opencritique_schema/registry.py \
+            src/opencritique_evaluation/novel_determination.py \
+            src/opencritique_registry/novel_service.py \
+            src/opencritique_evaluation/scorecard.py \
+            tests/test_schema_freeze.py \
+            tests/test_novel_determinations.py \
+            tests/test_migrations.py \
+            tests/test_release_packaging.py \
+            scripts
+      - name: Pyright (alpha-tolerant)
+        run: >
+          pyright
+          src/opencritique_schema/canonical.py
+          src/opencritique_schema/registry.py
+          src/opencritique_evaluation/novel_determination.py
+          || true
+
+  packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install build tooling
+        run: python -m pip install --upgrade pip build
+      - name: Build wheel and sdist
+        run: python -m build
+      - name: Install wheel in clean venv and import packages
+        run: |
+          python -m venv /tmp/oc-wheel
+          /tmp/oc-wheel/bin/pip install --upgrade pip
+          /tmp/oc-wheel/bin/pip install dist/*.whl
+          /tmp/oc-wheel/bin/python - <<'PY'
+          import opencritique_schema
+          import opencritique_registry
+          import opencritique_evaluation
+          import opencritique_adapters
+          import opencritique_acquisition
+          from opencritique_schema.registry import SCHEMA_FREEZE_RELEASE
+          assert SCHEMA_FREEZE_RELEASE == "0.5.0a1"
+          print("wheel import OK")
+          PY
+      - name: Install sdist in clean venv and import packages
+        run: |
+          python -m venv /tmp/oc-sdist
+          /tmp/oc-sdist/bin/pip install --upgrade pip
+          /tmp/oc-sdist/bin/pip install dist/*.tar.gz
+          /tmp/oc-sdist/bin/python - <<'PY'
+          import opencritique_schema, opencritique_registry, opencritique_evaluation
+          import opencritique_adapters, opencritique_acquisition
+          print("sdist import OK")
+          PY
+      - name: Release manifest and SBOM
+        run: |
+          python -m pip install -e '.[dev]'
+          python scripts/build_release_manifest.py dist
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Secret scan
+        run: python scripts/secret_scan.py
+
+  publication-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+      - name: Publication tests
+        run: pytest -q tests/test_repository_publication.py tests/test_schema_freeze.py
+      - name: Migration path
+        run: pytest -q tests/test_migrations.py

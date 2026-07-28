@@ -1,0 +1,167 @@
+{
+  "$defs": {
+    "ActorReference": {
+      "additionalProperties": false,
+      "properties": {
+        "actor_id": {
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "actor_type": {
+          "$ref": "#/$defs/ActorType"
+        },
+        "display_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Display Name"
+        }
+      },
+      "required": [
+        "actor_id",
+        "actor_type"
+      ],
+      "title": "ActorReference",
+      "type": "object"
+    },
+    "ActorType": {
+      "enum": [
+        "human",
+        "system",
+        "tool",
+        "organization"
+      ],
+      "title": "ActorType",
+      "type": "string"
+    },
+    "ClaimType": {
+      "enum": [
+        "theoretical",
+        "empirical",
+        "statistical",
+        "causal",
+        "methodological",
+        "novelty",
+        "interpretive",
+        "reproducibility",
+        "reporting",
+        "security"
+      ],
+      "title": "ClaimType",
+      "type": "string"
+    },
+    "Explicitness": {
+      "enum": [
+        "explicit",
+        "strongly_implied",
+        "inferred"
+      ],
+      "title": "Explicitness",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "anchor_ids": {
+      "items": {
+        "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Anchor Ids",
+      "type": "array"
+    },
+    "approval_status": {
+      "default": "candidate",
+      "enum": [
+        "candidate",
+        "expert_approved",
+        "rejected"
+      ],
+      "title": "Approval Status",
+      "type": "string"
+    },
+    "claim_id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "claim_type": {
+      "$ref": "#/$defs/ClaimType"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "$ref": "#/$defs/ActorReference"
+    },
+    "dependency_claim_ids": {
+      "items": {
+        "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+        "type": "string"
+      },
+      "title": "Dependency Claim Ids",
+      "type": "array"
+    },
+    "explicitness": {
+      "$ref": "#/$defs/Explicitness"
+    },
+    "id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Id",
+      "type": "string"
+    },
+    "manuscript_version_id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Manuscript Version Id",
+      "type": "string"
+    },
+    "reconstruction_notes": {
+      "title": "Reconstruction Notes",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "minLength": 1,
+      "title": "Scope",
+      "type": "string"
+    },
+    "statement": {
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "content_hash",
+    "claim_id",
+    "manuscript_version_id",
+    "statement",
+    "claim_type",
+    "explicitness",
+    "scope",
+    "anchor_ids",
+    "reconstruction_notes"
+  ],
+  "title": "Claim",
+  "type": "object"
+}

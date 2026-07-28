@@ -1,0 +1,155 @@
+{
+  "$defs": {
+    "BenchmarkCaseRef": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "case_version": {
+          "title": "Case Version",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "case_version",
+        "path"
+      ],
+      "title": "BenchmarkCaseRef",
+      "type": "object"
+    },
+    "BenchmarkEvidenceClass": {
+      "enum": [
+        "conformance",
+        "synthetic_scientific",
+        "expert_natural",
+        "live_private"
+      ],
+      "title": "BenchmarkEvidenceClass",
+      "type": "string"
+    },
+    "ReferenceCompleteness": {
+      "enum": [
+        "complete_seeded",
+        "partial_natural",
+        "unknown"
+      ],
+      "title": "ReferenceCompleteness",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "benchmark_id": {
+      "title": "Benchmark Id",
+      "type": "string"
+    },
+    "case_set_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Case Set Hash",
+      "type": "string"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/BenchmarkCaseRef"
+      },
+      "minItems": 1,
+      "title": "Cases",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "domain_profiles": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Domain Profiles",
+      "type": "array"
+    },
+    "evidence_class": {
+      "$ref": "#/$defs/BenchmarkEvidenceClass"
+    },
+    "expert_adjudicated": {
+      "default": false,
+      "title": "Expert Adjudicated",
+      "type": "boolean"
+    },
+    "independent_evaluation": {
+      "default": false,
+      "title": "Independent Evaluation",
+      "type": "boolean"
+    },
+    "license": {
+      "title": "License",
+      "type": "string"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "minimum_public_claim_cases": {
+      "default": 40,
+      "minimum": 1,
+      "title": "Minimum Public Claim Cases",
+      "type": "integer"
+    },
+    "reference_completeness": {
+      "$ref": "#/$defs/ReferenceCompleteness"
+    },
+    "source_url": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Url"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "benchmark_id",
+    "version",
+    "title",
+    "description",
+    "evidence_class",
+    "reference_completeness",
+    "domain_profiles",
+    "cases",
+    "license",
+    "case_set_hash",
+    "created_at"
+  ],
+  "title": "BenchmarkManifest",
+  "type": "object"
+}

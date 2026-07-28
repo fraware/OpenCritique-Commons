@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_theory_01",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "9796d3cfaa98e0fb0e4daf286a1ef350efd3795187c5a6dcd01ea0d31be2092c",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_theory_01_v1",
+    "id": "ocms_synth_theory_01",
+    "manuscript_id": "ocms_synth_theory_01",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Bound depends on unstated Lipschitz constant"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "4ef20f43f56c82edcbcf33b5c5361f34376089aad45fe3719252f5189fcd85bd",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "theory_heavy",
+      "extracted_artifact": {
+        "byte_size": 19,
+        "media_type": "text/plain",
+        "sha256": "f4ff62a2323d0ce8ab8b6eeb31b496f637de77d888ac2a73898e6e2f989e5366",
+        "uri": "synthetic://opencritique/theory-01-extracted"
+      },
+      "id": "ocver_synth_theory_01_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_synth_theory_01",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 16,
+        "media_type": "text/plain",
+        "sha256": "35f63b7ab8e332fce2ed8a751aaac862a50e28c28c7ef62d3dfcdda8f0a36b23",
+        "uri": "synthetic://opencritique/theory-01-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_theory_01_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-05-01T00:00:00Z",
+  "ledger_version": "0.1",
+  "performance_claims_authorized": false,
+  "sources": [
+    {
+      "code_url": null,
+      "dataset_url": null,
+      "declared_license": "Apache-2.0",
+      "evaluation_use_authorized": true,
+      "imported_case_count": 6,
+      "license_evidence_url": "https://github.com/fraware/OpenCritique-Commons/blob/main/LICENSE",
+      "notes": [
+        "Six synthetic placeholders exercising the rights path.",
+        "Natural PeerQA/manuscript import remains blocked pending written clearance.",
+        "performance_claims_authorized stays false on the ledger."
+      ],
+      "paper_url": "https://github.com/fraware/OpenCritique-Commons",
+      "redistribution_authorized": true,
+      "source_id": "synthetic-maintainer-rights-candidates",
+      "status": "imported",
+      "title": "Synthetic rights-cleared candidate cases (PR10 placeholders)"
+    }
+  ],
+  "total_imported_cases": 6
+}

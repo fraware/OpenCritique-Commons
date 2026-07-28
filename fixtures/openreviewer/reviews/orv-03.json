@@ -1,0 +1,27 @@
+{
+  "findings": [
+    {
+      "body": "Claims about architecture benefits lack depth ablations on the encoder stack.",
+      "confidence": 0.4,
+      "finding_id": "f1",
+      "page": 4,
+      "quote": "Deeper encoders consistently improve downstream accuracy.",
+      "section": "weaknesses",
+      "severity": "minor",
+      "title": "Missing ablation on encoder depth"
+    }
+  ],
+  "markdown": "# Review\n\n## Summary\n\n[SYNTHETIC] Synthetic OpenReviewer: with optional severity\n\n## Strengths\n\n- Synthetic strength placeholder.\n\n## Weaknesses\n\n- (see structured findings)\n\n## Questions\n\n- Synthetic clarifying question?\n",
+  "model_identifiers": [
+    "synthetic-openreviewer-fixture/none"
+  ],
+  "opencritique_fixture": {
+    "confidential_manuscript_text": false,
+    "contract_version": "openreviewer-markdown-template-v1",
+    "kind": "synthetic_rights_cleared_maintainer",
+    "performance_claims_authorized": false
+  },
+  "recommendation_score": 5.0,
+  "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic OpenReviewer: with optional severity",
+  "venue_template": "ICLR2025-synthetic"
+}

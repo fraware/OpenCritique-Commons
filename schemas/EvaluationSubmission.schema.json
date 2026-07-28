@@ -1,0 +1,334 @@
+{
+  "$defs": {
+    "CaseSubmission": {
+      "additionalProperties": false,
+      "properties": {
+        "abstained": {
+          "default": false,
+          "title": "Abstained",
+          "type": "boolean"
+        },
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "case_version": {
+          "title": "Case Version",
+          "type": "string"
+        },
+        "concerns": {
+          "items": {
+            "$ref": "#/$defs/SubmittedConcern"
+          },
+          "title": "Concerns",
+          "type": "array"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure"
+        }
+      },
+      "required": [
+        "case_id",
+        "case_version"
+      ],
+      "title": "CaseSubmission",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "critical",
+        "major",
+        "moderate",
+        "minor",
+        "informational"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SubmittedAnchor": {
+      "additionalProperties": false,
+      "properties": {
+        "object_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Object Label"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "source_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Text"
+        }
+      },
+      "title": "SubmittedAnchor",
+      "type": "object"
+    },
+    "SubmittedConcern": {
+      "additionalProperties": false,
+      "properties": {
+        "anchors": {
+          "items": {
+            "$ref": "#/$defs/SubmittedAnchor"
+          },
+          "minItems": 1,
+          "title": "Anchors",
+          "type": "array"
+        },
+        "concern_type": {
+          "minLength": 3,
+          "title": "Concern Type",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "evidence_summary": {
+          "default": "",
+          "title": "Evidence Summary",
+          "type": "string"
+        },
+        "local_id": {
+          "title": "Local Id",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "summary": {
+          "minLength": 10,
+          "title": "Summary",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 3,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "local_id",
+        "title",
+        "summary",
+        "concern_type",
+        "severity",
+        "confidence",
+        "anchors"
+      ],
+      "title": "SubmittedConcern",
+      "type": "object"
+    },
+    "SystemManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "code_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Code Commit"
+        },
+        "configuration_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Configuration Hash",
+          "type": "string"
+        },
+        "declared_cost_currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Cost Currency"
+        },
+        "declared_cost_minor": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Cost Minor"
+        },
+        "declared_latency_seconds": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Latency Seconds"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "display_name": {
+          "title": "Display Name",
+          "type": "string"
+        },
+        "execution_mode": {
+          "default": "external",
+          "enum": [
+            "external",
+            "local",
+            "hosted"
+          ],
+          "title": "Execution Mode",
+          "type": "string"
+        },
+        "license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License"
+        },
+        "model_identifiers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Model Identifiers",
+          "type": "array"
+        },
+        "output_contract": {
+          "const": "opencritique-evaluation-v0.1",
+          "default": "opencritique-evaluation-v0.1",
+          "title": "Output Contract",
+          "type": "string"
+        },
+        "repository_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repository Url"
+        },
+        "system_id": {
+          "title": "System Id",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "system_id",
+        "version",
+        "display_name",
+        "configuration_hash"
+      ],
+      "title": "SystemManifest",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "benchmark_id": {
+      "title": "Benchmark Id",
+      "type": "string"
+    },
+    "benchmark_version": {
+      "title": "Benchmark Version",
+      "type": "string"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/CaseSubmission"
+      },
+      "title": "Cases",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "submission_id": {
+      "title": "Submission Id",
+      "type": "string"
+    },
+    "system": {
+      "$ref": "#/$defs/SystemManifest"
+    }
+  },
+  "required": [
+    "submission_id",
+    "system",
+    "benchmark_id",
+    "benchmark_version",
+    "cases"
+  ],
+  "title": "EvaluationSubmission",
+  "type": "object"
+}

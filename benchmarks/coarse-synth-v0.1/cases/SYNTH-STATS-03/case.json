@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_stats_03",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "c6e86958471c4d8438fc45a8e127ee1dc5fdcce6acb75caf258f93709009c568",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_stats_03_v1",
+    "id": "ocms_synth_stats_03",
+    "manuscript_id": "ocms_synth_stats_03",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Unresolved quotation by design"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "52fcb51e32133b329b8540fcf7adeedb72cbefd77db3a7725abf1a6ed8fbeffa",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "economics_statistics",
+      "extracted_artifact": {
+        "byte_size": 18,
+        "media_type": "text/plain",
+        "sha256": "c051d5671c052e15a2873437af9e030f7858742a3ead44e03885e2c4659422cb",
+        "uri": "synthetic://opencritique/stats-03-extracted"
+      },
+      "id": "ocver_synth_stats_03_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_synth_stats_03",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 15,
+        "media_type": "text/plain",
+        "sha256": "bfaa5a5af394991517a305c4b4c3d1aaf25a5b10f4f3c0d4775291253271773b",
+        "uri": "synthetic://opencritique/stats-03-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_stats_03_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

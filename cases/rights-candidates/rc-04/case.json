@@ -1,0 +1,67 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_rights_rc_04",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic rights-path placeholder; not a natural manuscript.",
+    "Scientific performance claims remain disabled."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-rights-v1",
+    "content_hash": "abd97bdd6eb68ff84c37727922fe772434a2a5deefa11c8c88c537e2b83994ba",
+    "created_at": "2026-05-01T00:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_rights_rc_04_v1",
+    "id": "ocms_rights_rc_04",
+    "manuscript_id": "ocms_rights_rc_04",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic rights candidate: regularity conditions"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "247d3d38d925aebb87eb3662ec46710fd564aa767e539ae73a74ead4c7b8cd30",
+      "created_at": "2026-05-01T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "theory_heavy",
+      "extracted_artifact": null,
+      "id": "ocver_rights_rc_04_v1",
+      "ingestion_metadata": {
+        "method": "rights_cleared_placeholder",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_rights_candidates.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_rights_rc_04",
+      "page_count": 1,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 32,
+        "media_type": "text/plain",
+        "sha256": "81a5c3c0ef8d3c66c09c0b288ca74a56783e1e74a9ebe790621e28184d797a5f",
+        "uri": "synthetic://rights/rc-04"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_rights_rc_04_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1"
+}

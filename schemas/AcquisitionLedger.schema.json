@@ -1,0 +1,163 @@
+{
+  "$defs": {
+    "AcquisitionSource": {
+      "additionalProperties": false,
+      "properties": {
+        "code_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Code Url"
+        },
+        "dataset_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dataset Url"
+        },
+        "declared_license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared License"
+        },
+        "evaluation_use_authorized": {
+          "default": false,
+          "title": "Evaluation Use Authorized",
+          "type": "boolean"
+        },
+        "imported_case_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Imported Case Count",
+          "type": "integer"
+        },
+        "license_evidence_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Evidence Url"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
+        "paper_url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Paper Url",
+          "type": "string"
+        },
+        "redistribution_authorized": {
+          "default": false,
+          "title": "Redistribution Authorized",
+          "type": "boolean"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/AcquisitionStatus"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "title",
+        "paper_url",
+        "status"
+      ],
+      "title": "AcquisitionSource",
+      "type": "object"
+    },
+    "AcquisitionStatus": {
+      "enum": [
+        "discovered",
+        "metadata_verified",
+        "license_review_required",
+        "contact_required",
+        "authorized",
+        "rejected",
+        "imported"
+      ],
+      "title": "AcquisitionStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "ledger_version": {
+      "default": "0.1",
+      "title": "Ledger Version",
+      "type": "string"
+    },
+    "performance_claims_authorized": {
+      "default": false,
+      "title": "Performance Claims Authorized",
+      "type": "boolean"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/AcquisitionSource"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "total_imported_cases": {
+      "default": 0,
+      "title": "Total Imported Cases",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "sources"
+  ],
+  "title": "AcquisitionLedger",
+  "type": "object"
+}

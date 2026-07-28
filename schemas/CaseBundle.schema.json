@@ -1,0 +1,1901 @@
+{
+  "$defs": {
+    "ActorReference": {
+      "additionalProperties": false,
+      "properties": {
+        "actor_id": {
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "actor_type": {
+          "$ref": "#/$defs/ActorType"
+        },
+        "display_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Display Name"
+        }
+      },
+      "required": [
+        "actor_id",
+        "actor_type"
+      ],
+      "title": "ActorReference",
+      "type": "object"
+    },
+    "ActorType": {
+      "enum": [
+        "human",
+        "system",
+        "tool",
+        "organization"
+      ],
+      "title": "ActorType",
+      "type": "string"
+    },
+    "Adjudication": {
+      "additionalProperties": false,
+      "properties": {
+        "adjudication_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Adjudication Id",
+          "type": "string"
+        },
+        "adjudication_round": {
+          "minimum": 1,
+          "title": "Adjudication Round",
+          "type": "integer"
+        },
+        "adjudicator_id": {
+          "title": "Adjudicator Id",
+          "type": "string"
+        },
+        "anchors_reviewed": {
+          "title": "Anchors Reviewed",
+          "type": "boolean"
+        },
+        "blinded_fields": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blinded Fields",
+          "type": "array"
+        },
+        "concern_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Concern Id",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "conflict_declaration": {
+          "$ref": "#/$defs/ConflictDeclaration"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "counterposition_assessment": {
+          "title": "Counterposition Assessment",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "reasoning": {
+          "minLength": 1,
+          "title": "Reasoning",
+          "type": "string"
+        },
+        "requested_followup": {
+          "items": {
+            "$ref": "#/$defs/FollowupRequest"
+          },
+          "title": "Requested Followup",
+          "type": "array"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "validity": {
+          "$ref": "#/$defs/ValidityDecision"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "adjudication_id",
+        "concern_id",
+        "adjudicator_id",
+        "adjudication_round",
+        "blinded_fields",
+        "conflict_declaration",
+        "validity",
+        "severity",
+        "confidence",
+        "reasoning",
+        "evidence_ids",
+        "counterposition_assessment",
+        "anchors_reviewed"
+      ],
+      "title": "Adjudication",
+      "type": "object"
+    },
+    "Anchor": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "anchor_type": {
+          "$ref": "#/$defs/AnchorType"
+        },
+        "bounding_boxes": {
+          "items": {
+            "$ref": "#/$defs/BoundingBox"
+          },
+          "title": "Bounding Boxes",
+          "type": "array"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "extraction_confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extraction Confidence"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "manuscript_version_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Manuscript Version Id",
+          "type": "string"
+        },
+        "normalized_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalized Text"
+        },
+        "object_coordinates": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "title": "Object Coordinates",
+          "type": "object"
+        },
+        "object_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Object Label"
+        },
+        "page_end": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page End"
+        },
+        "page_start": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Start"
+        },
+        "rendered_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactSlice"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "resolution_status": {
+          "$ref": "#/$defs/AnchorResolutionStatus"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "section_path": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Section Path",
+          "type": "array"
+        },
+        "source_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Text"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "anchor_id",
+        "manuscript_version_id",
+        "anchor_type",
+        "resolution_status"
+      ],
+      "title": "Anchor",
+      "type": "object"
+    },
+    "AnchorResolutionStatus": {
+      "enum": [
+        "exact",
+        "normalized",
+        "fuzzy_candidate",
+        "unresolved",
+        "ambiguous",
+        "human_verified"
+      ],
+      "title": "AnchorResolutionStatus",
+      "type": "string"
+    },
+    "AnchorType": {
+      "enum": [
+        "text_span",
+        "equation",
+        "theorem",
+        "figure",
+        "panel",
+        "table",
+        "cell",
+        "citation",
+        "bibliography_entry",
+        "code_reference",
+        "section"
+      ],
+      "title": "AnchorType",
+      "type": "string"
+    },
+    "ArtifactReference": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_size": {
+          "minimum": 0,
+          "title": "Byte Size",
+          "type": "integer"
+        },
+        "media_type": {
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "uri": {
+          "minLength": 1,
+          "title": "Uri",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uri",
+        "sha256",
+        "media_type",
+        "byte_size"
+      ],
+      "title": "ArtifactReference",
+      "type": "object"
+    },
+    "ArtifactSlice": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/ArtifactReference"
+        },
+        "bounding_box": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bounding Box"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        }
+      },
+      "required": [
+        "artifact"
+      ],
+      "title": "ArtifactSlice",
+      "type": "object"
+    },
+    "BoundingBox": {
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "x0": {
+          "title": "X0",
+          "type": "number"
+        },
+        "x1": {
+          "title": "X1",
+          "type": "number"
+        },
+        "y0": {
+          "title": "Y0",
+          "type": "number"
+        },
+        "y1": {
+          "title": "Y1",
+          "type": "number"
+        }
+      },
+      "required": [
+        "page",
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "title": "BoundingBox",
+      "type": "object"
+    },
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Anchor Ids",
+          "type": "array"
+        },
+        "approval_status": {
+          "default": "candidate",
+          "enum": [
+            "candidate",
+            "expert_approved",
+            "rejected"
+          ],
+          "title": "Approval Status",
+          "type": "string"
+        },
+        "claim_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "claim_type": {
+          "$ref": "#/$defs/ClaimType"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "dependency_claim_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "title": "Dependency Claim Ids",
+          "type": "array"
+        },
+        "explicitness": {
+          "$ref": "#/$defs/Explicitness"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "manuscript_version_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Manuscript Version Id",
+          "type": "string"
+        },
+        "reconstruction_notes": {
+          "title": "Reconstruction Notes",
+          "type": "string"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "claim_id",
+        "manuscript_version_id",
+        "statement",
+        "claim_type",
+        "explicitness",
+        "scope",
+        "anchor_ids",
+        "reconstruction_notes"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "ClaimType": {
+      "enum": [
+        "theoretical",
+        "empirical",
+        "statistical",
+        "causal",
+        "methodological",
+        "novelty",
+        "interpretive",
+        "reproducibility",
+        "reporting",
+        "security"
+      ],
+      "title": "ClaimType",
+      "type": "string"
+    },
+    "Concern": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Anchor Ids",
+          "type": "array"
+        },
+        "claim_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "concern_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Concern Id",
+          "type": "string"
+        },
+        "concern_type": {
+          "minLength": 1,
+          "title": "Concern Type",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "manuscript_version_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Manuscript Version Id",
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/$defs/ConcernOrigin"
+        },
+        "potential_consequence": {
+          "title": "Potential Consequence",
+          "type": "string"
+        },
+        "required_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required Resolution"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "status": {
+          "$ref": "#/$defs/ConcernStatus"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "uncertainty_sources": {
+          "items": {
+            "$ref": "#/$defs/UncertaintySource"
+          },
+          "title": "Uncertainty Sources",
+          "type": "array"
+        },
+        "verification_grade": {
+          "$ref": "#/$defs/VerificationGrade"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "concern_id",
+        "manuscript_version_id",
+        "title",
+        "summary",
+        "concern_type",
+        "claim_ids",
+        "anchor_ids",
+        "severity",
+        "confidence",
+        "verification_grade",
+        "status",
+        "potential_consequence",
+        "origin"
+      ],
+      "title": "Concern",
+      "type": "object"
+    },
+    "ConcernOrigin": {
+      "additionalProperties": false,
+      "properties": {
+        "origin_id": {
+          "title": "Origin Id",
+          "type": "string"
+        },
+        "origin_type": {
+          "$ref": "#/$defs/ConcernOriginType"
+        },
+        "original_confidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Confidence"
+        },
+        "original_severity": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Severity"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Id"
+        }
+      },
+      "required": [
+        "origin_type",
+        "origin_id"
+      ],
+      "title": "ConcernOrigin",
+      "type": "object"
+    },
+    "ConcernOriginType": {
+      "enum": [
+        "human",
+        "reviewer_system",
+        "mutation_generator",
+        "replication",
+        "post_publication"
+      ],
+      "title": "ConcernOriginType",
+      "type": "string"
+    },
+    "ConcernStatus": {
+      "enum": [
+        "proposed",
+        "under_review",
+        "confirmed",
+        "qualified",
+        "rejected",
+        "unresolved",
+        "superseded",
+        "resolved"
+      ],
+      "title": "ConcernStatus",
+      "type": "string"
+    },
+    "ConflictDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "none",
+            "disclosed",
+            "disqualifying"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "ConflictDeclaration",
+      "type": "object"
+    },
+    "Counterposition": {
+      "additionalProperties": false,
+      "properties": {
+        "adequacy_status": {
+          "default": "unreviewed",
+          "enum": [
+            "unreviewed",
+            "adequate",
+            "inadequate"
+          ],
+          "title": "Adequacy Status",
+          "type": "string"
+        },
+        "concern_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Concern Id",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "counterposition_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Counterposition Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "residual_disagreement": {
+          "title": "Residual Disagreement",
+          "type": "string"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/CounterpositionSource"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "supporting_anchor_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "title": "Supporting Anchor Ids",
+          "type": "array"
+        },
+        "supporting_evidence_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "title": "Supporting Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "counterposition_id",
+        "concern_id",
+        "statement",
+        "source",
+        "residual_disagreement"
+      ],
+      "title": "Counterposition",
+      "type": "object"
+    },
+    "CounterpositionSource": {
+      "enum": [
+        "author",
+        "adjudicator",
+        "reviewer_system",
+        "domain_tool",
+        "published_source"
+      ],
+      "title": "CounterpositionSource",
+      "type": "string"
+    },
+    "EvidenceDirection": {
+      "enum": [
+        "concern",
+        "manuscript_defense",
+        "uncertainty",
+        "procedural_fact"
+      ],
+      "title": "EvidenceDirection",
+      "type": "string"
+    },
+    "EvidenceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "title": "Anchor Ids",
+          "type": "array"
+        },
+        "artifact_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "concern_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Concern Id",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "evidence_type": {
+          "$ref": "#/$defs/EvidenceType"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "independence_group": {
+          "title": "Independence Group",
+          "type": "string"
+        },
+        "limitations": {
+          "title": "Limitations",
+          "type": "string"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "producer": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "reproducibility_status": {
+          "$ref": "#/$defs/ReproducibilityStatus"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "supports": {
+          "$ref": "#/$defs/EvidenceDirection"
+        },
+        "tool_manifest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ToolManifest"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "evidence_id",
+        "concern_id",
+        "evidence_type",
+        "supports",
+        "description",
+        "method",
+        "producer",
+        "reproducibility_status",
+        "limitations",
+        "independence_group"
+      ],
+      "title": "EvidenceItem",
+      "type": "object"
+    },
+    "EvidenceType": {
+      "enum": [
+        "manuscript_text",
+        "page_render",
+        "external_source",
+        "deterministic_computation",
+        "statistical_analysis",
+        "symbolic_analysis",
+        "formal_tool_output",
+        "code_execution",
+        "expert_reasoning",
+        "author_response",
+        "procedural"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    },
+    "Explicitness": {
+      "enum": [
+        "explicit",
+        "strongly_implied",
+        "inferred"
+      ],
+      "title": "Explicitness",
+      "type": "string"
+    },
+    "FollowupRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "blocking": {
+          "default": false,
+          "title": "Blocking",
+          "type": "boolean"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "request_type": {
+          "title": "Request Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_type",
+        "description"
+      ],
+      "title": "FollowupRequest",
+      "type": "object"
+    },
+    "IngestionMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "page_indexing": {
+          "const": "one-indexed",
+          "default": "one-indexed",
+          "title": "Page Indexing",
+          "type": "string"
+        },
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        },
+        "tool_version": {
+          "title": "Tool Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method",
+        "tool",
+        "tool_version"
+      ],
+      "title": "IngestionMetadata",
+      "type": "object"
+    },
+    "Manuscript": {
+      "additionalProperties": false,
+      "properties": {
+        "consent_policy_id": {
+          "title": "Consent Policy Id",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "current_version_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Current Version Id",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "manuscript_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Manuscript Id",
+          "type": "string"
+        },
+        "rights_classification": {
+          "$ref": "#/$defs/RightsClassification"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Title"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "manuscript_id",
+        "title",
+        "rights_classification",
+        "consent_policy_id",
+        "current_version_id"
+      ],
+      "title": "Manuscript",
+      "type": "object"
+    },
+    "ManuscriptVersion": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "domain_profile": {
+          "title": "Domain Profile",
+          "type": "string"
+        },
+        "extracted_artifact": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "ingestion_metadata": {
+          "$ref": "#/$defs/IngestionMetadata"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "manuscript_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Manuscript Id",
+          "type": "string"
+        },
+        "page_count": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Count"
+        },
+        "previous_version_id": {
+          "anyOf": [
+            {
+              "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Previous Version Id"
+        },
+        "rendered_artifact": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_artifact": {
+          "$ref": "#/$defs/ArtifactReference"
+        },
+        "source_format": {
+          "$ref": "#/$defs/SourceFormat"
+        },
+        "version_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "version_id",
+        "manuscript_id",
+        "source_format",
+        "source_artifact",
+        "language",
+        "domain_profile",
+        "ingestion_metadata"
+      ],
+      "title": "ManuscriptVersion",
+      "type": "object"
+    },
+    "MutationRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "affected_anchor_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "title": "Affected Anchor Ids",
+          "type": "array"
+        },
+        "collateral_change_analysis": {
+          "title": "Collateral Change Analysis",
+          "type": "string"
+        },
+        "expected_severity_range": {
+          "items": {
+            "$ref": "#/$defs/Severity"
+          },
+          "title": "Expected Severity Range",
+          "type": "array"
+        },
+        "intended_concern_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Intended Concern Id",
+          "type": "string"
+        },
+        "mutated_version_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Mutated Version Id",
+          "type": "string"
+        },
+        "mutation_id": {
+          "title": "Mutation Id",
+          "type": "string"
+        },
+        "operation_description": {
+          "title": "Operation Description",
+          "type": "string"
+        },
+        "operation_type": {
+          "title": "Operation Type",
+          "type": "string"
+        },
+        "source_version_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Source Version Id",
+          "type": "string"
+        },
+        "validation_adjudicator_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Validation Adjudicator Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "mutation_id",
+        "source_version_id",
+        "mutated_version_id",
+        "operation_type",
+        "operation_description",
+        "affected_anchor_ids",
+        "intended_concern_id",
+        "expected_severity_range",
+        "collateral_change_analysis",
+        "validation_adjudicator_ids"
+      ],
+      "title": "MutationRecord",
+      "type": "object"
+    },
+    "ReproducibilityStatus": {
+      "enum": [
+        "reproducible",
+        "partially_reproducible",
+        "non_reproducible",
+        "judgment_based"
+      ],
+      "title": "ReproducibilityStatus",
+      "type": "string"
+    },
+    "Resolution": {
+      "additionalProperties": false,
+      "properties": {
+        "concern_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Concern Id",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "from_version_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "From Version Id",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "resolution_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Resolution Id",
+          "type": "string"
+        },
+        "resolution_type": {
+          "$ref": "#/$defs/ResolutionType"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "to_version_id": {
+          "anyOf": [
+            {
+              "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "To Version Id"
+        },
+        "verification_evidence_ids": {
+          "items": {
+            "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "title": "Verification Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "resolution_id",
+        "concern_id",
+        "resolution_type",
+        "description",
+        "from_version_id"
+      ],
+      "title": "Resolution",
+      "type": "object"
+    },
+    "ResolutionType": {
+      "enum": [
+        "manuscript_revised",
+        "explanation_added",
+        "analysis_rerun",
+        "concern_withdrawn",
+        "disagreement_documented",
+        "external_correction",
+        "unresolved"
+      ],
+      "title": "ResolutionType",
+      "type": "string"
+    },
+    "RightsClassification": {
+      "enum": [
+        "public",
+        "contributed",
+        "confidential",
+        "restricted"
+      ],
+      "title": "RightsClassification",
+      "type": "string"
+    },
+    "RunCost": {
+      "additionalProperties": false,
+      "properties": {
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "total": {
+          "minimum": 0,
+          "title": "Total",
+          "type": "number"
+        }
+      },
+      "required": [
+        "currency",
+        "total"
+      ],
+      "title": "RunCost",
+      "type": "object"
+    },
+    "RunManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "code_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Code Commit"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "configuration": {
+          "additionalProperties": true,
+          "title": "Configuration",
+          "type": "object"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "cost": {
+          "$ref": "#/$defs/RunCost"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "$ref": "#/$defs/ActorReference"
+        },
+        "id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input_hashes": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "title": "Input Hashes",
+          "type": "array"
+        },
+        "latency_seconds": {
+          "minimum": 0,
+          "title": "Latency Seconds",
+          "type": "number"
+        },
+        "model_identifiers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Model Identifiers",
+          "type": "array"
+        },
+        "output_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Hash",
+          "type": "string"
+        },
+        "prompt_hashes": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "title": "Prompt Hashes",
+          "type": "array"
+        },
+        "randomness_configuration": {
+          "additionalProperties": true,
+          "title": "Randomness Configuration",
+          "type": "object"
+        },
+        "retrieval_snapshot_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Retrieval Snapshot Ids",
+          "type": "array"
+        },
+        "run_id": {
+          "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "system_id": {
+          "title": "System Id",
+          "type": "string"
+        },
+        "system_version": {
+          "title": "System Version",
+          "type": "string"
+        },
+        "tool_versions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Tool Versions",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "created_by",
+        "content_hash",
+        "run_id",
+        "system_id",
+        "system_version",
+        "model_identifiers",
+        "prompt_hashes",
+        "tool_versions",
+        "input_hashes",
+        "retrieval_snapshot_ids",
+        "configuration",
+        "started_at",
+        "completed_at",
+        "cost",
+        "latency_seconds",
+        "randomness_configuration",
+        "output_hash"
+      ],
+      "title": "RunManifest",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "critical",
+        "major",
+        "moderate",
+        "minor",
+        "informational"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SourceFormat": {
+      "enum": [
+        "pdf",
+        "tex",
+        "docx",
+        "markdown",
+        "html",
+        "other"
+      ],
+      "title": "SourceFormat",
+      "type": "string"
+    },
+    "ToolManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "configuration": {
+          "additionalProperties": true,
+          "title": "Configuration",
+          "type": "object"
+        },
+        "output_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Hash"
+        },
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "version"
+      ],
+      "title": "ToolManifest",
+      "type": "object"
+    },
+    "UncertaintySource": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "description"
+      ],
+      "title": "UncertaintySource",
+      "type": "object"
+    },
+    "ValidityDecision": {
+      "enum": [
+        "confirmed",
+        "qualified",
+        "rejected",
+        "unresolved"
+      ],
+      "title": "ValidityDecision",
+      "type": "string"
+    },
+    "VerificationGrade": {
+      "enum": [
+        "V0",
+        "V1",
+        "V2",
+        "V3",
+        "V4",
+        "V5"
+      ],
+      "title": "VerificationGrade",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "adjudications": {
+      "items": {
+        "$ref": "#/$defs/Adjudication"
+      },
+      "title": "Adjudications",
+      "type": "array"
+    },
+    "anchors": {
+      "items": {
+        "$ref": "#/$defs/Anchor"
+      },
+      "title": "Anchors",
+      "type": "array"
+    },
+    "case_id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "case_type": {
+      "enum": [
+        "natural",
+        "controlled_mutation",
+        "microcase",
+        "adversarial"
+      ],
+      "title": "Case Type",
+      "type": "string"
+    },
+    "case_version": {
+      "title": "Case Version",
+      "type": "string"
+    },
+    "claims": {
+      "items": {
+        "$ref": "#/$defs/Claim"
+      },
+      "title": "Claims",
+      "type": "array"
+    },
+    "concerns": {
+      "items": {
+        "$ref": "#/$defs/Concern"
+      },
+      "title": "Concerns",
+      "type": "array"
+    },
+    "counterpositions": {
+      "items": {
+        "$ref": "#/$defs/Counterposition"
+      },
+      "title": "Counterpositions",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceItem"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "known_ambiguities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Ambiguities",
+      "type": "array"
+    },
+    "manuscript": {
+      "$ref": "#/$defs/Manuscript"
+    },
+    "manuscript_versions": {
+      "items": {
+        "$ref": "#/$defs/ManuscriptVersion"
+      },
+      "title": "Manuscript Versions",
+      "type": "array"
+    },
+    "mutation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MutationRecord"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "policy_version": {
+      "title": "Policy Version",
+      "type": "string"
+    },
+    "resolutions": {
+      "items": {
+        "$ref": "#/$defs/Resolution"
+      },
+      "title": "Resolutions",
+      "type": "array"
+    },
+    "run_manifests": {
+      "items": {
+        "$ref": "#/$defs/RunManifest"
+      },
+      "title": "Run Manifests",
+      "type": "array"
+    }
+  },
+  "required": [
+    "case_id",
+    "case_version",
+    "policy_version",
+    "case_type",
+    "manuscript",
+    "manuscript_versions",
+    "anchors",
+    "claims",
+    "concerns",
+    "evidence",
+    "counterpositions",
+    "adjudications"
+  ],
+  "title": "CaseBundle",
+  "type": "object"
+}

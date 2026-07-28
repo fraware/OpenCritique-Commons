@@ -1,0 +1,18 @@
+{
+  "attribution": "OpenCritique Commons maintainers (synthetic fixture)",
+  "case_id": "occase_rights_rc_04",
+  "case_version": "1.0.0",
+  "declared_license": "Apache-2.0",
+  "evaluation_use_authorized": true,
+  "natural_manuscript_imported": false,
+  "notes": [
+    "Placeholder authorized only as synthetic maintainer material.",
+    "Not derived from PeerQA or any uncleared external PDF."
+  ],
+  "performance_claims_authorized": false,
+  "redistribution_authorized": true,
+  "rights_classification": "public",
+  "source_artifact_sha256": "81a5c3c0ef8d3c66c09c0b288ca74a56783e1e74a9ebe790621e28184d797a5f",
+  "synthetic_placeholder": true,
+  "withdrawal_contact": "repository maintainers via GitHub Security Advisories / CITATION.cff"
+}

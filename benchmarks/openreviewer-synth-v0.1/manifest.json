@@ -1,0 +1,50 @@
+{
+  "benchmark_id": "ocbench_openreviewer_synth",
+  "case_set_hash": "bfe52caa1d8513b1c3a1af80714ceafcc06266fe013a290d8eb1c612a21fc65b",
+  "cases": [
+    {
+      "case_id": "occase_orv_orv_01",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ORV-01/case.json"
+    },
+    {
+      "case_id": "occase_orv_orv_02",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ORV-02/case.json"
+    },
+    {
+      "case_id": "occase_orv_orv_03",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ORV-03/case.json"
+    },
+    {
+      "case_id": "occase_orv_orv_04",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ORV-04/case.json"
+    },
+    {
+      "case_id": "occase_orv_orv_05",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ORV-05/case.json"
+    }
+  ],
+  "created_at": "2026-03-01T00:00:00Z",
+  "description": "Synthetic rights-cleared OpenReviewer-style fixtures. Not authorized for scientific performance claims.",
+  "domain_profiles": [
+    "empirical_ml",
+    "theory_heavy"
+  ],
+  "evidence_class": "conformance",
+  "expert_adjudicated": false,
+  "independent_evaluation": false,
+  "license": "Apache-2.0",
+  "limitations": [
+    "Synthetic fixtures only",
+    "No performance claims"
+  ],
+  "minimum_public_claim_cases": 40,
+  "reference_completeness": "unknown",
+  "source_url": null,
+  "title": "OpenReviewer synthetic adapter conformance benchmark",
+  "version": "0.1.0"
+}

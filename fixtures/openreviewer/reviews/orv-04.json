@@ -1,0 +1,16 @@
+{
+  "findings": [],
+  "markdown": "# Review\n\n## Summary\n\n[SYNTHETIC] Synthetic OpenReviewer: multilingual methods note\n\n## Strengths\n\n- Synthetic strength placeholder.\n\n## Weaknesses\n\n- Evaluation languages are listed without per-language sample sizes.\n\n## Questions\n\n- Synthetic clarifying question?\n",
+  "model_identifiers": [
+    "synthetic-openreviewer-fixture/none"
+  ],
+  "opencritique_fixture": {
+    "confidential_manuscript_text": false,
+    "contract_version": "openreviewer-markdown-template-v1",
+    "kind": "synthetic_rights_cleared_maintainer",
+    "performance_claims_authorized": false
+  },
+  "recommendation_score": 5.0,
+  "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic OpenReviewer: multilingual methods note",
+  "venue_template": "ICLR2025-synthetic"
+}

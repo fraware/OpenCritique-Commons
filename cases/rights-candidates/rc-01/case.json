@@ -1,0 +1,67 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_rights_rc_01",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic rights-path placeholder; not a natural manuscript.",
+    "Scientific performance claims remain disabled."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-rights-v1",
+    "content_hash": "30c53299222a879f0475ba4425d6f2e9e1d29acb5da2ee698370dfdafc5a172c",
+    "created_at": "2026-05-01T00:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_rights_rc_01_v1",
+    "id": "ocms_rights_rc_01",
+    "manuscript_id": "ocms_rights_rc_01",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic rights candidate: identification discussion"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "4ac9dd784989fd69eacc27c4325a7e503473fc81635b20be821b699266d5100e",
+      "created_at": "2026-05-01T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "economics",
+      "extracted_artifact": null,
+      "id": "ocver_rights_rc_01_v1",
+      "ingestion_metadata": {
+        "method": "rights_cleared_placeholder",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_rights_candidates.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_rights_rc_01",
+      "page_count": 1,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 32,
+        "media_type": "text/plain",
+        "sha256": "f65c10868bc394c7f661e55df28318d7cc3d8306e1bd43db6c2884d3707fd765",
+        "uri": "synthetic://rights/rc-01"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_rights_rc_01_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1"
+}

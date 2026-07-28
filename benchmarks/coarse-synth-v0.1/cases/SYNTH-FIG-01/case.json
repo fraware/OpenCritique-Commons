@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_fig_01",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "25c071d0e121fedc97ce725ad26d0ad0e35637da5fc8015bb9307199944265bf",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_fig_01_v1",
+    "id": "ocms_synth_fig_01",
+    "manuscript_id": "ocms_synth_fig_01",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Figure axis scale obscures effect size"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "8f3ea8879c3178f5541f145b9c97b455ab46acb8bb0bb02d6153c68d72d9a1b0",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "figure_table_heavy",
+      "extracted_artifact": {
+        "byte_size": 16,
+        "media_type": "text/plain",
+        "sha256": "b5a04d6f8a4561938fe8c598fb34b073197d7e425136bdf5fd4282002682c09c",
+        "uri": "synthetic://opencritique/fig-01-extracted"
+      },
+      "id": "ocver_synth_fig_01_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_synth_fig_01",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 13,
+        "media_type": "text/plain",
+        "sha256": "955f1edd7801c8496a703fb99e3815746a2755290fb9afc7ad671919fc0db3e0",
+        "uri": "synthetic://opencritique/fig-01-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_fig_01_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

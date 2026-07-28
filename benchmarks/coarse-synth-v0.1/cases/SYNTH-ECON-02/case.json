@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_econ_02",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "711a71159631c889bf405c0c43a5f78c6f502b3d0d8544b5947998ab25fa68f4",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_econ_02_v1",
+    "id": "ocms_synth_econ_02",
+    "manuscript_id": "ocms_synth_econ_02",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Multiple-testing correction missing"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "c46736857505b60b695ec927b37f130a83422689e63740f8124b27231c32c665",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "economics_statistics",
+      "extracted_artifact": {
+        "byte_size": 17,
+        "media_type": "text/plain",
+        "sha256": "058f1e6648e0c73d0e2fa26ad3f3dcd43b990bb1cb2a2983f0079cfe41f74224",
+        "uri": "synthetic://opencritique/econ-02-extracted"
+      },
+      "id": "ocver_synth_econ_02_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_synth_econ_02",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 14,
+        "media_type": "text/plain",
+        "sha256": "c8e47a4654a3dc449a1e38ba194b8ffa272b7105c3e5cdd59f0238f2be0d8ed0",
+        "uri": "synthetic://opencritique/econ-02-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_econ_02_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

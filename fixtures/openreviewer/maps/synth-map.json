@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "case_id": "occase_orv_orv_01",
+      "case_version": "1.0.0",
+      "review_path": "../reviews/orv-01.json"
+    },
+    {
+      "case_id": "occase_orv_orv_02",
+      "case_version": "1.0.0",
+      "review_path": "../reviews/orv-02.json"
+    },
+    {
+      "case_id": "occase_orv_orv_03",
+      "case_version": "1.0.0",
+      "review_path": "../reviews/orv-03.json"
+    },
+    {
+      "case_id": "occase_orv_orv_04",
+      "case_version": "1.0.0",
+      "review_path": "../reviews/orv-04.json"
+    },
+    {
+      "case_id": "occase_orv_orv_05",
+      "case_version": "1.0.0",
+      "review_path": "../reviews/orv-05.json"
+    }
+  ],
+  "configuration": {
+    "fixture_kind": "synthetic_rights_cleared_maintainer"
+  },
+  "contract_version": "openreviewer-markdown-template-v1",
+  "model_identifiers": [
+    "synthetic-openreviewer-fixture/none"
+  ],
+  "openreviewer_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "system_version": "openreviewer-synth-0.1"
+}

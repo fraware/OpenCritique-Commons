@@ -1,0 +1,89 @@
+{
+  "benchmark_id": "ocbench_coarse_synth",
+  "case_set_hash": "66e5ecfd1e77a73115771d18256a57e55b2a11816bbd4c8a0088af52822b149b",
+  "cases": [
+    {
+      "case_id": "occase_synth_econ_01",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ECON-01/case.json"
+    },
+    {
+      "case_id": "occase_synth_econ_02",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ECON-02/case.json"
+    },
+    {
+      "case_id": "occase_synth_ml_01",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ML-01/case.json"
+    },
+    {
+      "case_id": "occase_synth_ml_02",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ML-02/case.json"
+    },
+    {
+      "case_id": "occase_synth_theory_01",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-THEORY-01/case.json"
+    },
+    {
+      "case_id": "occase_synth_theory_02",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-THEORY-02/case.json"
+    },
+    {
+      "case_id": "occase_synth_fig_01",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-FIG-01/case.json"
+    },
+    {
+      "case_id": "occase_synth_table_01",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-TABLE-01/case.json"
+    },
+    {
+      "case_id": "occase_synth_multi_01",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-MULTI-01/case.json"
+    },
+    {
+      "case_id": "occase_synth_multi_02",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-MULTI-02/case.json"
+    },
+    {
+      "case_id": "occase_synth_stats_03",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-STATS-03/case.json"
+    },
+    {
+      "case_id": "occase_synth_ml_03",
+      "case_version": "1.0.0",
+      "path": "cases/SYNTH-ML-03/case.json"
+    }
+  ],
+  "created_at": "2026-01-15T12:00:00Z",
+  "description": "Rights-cleared synthetic maintainer fixtures for Coarse adapter validation. Not authorized for scientific performance claims.",
+  "domain_profiles": [
+    "economics_statistics",
+    "empirical_ml",
+    "figure_table_heavy",
+    "multilingual_ish",
+    "theory_heavy"
+  ],
+  "evidence_class": "conformance",
+  "expert_adjudicated": false,
+  "independent_evaluation": false,
+  "license": "Apache-2.0",
+  "limitations": [
+    "Synthetic fixtures only.",
+    "No confidential manuscript text.",
+    "Performance claims are not authorized."
+  ],
+  "minimum_public_claim_cases": 40,
+  "reference_completeness": "unknown",
+  "source_url": null,
+  "title": "Coarse synthetic adapter conformance benchmark",
+  "version": "0.1.0"
+}

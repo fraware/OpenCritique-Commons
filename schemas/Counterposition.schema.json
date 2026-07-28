@@ -1,0 +1,141 @@
+{
+  "$defs": {
+    "ActorReference": {
+      "additionalProperties": false,
+      "properties": {
+        "actor_id": {
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "actor_type": {
+          "$ref": "#/$defs/ActorType"
+        },
+        "display_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Display Name"
+        }
+      },
+      "required": [
+        "actor_id",
+        "actor_type"
+      ],
+      "title": "ActorReference",
+      "type": "object"
+    },
+    "ActorType": {
+      "enum": [
+        "human",
+        "system",
+        "tool",
+        "organization"
+      ],
+      "title": "ActorType",
+      "type": "string"
+    },
+    "CounterpositionSource": {
+      "enum": [
+        "author",
+        "adjudicator",
+        "reviewer_system",
+        "domain_tool",
+        "published_source"
+      ],
+      "title": "CounterpositionSource",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "adequacy_status": {
+      "default": "unreviewed",
+      "enum": [
+        "unreviewed",
+        "adequate",
+        "inadequate"
+      ],
+      "title": "Adequacy Status",
+      "type": "string"
+    },
+    "concern_id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Concern Id",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "counterposition_id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Counterposition Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "$ref": "#/$defs/ActorReference"
+    },
+    "id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Id",
+      "type": "string"
+    },
+    "residual_disagreement": {
+      "title": "Residual Disagreement",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/CounterpositionSource"
+    },
+    "statement": {
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    },
+    "supporting_anchor_ids": {
+      "items": {
+        "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+        "type": "string"
+      },
+      "title": "Supporting Anchor Ids",
+      "type": "array"
+    },
+    "supporting_evidence_ids": {
+      "items": {
+        "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+        "type": "string"
+      },
+      "title": "Supporting Evidence Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "content_hash",
+    "counterposition_id",
+    "concern_id",
+    "statement",
+    "source",
+    "residual_disagreement"
+  ],
+  "title": "Counterposition",
+  "type": "object"
+}

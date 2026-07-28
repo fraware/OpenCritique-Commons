@@ -1,0 +1,14 @@
+{
+  "store_version": "0.1",
+  "store_id": "opencritique-commons-scorecard-trust",
+  "policy_mode_default": "production",
+  "keys": [],
+  "revocations": [],
+  "rotations": [],
+  "published_channels": [
+    "https://github.com/fraware/OpenCritique-Commons/blob/main/trust/scorecard-trust-store.json",
+    "https://github.com/fraware/OpenCritique-Commons/releases"
+  ],
+  "updated_at": "2026-07-28T00:00:00Z",
+  "notes": "Production release public keys will be appended here after offline root ceremony. Private keys are never stored in this repository."
+}

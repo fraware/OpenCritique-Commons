@@ -1,0 +1,823 @@
+{
+  "$defs": {
+    "AnchorResolution": {
+      "additionalProperties": false,
+      "properties": {
+        "reference_anchor_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reference Anchor Ids",
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/AnchorResolutionStatus"
+        },
+        "submitted_index": {
+          "title": "Submitted Index",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "submitted_index",
+        "status"
+      ],
+      "title": "AnchorResolution",
+      "type": "object"
+    },
+    "AnchorResolutionStatus": {
+      "enum": [
+        "exact",
+        "normalized",
+        "object_label",
+        "page_only",
+        "ambiguous",
+        "unresolved"
+      ],
+      "title": "AnchorResolutionStatus",
+      "type": "string"
+    },
+    "BenchmarkCaseRef": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "case_version": {
+          "title": "Case Version",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "case_version",
+        "path"
+      ],
+      "title": "BenchmarkCaseRef",
+      "type": "object"
+    },
+    "BenchmarkEvidenceClass": {
+      "enum": [
+        "conformance",
+        "synthetic_scientific",
+        "expert_natural",
+        "live_private"
+      ],
+      "title": "BenchmarkEvidenceClass",
+      "type": "string"
+    },
+    "BenchmarkManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_id": {
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "case_set_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Case Set Hash",
+          "type": "string"
+        },
+        "cases": {
+          "items": {
+            "$ref": "#/$defs/BenchmarkCaseRef"
+          },
+          "minItems": 1,
+          "title": "Cases",
+          "type": "array"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "domain_profiles": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Domain Profiles",
+          "type": "array"
+        },
+        "evidence_class": {
+          "$ref": "#/$defs/BenchmarkEvidenceClass"
+        },
+        "expert_adjudicated": {
+          "default": false,
+          "title": "Expert Adjudicated",
+          "type": "boolean"
+        },
+        "independent_evaluation": {
+          "default": false,
+          "title": "Independent Evaluation",
+          "type": "boolean"
+        },
+        "license": {
+          "title": "License",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "minimum_public_claim_cases": {
+          "default": 40,
+          "minimum": 1,
+          "title": "Minimum Public Claim Cases",
+          "type": "integer"
+        },
+        "reference_completeness": {
+          "$ref": "#/$defs/ReferenceCompleteness"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "benchmark_id",
+        "version",
+        "title",
+        "description",
+        "evidence_class",
+        "reference_completeness",
+        "domain_profiles",
+        "cases",
+        "license",
+        "case_set_hash",
+        "created_at"
+      ],
+      "title": "BenchmarkManifest",
+      "type": "object"
+    },
+    "CaseEvaluation": {
+      "additionalProperties": false,
+      "properties": {
+        "abstained": {
+          "title": "Abstained",
+          "type": "boolean"
+        },
+        "anchor_resolutions": {
+          "additionalProperties": {
+            "items": {
+              "$ref": "#/$defs/AnchorResolution"
+            },
+            "type": "array"
+          },
+          "title": "Anchor Resolutions",
+          "type": "object"
+        },
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "case_version": {
+          "title": "Case Version",
+          "type": "string"
+        },
+        "eligible_reference_count": {
+          "title": "Eligible Reference Count",
+          "type": "integer"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Failure"
+        },
+        "matches": {
+          "items": {
+            "$ref": "#/$defs/ConcernMatch"
+          },
+          "title": "Matches",
+          "type": "array"
+        },
+        "missed_reference_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missed Reference Ids",
+          "type": "array"
+        },
+        "submitted_count": {
+          "title": "Submitted Count",
+          "type": "integer"
+        },
+        "unmatched_submitted_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unmatched Submitted Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "case_version",
+        "submitted_count",
+        "eligible_reference_count",
+        "matches",
+        "unmatched_submitted_ids",
+        "missed_reference_ids",
+        "anchor_resolutions",
+        "abstained",
+        "failure"
+      ],
+      "title": "CaseEvaluation",
+      "type": "object"
+    },
+    "ConcernMatch": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_score": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Anchor Score",
+          "type": "number"
+        },
+        "lexical_score": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Lexical Score",
+          "type": "number"
+        },
+        "reference_concern_id": {
+          "title": "Reference Concern Id",
+          "type": "string"
+        },
+        "score": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Score",
+          "type": "number"
+        },
+        "submitted_local_id": {
+          "title": "Submitted Local Id",
+          "type": "string"
+        },
+        "type_score": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Type Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "submitted_local_id",
+        "reference_concern_id",
+        "score",
+        "anchor_score",
+        "type_score",
+        "lexical_score"
+      ],
+      "title": "ConcernMatch",
+      "type": "object"
+    },
+    "EvaluationMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_resolution_rate": {
+          "$ref": "#/$defs/MetricValue"
+        },
+        "brier_score": {
+          "$ref": "#/$defs/MetricValue"
+        },
+        "cases_abstained": {
+          "title": "Cases Abstained",
+          "type": "integer"
+        },
+        "cases_completed": {
+          "title": "Cases Completed",
+          "type": "integer"
+        },
+        "cases_failed": {
+          "title": "Cases Failed",
+          "type": "integer"
+        },
+        "cases_total": {
+          "title": "Cases Total",
+          "type": "integer"
+        },
+        "eligible_reference_concerns": {
+          "title": "Eligible Reference Concerns",
+          "type": "integer"
+        },
+        "false_critical_per_manuscript": {
+          "$ref": "#/$defs/MetricValue"
+        },
+        "matched_concerns": {
+          "title": "Matched Concerns",
+          "type": "integer"
+        },
+        "missed_reference": {
+          "title": "Missed Reference",
+          "type": "integer"
+        },
+        "novel_candidates_pending_adjudication": {
+          "title": "Novel Candidates Pending Adjudication",
+          "type": "integer"
+        },
+        "precision": {
+          "$ref": "#/$defs/MetricValue"
+        },
+        "recall": {
+          "$ref": "#/$defs/MetricValue"
+        },
+        "severity_weighted_precision": {
+          "$ref": "#/$defs/MetricValue"
+        },
+        "severity_weighted_recall": {
+          "$ref": "#/$defs/MetricValue"
+        },
+        "submitted_concerns": {
+          "title": "Submitted Concerns",
+          "type": "integer"
+        },
+        "unmatched_submitted": {
+          "title": "Unmatched Submitted",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "cases_total",
+        "cases_completed",
+        "cases_abstained",
+        "cases_failed",
+        "submitted_concerns",
+        "eligible_reference_concerns",
+        "matched_concerns",
+        "unmatched_submitted",
+        "missed_reference",
+        "anchor_resolution_rate",
+        "precision",
+        "recall",
+        "severity_weighted_precision",
+        "severity_weighted_recall",
+        "false_critical_per_manuscript",
+        "brier_score",
+        "novel_candidates_pending_adjudication"
+      ],
+      "title": "EvaluationMetrics",
+      "type": "object"
+    },
+    "EvaluationResult": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark": {
+          "$ref": "#/$defs/BenchmarkManifest"
+        },
+        "case_evaluations": {
+          "items": {
+            "$ref": "#/$defs/CaseEvaluation"
+          },
+          "title": "Case Evaluations",
+          "type": "array"
+        },
+        "claim_boundary": {
+          "title": "Claim Boundary",
+          "type": "string"
+        },
+        "generated_at": {
+          "format": "date-time",
+          "title": "Generated At",
+          "type": "string"
+        },
+        "matcher_config": {
+          "$ref": "#/$defs/MatcherConfig"
+        },
+        "matcher_version": {
+          "title": "Matcher Version",
+          "type": "string"
+        },
+        "metrics": {
+          "$ref": "#/$defs/EvaluationMetrics"
+        },
+        "performance_claim_authorized": {
+          "title": "Performance Claim Authorized",
+          "type": "boolean"
+        },
+        "predecessor_result_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Predecessor Result Id"
+        },
+        "result_id": {
+          "title": "Result Id",
+          "type": "string"
+        },
+        "scoring_policy_version": {
+          "default": "scoring-policy-v0.1",
+          "title": "Scoring Policy Version",
+          "type": "string"
+        },
+        "submission_id": {
+          "title": "Submission Id",
+          "type": "string"
+        },
+        "system": {
+          "$ref": "#/$defs/SystemManifest"
+        }
+      },
+      "required": [
+        "result_id",
+        "benchmark",
+        "system",
+        "submission_id",
+        "matcher_version",
+        "case_evaluations",
+        "metrics",
+        "performance_claim_authorized",
+        "claim_boundary"
+      ],
+      "title": "EvaluationResult",
+      "type": "object"
+    },
+    "MatcherConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_weight": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Anchor Weight",
+          "type": "number"
+        },
+        "config_id": {
+          "default": "default-v0.2",
+          "title": "Config Id",
+          "type": "string"
+        },
+        "lexical_weight": {
+          "default": 0.2,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Lexical Weight",
+          "type": "number"
+        },
+        "threshold": {
+          "default": 0.55,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Threshold",
+          "type": "number"
+        },
+        "type_weight": {
+          "default": 0.3,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Type Weight",
+          "type": "number"
+        }
+      },
+      "title": "MatcherConfig",
+      "type": "object"
+    },
+    "MetricValue": {
+      "additionalProperties": false,
+      "properties": {
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator"
+        },
+        "numerator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Numerator"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "withheld_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Withheld Reason"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "MetricValue",
+      "type": "object"
+    },
+    "ReferenceCompleteness": {
+      "enum": [
+        "complete_seeded",
+        "partial_natural",
+        "unknown"
+      ],
+      "title": "ReferenceCompleteness",
+      "type": "string"
+    },
+    "SystemManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "code_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Code Commit"
+        },
+        "configuration_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Configuration Hash",
+          "type": "string"
+        },
+        "declared_cost_currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Cost Currency"
+        },
+        "declared_cost_minor": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Cost Minor"
+        },
+        "declared_latency_seconds": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared Latency Seconds"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "display_name": {
+          "title": "Display Name",
+          "type": "string"
+        },
+        "execution_mode": {
+          "default": "external",
+          "enum": [
+            "external",
+            "local",
+            "hosted"
+          ],
+          "title": "Execution Mode",
+          "type": "string"
+        },
+        "license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License"
+        },
+        "model_identifiers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Model Identifiers",
+          "type": "array"
+        },
+        "output_contract": {
+          "const": "opencritique-evaluation-v0.1",
+          "default": "opencritique-evaluation-v0.1",
+          "title": "Output Contract",
+          "type": "string"
+        },
+        "repository_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repository Url"
+        },
+        "system_id": {
+          "title": "System Id",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "system_id",
+        "version",
+        "display_name",
+        "configuration_hash"
+      ],
+      "title": "SystemManifest",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "disclosure": {
+      "title": "Disclosure",
+      "type": "string"
+    },
+    "headline": {
+      "title": "Headline",
+      "type": "string"
+    },
+    "immutable": {
+      "default": true,
+      "title": "Immutable",
+      "type": "boolean"
+    },
+    "predecessor_scorecard_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Scorecard Hash"
+    },
+    "predecessor_scorecard_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Scorecard Id"
+    },
+    "reference_set_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reference Set Hash"
+    },
+    "result": {
+      "$ref": "#/$defs/EvaluationResult"
+    },
+    "scorecard_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scorecard Id"
+    },
+    "scorecard_version": {
+      "default": "0.1",
+      "title": "Scorecard Version",
+      "type": "string"
+    },
+    "scoring_policy_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scoring Policy Version"
+    }
+  },
+  "required": [
+    "result",
+    "headline",
+    "disclosure"
+  ],
+  "title": "PublicScorecard",
+  "type": "object"
+}

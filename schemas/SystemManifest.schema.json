@@ -1,0 +1,136 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "code_commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Code Commit"
+    },
+    "configuration_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Configuration Hash",
+      "type": "string"
+    },
+    "declared_cost_currency": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Z]{3}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Declared Cost Currency"
+    },
+    "declared_cost_minor": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Declared Cost Minor"
+    },
+    "declared_latency_seconds": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Declared Latency Seconds"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "display_name": {
+      "title": "Display Name",
+      "type": "string"
+    },
+    "execution_mode": {
+      "default": "external",
+      "enum": [
+        "external",
+        "local",
+        "hosted"
+      ],
+      "title": "Execution Mode",
+      "type": "string"
+    },
+    "license": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License"
+    },
+    "model_identifiers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Model Identifiers",
+      "type": "array"
+    },
+    "output_contract": {
+      "const": "opencritique-evaluation-v0.1",
+      "default": "opencritique-evaluation-v0.1",
+      "title": "Output Contract",
+      "type": "string"
+    },
+    "repository_url": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Repository Url"
+    },
+    "system_id": {
+      "title": "System Id",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "system_id",
+    "version",
+    "display_name",
+    "configuration_hash"
+  ],
+  "title": "SystemManifest",
+  "type": "object"
+}

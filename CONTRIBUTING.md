@@ -1,0 +1,57 @@
+# Contributing to OpenCritique Commons
+
+Thank you for helping keep scientific-critique infrastructure inspectable.
+
+## Before you start
+
+1. Read [GOVERNANCE.md](GOVERNANCE.md), [SECURITY.md](SECURITY.md), and
+   [docs/REPOSITORY_PUBLICATION.md](docs/REPOSITORY_PUBLICATION.md).
+2. Confirm the change does **not** authorize scientific performance claims.
+3. Prefer a linked issue. Feature work on issues #2–#7 must wait until Milestone 0
+   (restored `src/` and green fresh-clone gate) is on `main`.
+
+## Development setup
+
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+bash scripts/check.sh
+```
+
+## Commit convention
+
+Use concise, imperative subjects. Prefer a prefix when it clarifies intent:
+
+- `fix:` — bug fixes and restorations
+- `feat:` — additive capability within an approved workstream
+- `docs:` — documentation only
+- `test:` — tests only
+- `chore:` — tooling, CI, and repository hygiene
+- `refactor:` — internal structure without behavior change
+
+Explain *why* in the body when the change is non-obvious. Do not amend published
+history or force-push shared branches.
+
+## Pull requests
+
+Use the repository PR template. Every PR must:
+
+- state scope and out-of-scope items;
+- disclose role overlaps during alpha staffing;
+- include verification commands actually run;
+- keep scientific-performance claims disabled unless an authorized gate is met;
+- avoid committing transport residue (`.bootstrap/`, repair publish workflows,
+  `_inspect_wheel/`, private keys).
+
+## Architecture decisions
+
+Normative process and architecture choices belong under
+`governance/decisions/` as append-only ADRs. Do not silently reshape frozen
+schema names; file an ADR instead.
+
+## Code of conduct
+
+Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_ml_03",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "3246acb2cd399ecf1fa197951498421093612cd2963ef5f8a559b59d68ea5023",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_ml_03_v1",
+    "id": "ocms_synth_ml_03",
+    "manuscript_id": "ocms_synth_ml_03",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Calibration plot misread"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "417bf08163ab0a43327def87ad45b92b2ddb9f6eabc08feb33ba8f3ca6876c76",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "empirical_ml",
+      "extracted_artifact": {
+        "byte_size": 15,
+        "media_type": "text/plain",
+        "sha256": "e1ac9e446b4a68177863173fe21dc3c99a651b9bba5b70864f35c6af764413fa",
+        "uri": "synthetic://opencritique/ml-03-extracted"
+      },
+      "id": "ocver_synth_ml_03_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_synth_ml_03",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 12,
+        "media_type": "text/plain",
+        "sha256": "2496173abd49f891830c84fe89ae565bbf040853f261ceab25c8cfb67d5b8e96",
+        "uri": "synthetic://opencritique/ml-03-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_ml_03_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

@@ -1,0 +1,8 @@
+{
+  "authentic_outputs_available": false,
+  "contract_version": "openreviewer-markdown-template-v1",
+  "fixture_kind": "synthetic_rights_cleared_maintainer",
+  "notes": "Integration is stubbed at the adapter interface with synthetic fixtures. Authentic redistributable OpenReviewer outputs remain pending rights clearance.",
+  "performance_claims_authorized": false,
+  "repository": "https://github.com/maxidl/openreviewer"
+}

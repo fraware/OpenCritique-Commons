@@ -1,0 +1,299 @@
+{
+  "$defs": {
+    "ActorReference": {
+      "additionalProperties": false,
+      "properties": {
+        "actor_id": {
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "actor_type": {
+          "$ref": "#/$defs/ActorType"
+        },
+        "display_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Display Name"
+        }
+      },
+      "required": [
+        "actor_id",
+        "actor_type"
+      ],
+      "title": "ActorReference",
+      "type": "object"
+    },
+    "ActorType": {
+      "enum": [
+        "human",
+        "system",
+        "tool",
+        "organization"
+      ],
+      "title": "ActorType",
+      "type": "string"
+    },
+    "ConcernOrigin": {
+      "additionalProperties": false,
+      "properties": {
+        "origin_id": {
+          "title": "Origin Id",
+          "type": "string"
+        },
+        "origin_type": {
+          "$ref": "#/$defs/ConcernOriginType"
+        },
+        "original_confidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Confidence"
+        },
+        "original_severity": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Severity"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Id"
+        }
+      },
+      "required": [
+        "origin_type",
+        "origin_id"
+      ],
+      "title": "ConcernOrigin",
+      "type": "object"
+    },
+    "ConcernOriginType": {
+      "enum": [
+        "human",
+        "reviewer_system",
+        "mutation_generator",
+        "replication",
+        "post_publication"
+      ],
+      "title": "ConcernOriginType",
+      "type": "string"
+    },
+    "ConcernStatus": {
+      "enum": [
+        "proposed",
+        "under_review",
+        "confirmed",
+        "qualified",
+        "rejected",
+        "unresolved",
+        "superseded",
+        "resolved"
+      ],
+      "title": "ConcernStatus",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "critical",
+        "major",
+        "moderate",
+        "minor",
+        "informational"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "UncertaintySource": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "description"
+      ],
+      "title": "UncertaintySource",
+      "type": "object"
+    },
+    "VerificationGrade": {
+      "enum": [
+        "V0",
+        "V1",
+        "V2",
+        "V3",
+        "V4",
+        "V5"
+      ],
+      "title": "VerificationGrade",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "anchor_ids": {
+      "items": {
+        "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Anchor Ids",
+      "type": "array"
+    },
+    "claim_ids": {
+      "items": {
+        "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "concern_id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Concern Id",
+      "type": "string"
+    },
+    "concern_type": {
+      "minLength": 1,
+      "title": "Concern Type",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_by": {
+      "$ref": "#/$defs/ActorReference"
+    },
+    "id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Id",
+      "type": "string"
+    },
+    "manuscript_version_id": {
+      "pattern": "^oc[a-z]*_[A-Za-z0-9._-]+$",
+      "title": "Manuscript Version Id",
+      "type": "string"
+    },
+    "origin": {
+      "$ref": "#/$defs/ConcernOrigin"
+    },
+    "potential_consequence": {
+      "title": "Potential Consequence",
+      "type": "string"
+    },
+    "required_resolution": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Required Resolution"
+    },
+    "schema_version": {
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "severity": {
+      "$ref": "#/$defs/Severity"
+    },
+    "status": {
+      "$ref": "#/$defs/ConcernStatus"
+    },
+    "summary": {
+      "minLength": 1,
+      "title": "Summary",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "uncertainty_sources": {
+      "items": {
+        "$ref": "#/$defs/UncertaintySource"
+      },
+      "title": "Uncertainty Sources",
+      "type": "array"
+    },
+    "verification_grade": {
+      "$ref": "#/$defs/VerificationGrade"
+    }
+  },
+  "required": [
+    "id",
+    "created_by",
+    "content_hash",
+    "concern_id",
+    "manuscript_version_id",
+    "title",
+    "summary",
+    "concern_type",
+    "claim_ids",
+    "anchor_ids",
+    "severity",
+    "confidence",
+    "verification_grade",
+    "status",
+    "potential_consequence",
+    "origin"
+  ],
+  "title": "Concern",
+  "type": "object"
+}
