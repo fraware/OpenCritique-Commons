@@ -27,6 +27,9 @@ opencritique-artifacts/
 *.private.pem
 *private-key*.pem
 
+# Local recovery / inspection artifacts (never publish)
+_inspect_wheel/
+
 # Editors and operating systems
 .vscode/
 .idea/
