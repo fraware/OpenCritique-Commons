@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_table_01",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "42c34db2509aef87b5a77cb0ab4f2ac33a341dbbe7bf19ad951d6a955f469c70",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_table_01_v1",
+    "id": "ocms_synth_table_01",
+    "manuscript_id": "ocms_synth_table_01",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Table omits confidence intervals"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "86a16ea1df5562032fa4fa0e1434be7698783ac021a89c45c8e9242b9c34f22b",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "figure_table_heavy",
+      "extracted_artifact": {
+        "byte_size": 18,
+        "media_type": "text/plain",
+        "sha256": "8f3b91787b49198d52206ffe7d89fea9509891deb41c106aa28db542ff8d9138",
+        "uri": "synthetic://opencritique/table-01-extracted"
+      },
+      "id": "ocver_synth_table_01_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_synth_table_01",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 15,
+        "media_type": "text/plain",
+        "sha256": "67d75f8a1dc3771e978d6d719798ad8424d3697bcdf97b555a83c2b3117dea0b",
+        "uri": "synthetic://opencritique/table-01-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_table_01_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

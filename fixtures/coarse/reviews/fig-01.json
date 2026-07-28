@@ -1,0 +1,42 @@
+{
+  "date": "2026-01-15",
+  "detailed_comments": [
+    {
+      "confidence": "medium",
+      "feedback": "The truncated y-axis may exaggerate separation; report absolute effect sizes.",
+      "number": 1,
+      "quote": "Figure 3 shows a clear separation between treatment and control trajectories.",
+      "severity": "minor",
+      "status": "Pending",
+      "title": "Synthetic: Figure axis scale obscures effect size"
+    }
+  ],
+  "domain": "biology",
+  "language": {
+    "notes": "Synthetic English excerpt.",
+    "primary": "en"
+  },
+  "opencritique_fixture": {
+    "case_id": "occase_synth_fig_01",
+    "confidential_manuscript_text": false,
+    "kind": "synthetic_rights_cleared_maintainer",
+    "performance_claims_authorized": false,
+    "upstream_contract_version": "coarse-review-contract-v1"
+  },
+  "overall_feedback": {
+    "assessment": "Not a scientific judgment of any real manuscript.",
+    "issues": [
+      {
+        "body": "Placeholder overview issue.",
+        "title": "Synthetic issue"
+      }
+    ],
+    "recommendation": "Use only for adapter conformance.",
+    "revision_targets": [
+      "methods"
+    ],
+    "summary": "Synthetic overview feedback for adapter contract exercise."
+  },
+  "taxonomy": "synthetic.maintainer.fixture",
+  "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic: Figure axis scale obscures effect size"
+}

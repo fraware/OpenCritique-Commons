@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_econ_01",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "cf51d8c7db27f17276b613ca2121b9e9f5083b224ad56ddaf95f4b8973447cc6",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_econ_01_v1",
+    "id": "ocms_synth_econ_01",
+    "manuscript_id": "ocms_synth_econ_01",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Identification under clustered sampling"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "3c516c1ef5dcd474a6533a6977039f4816499f523e866e3ff7b0f81c4dda3726",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "economics_statistics",
+      "extracted_artifact": {
+        "byte_size": 17,
+        "media_type": "text/plain",
+        "sha256": "1c39c6026c61e26356b97aa05660d1312b90a0299e65147add8a2f576febb1d3",
+        "uri": "synthetic://opencritique/econ-01-extracted"
+      },
+      "id": "ocver_synth_econ_01_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_synth_econ_01",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 14,
+        "media_type": "text/plain",
+        "sha256": "4678dbecafbdaff8dc10e463c3c905a259638e256270682f2002d7f6113016eb",
+        "uri": "synthetic://opencritique/econ-01-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_econ_01_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

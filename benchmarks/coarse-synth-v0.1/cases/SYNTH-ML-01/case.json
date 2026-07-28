@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_ml_01",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "484f52884f44b3071a58d29940bdca72f26c6ca579d5b40a10bf3e0c940b5c74",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_ml_01_v1",
+    "id": "ocms_synth_ml_01",
+    "manuscript_id": "ocms_synth_ml_01",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Train-test leakage risk"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "d1ddd6bd12234e35f997694e3303d13e96347846e618ecc69f0c62d7cd69b2ea",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "empirical_ml",
+      "extracted_artifact": {
+        "byte_size": 15,
+        "media_type": "text/plain",
+        "sha256": "06cde5d743c0b0fda19e12e31f22f0c8567ec405be6e19a8f5a82ba4210d71fe",
+        "uri": "synthetic://opencritique/ml-01-extracted"
+      },
+      "id": "ocver_synth_ml_01_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_synth_ml_01",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 12,
+        "media_type": "text/plain",
+        "sha256": "78fe57f91c15e99a3643fbde6dd297a1fa896f1271cc2b0550ecad0da02f94bb",
+        "uri": "synthetic://opencritique/ml-01-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_ml_01_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

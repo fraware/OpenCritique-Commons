@@ -1,0 +1,42 @@
+{
+  "date": "2026-01-15",
+  "detailed_comments": [
+    {
+      "confidence": "medium",
+      "feedback": "Untuned baselines weaken comparative claims about proposed gains.",
+      "number": 1,
+      "quote": "The baseline uses default hyperparameters from the reference library.",
+      "severity": "minor",
+      "status": "Pending",
+      "title": "Synthetic: Baseline under-tuned"
+    }
+  ],
+  "domain": "machine_learning",
+  "language": {
+    "notes": "Synthetic English excerpt.",
+    "primary": "en"
+  },
+  "opencritique_fixture": {
+    "case_id": "occase_synth_ml_02",
+    "confidential_manuscript_text": false,
+    "kind": "synthetic_rights_cleared_maintainer",
+    "performance_claims_authorized": false,
+    "upstream_contract_version": "coarse-review-contract-v1"
+  },
+  "overall_feedback": {
+    "assessment": "Not a scientific judgment of any real manuscript.",
+    "issues": [
+      {
+        "body": "Placeholder overview issue.",
+        "title": "Synthetic issue"
+      }
+    ],
+    "recommendation": "Use only for adapter conformance.",
+    "revision_targets": [
+      "methods"
+    ],
+    "summary": "Synthetic overview feedback for adapter contract exercise."
+  },
+  "taxonomy": "synthetic.maintainer.fixture",
+  "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic: Baseline under-tuned"
+}

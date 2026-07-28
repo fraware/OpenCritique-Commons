@@ -1,0 +1,74 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_synth_multi_02",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Not authorized for scientific performance claims."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "05e2b1b6ed08e8f0c29cd4bcafdda02a41b5d49a54b49618a62281e0ddf49936",
+    "created_at": "2026-01-15T12:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_synth_multi_02_v1",
+    "id": "ocms_synth_multi_02",
+    "manuscript_id": "ocms_synth_multi_02",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic: Mixed-language methods description"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "ca6704131b92e884c3d59df457566082c33757d3bb3a2dcf574573c5a72d17ff",
+      "created_at": "2026-01-15T12:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "multilingual_ish",
+      "extracted_artifact": {
+        "byte_size": 18,
+        "media_type": "text/plain",
+        "sha256": "0bf1c884de52680c25eee21e2fdb9f24dbf0e099af291a705c936c35e8f1c676",
+        "uri": "synthetic://opencritique/multi-02-extracted"
+      },
+      "id": "ocver_synth_multi_02_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_coarse_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "de",
+      "manuscript_id": "ocms_synth_multi_02",
+      "page_count": 2,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 15,
+        "media_type": "text/plain",
+        "sha256": "5b0f1d1978fc74c14b911c9fc03f43b4ac99bb23ebba5ae9ac6437a4246fffb6",
+        "uri": "synthetic://opencritique/multi-02-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_synth_multi_02_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

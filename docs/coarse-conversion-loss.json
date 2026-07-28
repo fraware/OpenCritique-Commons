@@ -1,0 +1,862 @@
+{
+  "aggregate_quote_stats": {
+    "ambiguous": 0,
+    "exact": 12,
+    "normalized": 0,
+    "total": 13,
+    "unresolved": 1
+  },
+  "cases": [
+    {
+      "case_id": "occase_synth_econ_01",
+      "case_version": "1.0.0",
+      "comment_count": 2,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 2,
+        "normalized": 0,
+        "total": 2,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1,
+        2
+      ],
+      "review_path": "../reviews/econ-01.json"
+    },
+    {
+      "case_id": "occase_synth_econ_02",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/econ-02.json"
+    },
+    {
+      "case_id": "occase_synth_ml_01",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/ml-01.json"
+    },
+    {
+      "case_id": "occase_synth_ml_02",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/ml-02.json"
+    },
+    {
+      "case_id": "occase_synth_theory_01",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/theory-01.json"
+    },
+    {
+      "case_id": "occase_synth_theory_02",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/theory-02.json"
+    },
+    {
+      "case_id": "occase_synth_fig_01",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/fig-01.json"
+    },
+    {
+      "case_id": "occase_synth_table_01",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/table-01.json"
+    },
+    {
+      "case_id": "occase_synth_multi_01",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/multi-01.json"
+    },
+    {
+      "case_id": "occase_synth_multi_02",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/multi-02.json"
+    },
+    {
+      "case_id": "occase_synth_stats_03",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 0,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 1
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/stats-03.json"
+    },
+    {
+      "case_id": "occase_synth_ml_03",
+      "case_version": "1.0.0",
+      "comment_count": 1,
+      "field_fates": [
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].number",
+          "notes": "Recoverable via adapter provenance local_id material and title/quote pairing."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].title",
+          "notes": "Mapped to SubmittedConcern.title."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].quote",
+          "notes": "Mapped to SubmittedAnchor.source_text verbatim; resolution may be unresolved."
+        },
+        {
+          "fate": "preserved",
+          "field_path": "detailed_comments[].feedback",
+          "notes": "Mapped to SubmittedConcern.summary."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].severity",
+          "notes": "Mapped through SEVERITY_MAP into OpenCritique Severity."
+        },
+        {
+          "fate": "normalized",
+          "field_path": "detailed_comments[].confidence",
+          "notes": "Mapped through CONFIDENCE_MAP into float confidence."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "detailed_comments[].status",
+          "notes": "Coarse comment workflow status has no evaluation-submission equivalent."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "overall_feedback",
+          "notes": "Overview feedback is not a concern unit; omitted from EvaluationSubmission."
+        },
+        {
+          "fate": "omitted",
+          "field_path": "title|domain|taxonomy|date|language",
+          "notes": "Review-level metadata retained only in original fixture provenance by hash."
+        },
+        {
+          "fate": "provisional",
+          "field_path": "claim reconstruction",
+          "notes": "Any claim statements derived from titles remain candidate/inferred."
+        }
+      ],
+      "quote_stats": {
+        "ambiguous": 0,
+        "exact": 1,
+        "normalized": 0,
+        "total": 1,
+        "unresolved": 0
+      },
+      "reconstructed_claims_provisional": true,
+      "recovered_comment_numbers": [
+        1
+      ],
+      "review_path": "../reviews/ml-03.json"
+    }
+  ],
+  "compatibility_matrix": [
+    {
+      "adapter_status": "supported",
+      "fixture_kind": "synthetic_rights_cleared_maintainer",
+      "notes": "Synthetic contract fixtures; genuine production exports still pending.",
+      "upstream_contract_version": "coarse-review-contract-v1"
+    }
+  ],
+  "disclosure": "Synthetic maintainer fixtures exercise adapter compatibility only. They do not authorize precision, recall, or comparative performance claims.",
+  "fixture_kind": "synthetic_rights_cleared_maintainer",
+  "generated_at": "2026-07-28T21:55:56.502266Z",
+  "omitted_field_summary": [
+    "detailed_comments[].status",
+    "overall_feedback",
+    "title|domain|taxonomy|date|language",
+    "claim reconstruction"
+  ],
+  "performance_claims_authorized": false,
+  "report_version": "0.1",
+  "upstream_commit_pin": "9f3c2a1b8e7d6c5a4b3e2f1d0c9b8a7e6f5d4c3b",
+  "upstream_contract_version": "coarse-review-contract-v1",
+  "upstream_repository": "https://github.com/Davidvandijcke/coarse"
+}

@@ -1,0 +1,42 @@
+{
+  "date": "2026-01-15",
+  "detailed_comments": [
+    {
+      "confidence": "medium",
+      "feedback": "Excluding ambiguous cases after seeing labels can inflate reported precision.",
+      "number": 1,
+      "quote": "La precision del modelo aumenta cuando se excluyen los casos ambiguos.",
+      "severity": "major",
+      "status": "Pending",
+      "title": "Synthetic: Non-English quote preserved"
+    }
+  ],
+  "domain": "linguistics",
+  "language": {
+    "notes": "Synthetic Spanish excerpt; not a real manuscript.",
+    "primary": "es"
+  },
+  "opencritique_fixture": {
+    "case_id": "occase_synth_multi_01",
+    "confidential_manuscript_text": false,
+    "kind": "synthetic_rights_cleared_maintainer",
+    "performance_claims_authorized": false,
+    "upstream_contract_version": "coarse-review-contract-v1"
+  },
+  "overall_feedback": {
+    "assessment": "Not a scientific judgment of any real manuscript.",
+    "issues": [
+      {
+        "body": "Placeholder overview issue.",
+        "title": "Synthetic issue"
+      }
+    ],
+    "recommendation": "Use only for adapter conformance.",
+    "revision_targets": [
+      "methods"
+    ],
+    "summary": "Synthetic overview feedback for adapter contract exercise."
+  },
+  "taxonomy": "synthetic.maintainer.fixture",
+  "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic: Non-English quote preserved"
+}
