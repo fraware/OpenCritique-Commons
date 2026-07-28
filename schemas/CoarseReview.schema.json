@@ -1,0 +1,168 @@
+{
+  "$defs": {
+    "CoarseDetailedComment": {
+      "additionalProperties": true,
+      "properties": {
+        "confidence": {
+          "default": "medium",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "feedback": {
+          "minLength": 1,
+          "title": "Feedback",
+          "type": "string"
+        },
+        "number": {
+          "title": "Number",
+          "type": "integer"
+        },
+        "quote": {
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        },
+        "severity": {
+          "default": "major",
+          "enum": [
+            "critical",
+            "major",
+            "minor"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "status": {
+          "default": "Pending",
+          "title": "Status",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "number",
+        "title",
+        "quote",
+        "feedback"
+      ],
+      "title": "CoarseDetailedComment",
+      "type": "object"
+    },
+    "CoarseOverviewFeedback": {
+      "additionalProperties": true,
+      "properties": {
+        "assessment": {
+          "default": "",
+          "title": "Assessment",
+          "type": "string"
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/CoarseOverviewIssue"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "recommendation": {
+          "default": "",
+          "title": "Recommendation",
+          "type": "string"
+        },
+        "revision_targets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Revision Targets",
+          "type": "array"
+        },
+        "summary": {
+          "default": "",
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "title": "CoarseOverviewFeedback",
+      "type": "object"
+    },
+    "CoarseOverviewIssue": {
+      "additionalProperties": true,
+      "properties": {
+        "body": {
+          "title": "Body",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "body"
+      ],
+      "title": "CoarseOverviewIssue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": true,
+  "properties": {
+    "date": {
+      "title": "Date",
+      "type": "string"
+    },
+    "detailed_comments": {
+      "items": {
+        "$ref": "#/$defs/CoarseDetailedComment"
+      },
+      "title": "Detailed Comments",
+      "type": "array"
+    },
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "language": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Language"
+    },
+    "overall_feedback": {
+      "$ref": "#/$defs/CoarseOverviewFeedback"
+    },
+    "taxonomy": {
+      "title": "Taxonomy",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "domain",
+    "taxonomy",
+    "date",
+    "overall_feedback",
+    "detailed_comments"
+  ],
+  "title": "CoarseReview",
+  "type": "object"
+}

@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "CoarseCaseMap": {
+      "additionalProperties": true,
+      "properties": {
+        "abstained": {
+          "default": false,
+          "title": "Abstained",
+          "type": "boolean"
+        },
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "case_version": {
+          "title": "Case Version",
+          "type": "string"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure"
+        },
+        "review_path": {
+          "title": "Review Path",
+          "type": "string"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Id"
+        }
+      },
+      "required": [
+        "case_id",
+        "case_version",
+        "review_path"
+      ],
+      "title": "CoarseCaseMap",
+      "type": "object"
+    }
+  },
+  "additionalProperties": true,
+  "properties": {
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/CoarseCaseMap"
+      },
+      "title": "Cases",
+      "type": "array"
+    },
+    "coarse_commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Coarse Commit"
+    },
+    "configuration": {
+      "additionalProperties": true,
+      "title": "Configuration",
+      "type": "object"
+    },
+    "declared_cost_currency": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Declared Cost Currency"
+    },
+    "declared_cost_minor": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Declared Cost Minor"
+    },
+    "declared_latency_seconds": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Declared Latency Seconds"
+    },
+    "model_identifiers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Model Identifiers",
+      "type": "array"
+    },
+    "system_version": {
+      "title": "System Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "system_version",
+    "cases"
+  ],
+  "title": "CoarseBenchmarkMap",
+  "type": "object"
+}

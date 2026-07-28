@@ -1,0 +1,268 @@
+{
+  "$defs": {
+    "MatcherConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_weight": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Anchor Weight",
+          "type": "number"
+        },
+        "config_id": {
+          "default": "default-v0.2",
+          "title": "Config Id",
+          "type": "string"
+        },
+        "lexical_weight": {
+          "default": 0.2,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Lexical Weight",
+          "type": "number"
+        },
+        "threshold": {
+          "default": 0.55,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Threshold",
+          "type": "number"
+        },
+        "type_weight": {
+          "default": 0.3,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Type Weight",
+          "type": "number"
+        }
+      },
+      "title": "MatcherConfig",
+      "type": "object"
+    },
+    "SensitivityRun": {
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "$ref": "#/$defs/MatcherConfig"
+        },
+        "matched_count": {
+          "title": "Matched Count",
+          "type": "integer"
+        },
+        "matched_pairs": {
+          "items": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Matched Pairs",
+          "type": "array"
+        },
+        "precision": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Precision"
+        },
+        "recall": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Recall"
+        }
+      },
+      "required": [
+        "config",
+        "matched_pairs",
+        "matched_count",
+        "precision",
+        "recall"
+      ],
+      "title": "SensitivityRun",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "baseline_config": {
+      "$ref": "#/$defs/MatcherConfig"
+    },
+    "baseline_retention_rate": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Baseline Retention Rate",
+      "type": "number"
+    },
+    "benchmark_id": {
+      "title": "Benchmark Id",
+      "type": "string"
+    },
+    "benchmark_version": {
+      "title": "Benchmark Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "match_count_max": {
+      "title": "Match Count Max",
+      "type": "integer"
+    },
+    "match_count_min": {
+      "title": "Match Count Min",
+      "type": "integer"
+    },
+    "precision_max": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Precision Max"
+    },
+    "precision_min": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Precision Min"
+    },
+    "recall_max": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Recall Max"
+    },
+    "recall_min": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Recall Min"
+    },
+    "report_version": {
+      "default": "0.1",
+      "title": "Report Version",
+      "type": "string"
+    },
+    "runs": {
+      "items": {
+        "$ref": "#/$defs/SensitivityRun"
+      },
+      "minItems": 2,
+      "title": "Runs",
+      "type": "array"
+    },
+    "stable_pairs": {
+      "items": {
+        "maxItems": 4,
+        "minItems": 4,
+        "prefixItems": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Stable Pairs",
+      "type": "array"
+    },
+    "submission_id": {
+      "title": "Submission Id",
+      "type": "string"
+    },
+    "unstable_pairs": {
+      "items": {
+        "maxItems": 4,
+        "minItems": 4,
+        "prefixItems": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Unstable Pairs",
+      "type": "array"
+    }
+  },
+  "required": [
+    "benchmark_id",
+    "benchmark_version",
+    "submission_id",
+    "baseline_config",
+    "runs",
+    "stable_pairs",
+    "unstable_pairs",
+    "baseline_retention_rate",
+    "match_count_min",
+    "match_count_max",
+    "precision_min",
+    "precision_max",
+    "recall_min",
+    "recall_max"
+  ],
+  "title": "MatcherSensitivityReport",
+  "type": "object"
+}

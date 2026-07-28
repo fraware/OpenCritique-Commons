@@ -1,0 +1,166 @@
+{
+  "freeze_release": "0.5.0a1",
+  "schemas": [
+    {
+      "description": "Acquisition ledger",
+      "model": "AcquisitionLedger",
+      "persistent": true,
+      "schema_id": "opencritique.AcquisitionLedger",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "OpenCritique Adjudication schema",
+      "model": "Adjudication",
+      "persistent": true,
+      "schema_id": "opencritique.Adjudication",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "OpenCritique Anchor schema",
+      "model": "Anchor",
+      "persistent": true,
+      "schema_id": "opencritique.Anchor",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "Benchmark manifest",
+      "model": "BenchmarkManifest",
+      "persistent": true,
+      "schema_id": "opencritique.BenchmarkManifest",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "OpenCritique CaseBundle schema",
+      "model": "CaseBundle",
+      "persistent": true,
+      "schema_id": "opencritique.CaseBundle",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "OpenCritique Claim schema",
+      "model": "Claim",
+      "persistent": true,
+      "schema_id": "opencritique.Claim",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "Coarse benchmark map",
+      "model": "CoarseBenchmarkMap",
+      "persistent": true,
+      "schema_id": "opencritique.CoarseBenchmarkMap",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Coarse review export",
+      "model": "CoarseReview",
+      "persistent": true,
+      "schema_id": "opencritique.CoarseReview",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "OpenCritique Concern schema",
+      "model": "Concern",
+      "persistent": true,
+      "schema_id": "opencritique.Concern",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "OpenCritique Counterposition schema",
+      "model": "Counterposition",
+      "persistent": true,
+      "schema_id": "opencritique.Counterposition",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "Evaluation result",
+      "model": "EvaluationResult",
+      "persistent": true,
+      "schema_id": "opencritique.EvaluationResult",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Evaluation submission",
+      "model": "EvaluationSubmission",
+      "persistent": true,
+      "schema_id": "opencritique.EvaluationSubmission",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "OpenCritique EvidenceItem schema",
+      "model": "EvidenceItem",
+      "persistent": true,
+      "schema_id": "opencritique.EvidenceItem",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "Manuscript identity and rights metadata",
+      "model": "Manuscript",
+      "persistent": true,
+      "schema_id": "opencritique.Manuscript",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "OpenCritique ManuscriptVersion schema",
+      "model": "ManuscriptVersion",
+      "persistent": true,
+      "schema_id": "opencritique.ManuscriptVersion",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "Matcher sensitivity",
+      "model": "MatcherSensitivityReport",
+      "persistent": true,
+      "schema_id": "opencritique.MatcherSensitivityReport",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Append-only novel-concern determination",
+      "model": "NovelConcernDetermination",
+      "persistent": true,
+      "schema_id": "opencritique.NovelConcernDetermination",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Novel concern queue",
+      "model": "NovelConcernQueue",
+      "persistent": true,
+      "schema_id": "opencritique.NovelConcernQueue",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Public scorecard",
+      "model": "PublicScorecard",
+      "persistent": true,
+      "schema_id": "opencritique.PublicScorecard",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "OpenCritique Resolution schema",
+      "model": "Resolution",
+      "persistent": true,
+      "schema_id": "opencritique.Resolution",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "OpenCritique RunManifest schema",
+      "model": "RunManifest",
+      "persistent": true,
+      "schema_id": "opencritique.RunManifest",
+      "schema_version": "0.1.0"
+    },
+    {
+      "description": "Signed scorecard",
+      "model": "SignedScorecardEnvelope",
+      "persistent": true,
+      "schema_id": "opencritique.SignedScorecardEnvelope",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "System under evaluation",
+      "model": "SystemManifest",
+      "persistent": true,
+      "schema_id": "opencritique.SystemManifest",
+      "schema_version": "0.1"
+    }
+  ]
+}
