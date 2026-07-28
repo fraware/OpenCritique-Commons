@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.pyright/
+.coverage
+htmlcov/
+
+# Environments and builds
+.venv/
+venv/
+build/
+dist/
+
+# Local registry state
+*.db
+*.sqlite
+*.sqlite3
+opencritique-artifacts/
+
+# Local secrets and signing material
+.env
+.env.*
+!.env.example
+*.private.pem
+*private-key*.pem
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
