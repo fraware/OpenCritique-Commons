@@ -1,0 +1,69 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_orv_orv_01",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic OpenReviewer fixture; not a real model output.",
+    "Performance claims are not authorized."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-fixture-v1",
+    "content_hash": "6e64acedb84eb847006697db9e4ae251223e9d39d46bc4db6956bfe8c69a0a3c",
+    "created_at": "2026-03-01T00:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_orv_orv_01_v1",
+    "id": "ocms_orv_orv_01",
+    "manuscript_id": "ocms_orv_orv_01",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC] Synthetic OpenReviewer: leakage concern"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "8351bccc702d69ef41d4405bd1ec1153d8b89b1e6558927575a797ac30ec5f6b",
+      "created_at": "2026-03-01T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "empirical_ml",
+      "extracted_artifact": null,
+      "id": "ocver_orv_orv_01_v1",
+      "ingestion_metadata": {
+        "method": "synthetic_fixture",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_openreviewer_fixtures.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_orv_orv_01",
+      "page_count": 3,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 13,
+        "media_type": "text/plain",
+        "sha256": "b0d15f644c20fecfca3e3529033f66b7e247fda09a5ab3902d70bc1439ebf51a",
+        "uri": "synthetic://opencritique/orv-01-source"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_orv_orv_01_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}
