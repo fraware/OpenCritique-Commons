@@ -1,0 +1,67 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_rights_rc_02",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic rights-path placeholder; not a natural manuscript.",
+    "Scientific performance claims remain disabled."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-rights-v1",
+    "content_hash": "8f44d1f28c10624215b552e08c4adade5a1577543b6a5f557b1308a0988debf4",
+    "created_at": "2026-05-01T00:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_rights_rc_02_v1",
+    "id": "ocms_rights_rc_02",
+    "manuscript_id": "ocms_rights_rc_02",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic rights candidate: multiplicity control"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "8399cdd41f5c8ed5c6e7bf4c5c0a63a911afd8e85fd45e3d54369379737b2317",
+      "created_at": "2026-05-01T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "statistics",
+      "extracted_artifact": null,
+      "id": "ocver_rights_rc_02_v1",
+      "ingestion_metadata": {
+        "method": "rights_cleared_placeholder",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_rights_candidates.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_rights_rc_02",
+      "page_count": 1,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 32,
+        "media_type": "text/plain",
+        "sha256": "eb1fdc7bebc351f66aec09ec99276efeb8107de6056608bd89354a00cccde997",
+        "uri": "synthetic://rights/rc-02"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_rights_rc_02_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1"
+}

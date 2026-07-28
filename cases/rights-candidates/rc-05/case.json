@@ -1,0 +1,67 @@
+{
+  "adjudications": [],
+  "anchors": [],
+  "case_id": "occase_rights_rc_05",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [],
+  "concerns": [],
+  "counterpositions": [],
+  "evidence": [],
+  "known_ambiguities": [
+    "Synthetic rights-path placeholder; not a natural manuscript.",
+    "Scientific performance claims remain disabled."
+  ],
+  "manuscript": {
+    "consent_policy_id": "synthetic-maintainer-rights-v1",
+    "content_hash": "80895b9efcf9b078f41390175796c0efb9ff957e2ba7ad403ef9d8214dec8300",
+    "created_at": "2026-05-01T00:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_rights_rc_05_v1",
+    "id": "ocms_rights_rc_05",
+    "manuscript_id": "ocms_rights_rc_05",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic rights candidate: table intervals"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "fca09fe353b4b71abffc45f47f86d7b1a53cb5b112082d4e4ed3826abfff5df8",
+      "created_at": "2026-05-01T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "figure_table_heavy",
+      "extracted_artifact": null,
+      "id": "ocver_rights_rc_05_v1",
+      "ingestion_metadata": {
+        "method": "rights_cleared_placeholder",
+        "notes": "",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_rights_candidates.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_rights_rc_05",
+      "page_count": 1,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 32,
+        "media_type": "text/plain",
+        "sha256": "18c2c92b5fbfb25fbcd1dd497ea6b2ca47eae2827f98eec2f5197e6ce26682b1",
+        "uri": "synthetic://rights/rc-05"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_rights_rc_05_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1"
+}
