@@ -2,8 +2,8 @@
 
 Review date: 2026-07-29  
 Scope: evaluation engine/signing/trust, registry migrate/config/readyz, PDF
-security, studio CSP — paths rebuilt during stubs-closed hardening
-([PR #15](https://github.com/fraware/OpenCritique-Commons/pull/15)).
+security, studio CSP — paths rebuilt during product hardening for the
+engineering `v0.6.0a0` surface.
 
 ## Verdict
 
@@ -34,10 +34,10 @@ assumptions.
 ## Residual tracked items (non-P0)
 
 - CIR-04 closed: `verify_envelope` now requires trust material or `allow_untrusted_test=True`.
-- Deeper PDF parser coverage (cross-reference streams, encrypted PDFs) remains out of scope until OCR/document-intelligence depth work (deferred product issue).
+- Deeper PDF parser coverage (cross-reference streams, encrypted PDFs) remains out of scope until OCR/document-intelligence depth work (deferred product issue #16).
 
 ## Statement
 
 Recovered/rebuilt integrity risk for the scoped paths is documented. P0/P1
 defects found in this pass are fixed with tests. No P0 integrity defects remain
-open.
+open. This review does not authorize scientific performance claims.

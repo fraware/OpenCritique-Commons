@@ -18,7 +18,7 @@ Upstream contract files (`fixtures/*/UPSTREAM_CONTRACT.json`) document the
 fixture tree under `fixtures/*/production/` with `MANIFEST.json`
 (`source=production`) and content hashes. Empty / `blocked` production trees
 fail closed: CI asserts no fabricated review payloads and that `status=ready`
-without ≥10 exports raises.
+without enough exports raises.
 
 Loss and cross-adapter reports include an explicit `source=production` section
 (see `ProductionSection` in `opencritique_adapters.production_fixtures`) separate
@@ -43,6 +43,13 @@ from sample results.
 5. Refresh conversion-loss / cross-adapter reports with an explicit
    `source=production` section separate from sample results.
 6. Keep unresolved quotations unresolved; document ambiguous cases in the report.
+
+Validate intake with:
+
+```bash
+python scripts/ingest_production_adapter_exports.py validate-tree --adapter coarse
+python scripts/ingest_production_adapter_exports.py validate-tree --adapter openreviewer
+```
 
 ## What must stay out
 

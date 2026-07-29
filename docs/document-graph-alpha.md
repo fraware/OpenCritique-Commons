@@ -1,10 +1,13 @@
 # Document graph alpha
 
-Workstream C (PR8). Versioned ingestion toolchain:
+Versioned ingestion toolchain for manuscript structure:
 
 - Toolchain id: `opencritique-document-graph`
 - Version: `0.1.0-alpha`
 - Module: `opencritique_schema.document_graph`
+
+This is an engineering alpha for sample conformance. It does not authorize
+scientific performance claims or natural-corpus completeness.
 
 ## Node kinds
 
