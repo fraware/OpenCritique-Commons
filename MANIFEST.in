@@ -1,0 +1,12 @@
+include README.md LICENSE CODE_OF_CONDUCT.md CITATION.cff SECURITY.md alembic.ini Dockerfile docker-compose.yml
+recursive-include docs *.md *.json
+recursive-include openapi *.json
+recursive-include schemas *.json
+recursive-include trust *.json *.pem
+recursive-include governance *.md
+recursive-include migrations *.py
+recursive-include corpus *.json *.md *.tex
+recursive-include cases *.json *.md
+recursive-include fixtures *.json
+recursive-include benchmarks *.json
+recursive-include scripts *.py *.sh

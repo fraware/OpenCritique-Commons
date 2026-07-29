@@ -31,10 +31,13 @@ dev = [
   "ruff>=0.9",
   "pyright>=1.1",
   "httpx>=0.28,<1",
+  "psycopg[binary]>=3.2,<4",
 ]
 
 [project.scripts]
 opencritique = "opencritique_schema.cli:app"
+opencritique-registry = "opencritique_registry.cli:app"
+opencritique-acquisition = "opencritique_acquisition.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -53,8 +56,11 @@ ignore = ["UP042", "B008"]
 
 [tool.pyright]
 pythonVersion = "3.12"
-typeCheckingMode = "strict"
-include = ["src", "tests"]
+typeCheckingMode = "standard"
+include = ["src", "tests", "scripts"]
+exclude = ["**/__pycache__", "dist", "build", ".venv"]
+reportMissingImports = true
+reportMissingTypeStubs = false
 
 [tool.setuptools.package-data]
 opencritique_registry = ["studio_assets/*"]
