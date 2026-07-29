@@ -3,6 +3,31 @@
     "AcquisitionSource": {
       "additionalProperties": false,
       "properties": {
+        "cancellation_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cancellation Reason"
+        },
+        "cancelled_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cancelled At"
+        },
         "code_url": {
           "anyOf": [
             {
@@ -49,6 +74,30 @@
           "default": false,
           "title": "Evaluation Use Authorized",
           "type": "boolean"
+        },
+        "grant_authority": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Grant Authority"
+        },
+        "grant_scope": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Grant Scope"
         },
         "imported_case_count": {
           "default": 0,
@@ -100,6 +149,31 @@
         "title": {
           "title": "Title",
           "type": "string"
+        },
+        "withdrawal_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Withdrawal Reason"
+        },
+        "withdrawn_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Withdrawn At"
         }
       },
       "required": [
@@ -119,7 +193,9 @@
         "contact_required",
         "authorized",
         "rejected",
-        "imported"
+        "imported",
+        "withdrawn",
+        "cancelled"
       ],
       "title": "AcquisitionStatus",
       "type": "string"

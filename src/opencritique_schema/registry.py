@@ -9,9 +9,9 @@ This module stays free of adapter/registry/FastAPI imports so
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel, ValidationError
 
@@ -95,9 +95,9 @@ class UnknownSchemaError(SchemaRegistryError):
 class SchemaValidationError(SchemaRegistryError):
     """Malformed fixture or payload failed typed validation."""
 
-    def __init__(self, schema_id: str, errors: list[dict[str, Any]]) -> None:
+    def __init__(self, schema_id: str, errors: Sequence[dict[str, Any]]) -> None:
         self.schema_id = schema_id
-        self.errors = errors
+        self.errors = list(errors)
         super().__init__(f"schema validation failed for {schema_id}: {len(errors)} error(s)")
 
 
@@ -185,7 +185,9 @@ def validate_payload(schema_id: str, payload: dict[str, Any] | str | bytes) -> B
             return entry.model.model_validate_json(payload)
         return entry.model.model_validate(payload)
     except ValidationError as exc:
-        raise SchemaValidationError(schema_id, exc.errors()) from exc
+        raise SchemaValidationError(
+            schema_id, cast(list[dict[str, Any]], exc.errors())
+        ) from exc
 
 
 def export_json_schemas() -> dict[str, dict[str, Any]]:

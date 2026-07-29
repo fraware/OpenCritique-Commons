@@ -1,6 +1,46 @@
 {
+  "$defs": {
+    "ByokConfig": {
+      "additionalProperties": false,
+      "description": "Bring-your-own-key deployment descriptor (no credential retention).",
+      "properties": {
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "provider_id": {
+          "minLength": 1,
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "retain_credentials": {
+          "const": false,
+          "default": false,
+          "title": "Retain Credentials",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "provider_id"
+      ],
+      "title": "ByokConfig",
+      "type": "object"
+    }
+  },
   "additionalProperties": false,
   "properties": {
+    "byok": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ByokConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "code_commit": {
       "anyOf": [
         {
@@ -71,7 +111,8 @@
       "enum": [
         "external",
         "local",
-        "hosted"
+        "hosted",
+        "byok"
       ],
       "title": "Execution Mode",
       "type": "string"

@@ -39,3 +39,16 @@ def test_editable_packages_importable() -> None:
     for name in PACKAGES:
         module = importlib.import_module(name)
         assert module is not None
+
+
+def test_manifest_includes_runtime_assets() -> None:
+    manifest = (ROOT / "MANIFEST.in").read_text(encoding="utf-8")
+    for snippet in (
+        "recursive-include docs",
+        "recursive-include openapi",
+        "recursive-include migrations",
+        "recursive-include trust",
+        "recursive-include corpus",
+        "recursive-include cases",
+    ):
+        assert snippet in manifest

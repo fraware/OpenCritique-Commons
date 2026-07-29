@@ -231,3 +231,27 @@ def resolve_against_graph(
 
 INGESTION_TOOLCHAIN_ID = "opencritique-document-graph"
 INGESTION_TOOLCHAIN_VERSION = "0.1.0-alpha"
+
+
+def ingest_to_graph(
+    *,
+    manuscript_version_id: str,
+    path: str | None = None,
+    data: bytes | None = None,
+    media_type: str | None = None,
+) -> DocumentGraph:
+    """Wire real extractors into the document-graph module.
+
+    Prefer this entrypoint over constructing graphs by hand when ingesting
+    Markdown, LaTeX, or PDF samples.
+    """
+    from pathlib import Path
+
+    from opencritique_ingestion import ingest_bytes, ingest_path
+
+    if path is not None:
+        return ingest_path(Path(path), manuscript_version_id=manuscript_version_id)
+    if data is None or media_type is None:
+        raise ValueError("ingest_to_graph requires path or (data, media_type)")
+    return ingest_bytes(data, manuscript_version_id=manuscript_version_id, media_type=media_type)
+
