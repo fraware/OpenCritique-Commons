@@ -16,6 +16,23 @@ false.
 | OpenReviewer sample fixtures (`fixtures/openreviewer/reviews/`) | sample / conformance | 5 review fixtures | **No** — not natural |
 | Natural / PeerQA adjudicated decisions | natural | **0** (rights clearance negative finding; see [rights-clearance-status.md](rights-clearance-status.md)) | **Open** |
 
+Recompute programmatically (never invents natural volume):
+
+```bash
+python -c "from opencritique_evaluation.matcher_audit import measure_current_denominators; print(measure_current_denominators())"
+```
+
+## Session manifests
+
+Stratified draws persist as `MatcherAuditSessionManifest` objects with:
+
+- `evidence_class` (`sample` vs `natural`)
+- `population_denominator` and `sampled_count`
+- `configuration_hash` over the matcher config
+- `natural_dod_met` (false for sample sessions; requires natural volume)
+
+Sample sessions cannot mark `natural_dod_met=true`.
+
 ## Sampling notes
 
 - Protocol target remains 100 match decisions **or** every available decision when

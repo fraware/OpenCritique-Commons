@@ -1,6 +1,6 @@
 # Matcher-audit pilot protocol
 
-Issue #6 / PR9. Protocol id: `matcher-audit-pilot-v0.1`.
+Issue #6. Protocol id: `matcher-audit-pilot-v0.1`.
 
 ## Population
 
