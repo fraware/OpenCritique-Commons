@@ -10,23 +10,55 @@ class ArtifactIntegrityError(RuntimeError):
     pass
 
 
+class ArtifactStoreConfigurationError(RuntimeError):
+    pass
+
+
+class ArtifactStoreWriteError(RuntimeError):
+    pass
+
+
 class LocalArtifactStore:
     def __init__(self, root: Path, max_bytes: int) -> None:
         self.root = root.resolve()
         self.max_bytes = max_bytes
 
     def ensure_root(self) -> None:
-        self.root.mkdir(parents=True, exist_ok=True)
+        try:
+            self.root.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            raise ArtifactStoreConfigurationError(
+                f"failed to create artifact root {self.root}: {exc}"
+            ) from exc
+        if not self.root.is_dir():
+            raise ArtifactStoreConfigurationError(
+                f"artifact root {self.root} is not a directory"
+            )
+        try:
+            with tempfile.NamedTemporaryFile(
+                dir=self.root,
+                prefix=".oc-artifact-root-",
+                delete=True,
+            ):
+                pass
+        except OSError as exc:
+            raise ArtifactStoreConfigurationError(
+                f"artifact root {self.root} is not writable: {exc}"
+            ) from exc
 
     def path_for(self, sha256: str) -> Path:
-        if len(sha256) != 64 or any(ch not in "0123456789abcdef" for ch in sha256):
+        if len(sha256) != 64 or any(
+            ch not in "0123456789abcdef" for ch in sha256
+        ):
             raise ValueError("invalid SHA-256")
         return self.root / sha256[:2] / sha256[2:4] / sha256
 
     def put(self, data: bytes) -> tuple[str, Path]:
         self.ensure_root()
         if len(data) > self.max_bytes:
-            raise ValueError(f"artifact exceeds configured limit of {self.max_bytes} bytes")
+            raise ValueError(
+                f"artifact exceeds configured limit of {self.max_bytes} bytes"
+            )
         digest = hashlib.sha256(data).hexdigest()
         target = self.path_for(digest)
         if target.exists():
@@ -35,8 +67,18 @@ class LocalArtifactStore:
                     "existing content-addressed object has different bytes"
                 )
             return digest, target
-        target.parent.mkdir(parents=True, exist_ok=True)
-        fd, tmp_name = tempfile.mkstemp(prefix=".upload-", dir=target.parent)
+        try:
+            target.parent.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            raise ArtifactStoreWriteError(
+                f"failed to prepare artifact directory {target.parent}: {exc}"
+            ) from exc
+        try:
+            fd, tmp_name = tempfile.mkstemp(prefix=".upload-", dir=target.parent)
+        except OSError as exc:
+            raise ArtifactStoreWriteError(
+                f"failed to allocate artifact temp file in {target.parent}: {exc}"
+            ) from exc
         try:
             with os.fdopen(fd, "wb") as stream:
                 stream.write(data)
@@ -44,6 +86,10 @@ class LocalArtifactStore:
                 os.fsync(stream.fileno())
             os.chmod(tmp_name, 0o600)
             os.replace(tmp_name, target)
+        except OSError as exc:
+            raise ArtifactStoreWriteError(
+                f"failed to persist artifact {digest}: {exc}"
+            ) from exc
         finally:
             if os.path.exists(tmp_name):
                 os.unlink(tmp_name)
@@ -54,5 +100,7 @@ class LocalArtifactStore:
         data = target.read_bytes()
         actual = hashlib.sha256(data).hexdigest()
         if actual != sha256:
-            raise ArtifactIntegrityError(f"artifact hash mismatch: expected {sha256}, got {actual}")
+            raise ArtifactIntegrityError(
+                f"artifact hash mismatch: expected {sha256}, got {actual}"
+            )
         return data

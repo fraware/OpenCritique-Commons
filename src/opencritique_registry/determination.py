@@ -6,7 +6,6 @@ from opencritique_schema.models import Adjudication, ConcernStatus, Severity, Va
 
 from .schemas import TaskSlot
 
-
 SEVERITY_ORDER = {
     Severity.INFORMATIONAL: 0,
     Severity.MINOR: 1,
@@ -50,7 +49,7 @@ def _severity_from_two(left: Severity, right: Severity) -> tuple[Severity | None
     if Severity.CRITICAL in {left, right}:
         return None, True, "Any contested critical classification requires tie-break adjudication."
     if gap <= 1:
-        lower = min((left, right), key=SEVERITY_ORDER.get)
+        lower = min((left, right), key=lambda s: SEVERITY_ORDER[s])
         return lower, False, "Adjacent severity decisions resolve to the lower severity."
     return (
         None,

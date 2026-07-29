@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from typing import Any
+from typing import Any, Literal, cast
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from opencritique_schema.canonical import content_hash
 from opencritique_schema.models import (
     CaseBundle,
+    RightsClassification,
     Severity,
 )
 
@@ -39,6 +40,7 @@ from .expert_schemas import (
     AgreementMetrics,
     CalibrationAttemptStatus,
     CalibrationAttemptView,
+    CalibrationCaseRef,
     CalibrationMetrics,
     CalibrationScore,
     CalibrationSetInput,
@@ -48,7 +50,9 @@ from .expert_schemas import (
     CaseIntakeInput,
     CaseIntakeReviewInput,
     CaseIntakeView,
+    ClaimAnchorContext,
     ClaimDeterminationInput,
+    ClaimDeterminationStatus,
     ClaimDeterminationView,
     ClaimReconstructionInput,
     ClaimSubmissionView,
@@ -67,11 +71,13 @@ from .expert_schemas import (
     IntakeStatus,
     QualificationStatus,
     QualificationView,
+    RightsAttestation,
 )
 from .ids import new_id
 from .schemas import (
     AdjudicationSubmissionInput,
     BlindedTaskPayload,
+    DataUse,
     PrincipalRole,
     TaskSlot,
     TaskStatus,
@@ -123,7 +129,7 @@ def _calibration_set_view(row: CalibrationSetORM) -> CalibrationSetView:
         set_id=row.set_id,
         name=row.name,
         domain_profile=row.domain_profile,
-        case_refs=row.case_refs,
+        case_refs=[CalibrationCaseRef.model_validate(ref) for ref in row.case_refs],
         min_cases=row.min_cases,
         pass_threshold=row.pass_threshold,
         max_false_critical=row.max_false_critical,
@@ -171,9 +177,9 @@ def _intake_view(row: CaseIntakeORM) -> CaseIntakeView:
         source_artifact_sha256=row.source_artifact_sha256,
         domain_profile=row.domain_profile,
         language=row.language,
-        rights_classification=row.rights_classification,
-        requested_uses=row.requested_uses,
-        rights_attestation=row.rights_attestation,
+        rights_classification=RightsClassification(row.rights_classification),
+        requested_uses=[DataUse(use) for use in row.requested_uses],
+        rights_attestation=RightsAttestation.model_validate(row.rights_attestation),
         contains_sensitive_data=row.contains_sensitive_data,
         contains_personal_data=row.contains_personal_data,
         redistribution_allowed=row.redistribution_allowed,
@@ -193,7 +199,7 @@ def _claim_task_view(row: ClaimReconstructionTaskORM) -> ClaimTaskView:
         slot=TaskSlot(row.slot),
         status=TaskStatus(row.status),
         assigned_to=row.assigned_to,
-        anchor_context=row.anchor_context,
+        anchor_context=[ClaimAnchorContext.model_validate(item) for item in row.anchor_context],
         claimed_at=optional_utc(row.claimed_at),
         completed_at=optional_utc(row.completed_at),
     )
@@ -218,7 +224,10 @@ def _compensation_view(row: CompensationRecordORM) -> CompensationView:
     return CompensationView(
         compensation_id=row.compensation_id,
         actor_id=row.actor_id,
-        task_type=row.task_type,
+        task_type=cast(
+            Literal["adjudication", "calibration", "claim_reconstruction"],
+            row.task_type,
+        ),
         task_id=row.task_id,
         amount_minor=row.amount_minor,
         currency=row.currency,
@@ -940,8 +949,12 @@ class ExpertProgramService:
         return ClaimDeterminationView(
             determination_id=row.determination_id,
             intake_id=row.intake_id,
-            status=row.status,
-            canonical_claim=row.canonical_claim_json,
+            status=ClaimDeterminationStatus(row.status),
+            canonical_claim=(
+                ClaimReconstructionInput.model_validate(row.canonical_claim_json)
+                if row.canonical_claim_json is not None
+                else None
+            ),
             selected_submission_ids=row.submission_ids,
             rationale=row.rationale,
             created_by=row.created_by,

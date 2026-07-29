@@ -11,11 +11,18 @@
 
   const $ = (id) => document.getElementById(id);
 
+  function announce(text) {
+    const live = $("status-announcer");
+    if (!live) return;
+    live.textContent = text || "";
+  }
+
   function setMessage(el, text, kind) {
     if (!el) return;
     el.textContent = text || "";
     el.classList.remove("error", "success", "muted");
     if (kind) el.classList.add(kind);
+    if (text) announce(text);
   }
 
   function authHeaders() {
@@ -62,6 +69,26 @@
       return;
     }
     identity.textContent = `${state.me.display_name || state.me.actor_id} (${state.me.role})`;
+  }
+
+  function renderTaskList(tasks) {
+    const el = $("task-list");
+    if (!tasks || !tasks.length) {
+      el.innerHTML = "<p class='muted'>No claimed tasks loaded.</p>";
+      return;
+    }
+    el.innerHTML = tasks
+      .map(
+        (task) => `
+          <div class="task-row">
+            <div>
+              <strong>${escapeHtml(task.task_id)}</strong>
+              <div class="muted">${escapeHtml(task.case_id || task.intake_id || "task")} · ${escapeHtml(task.status)}</div>
+            </div>
+            <span class="badge">${escapeHtml(task.slot || "task")}</span>
+          </div>`
+      )
+      .join("");
   }
 
   function escapeHtml(value) {
@@ -127,6 +154,8 @@
     $("adjudication-form").classList.remove("hidden");
     $("claim-form").classList.add("hidden");
     $("task-panel").classList.remove("hidden");
+    $("appeal-concern-id").value = payload.concern_id;
+    $("task-panel").focus();
   }
 
   function renderClaimTask(payload) {
@@ -166,6 +195,26 @@
     $("claim-form").classList.remove("hidden");
     $("adjudication-form").classList.add("hidden");
     $("task-panel").classList.remove("hidden");
+    $("task-panel").focus();
+  }
+
+  function renderAppeals(items) {
+    const el = $("appeals-list");
+    if (!items || !items.length) {
+      el.innerHTML = "<p class='muted'>No appeal records found for this concern.</p>";
+      return;
+    }
+    el.innerHTML = items
+      .map(
+        (item) => `
+          <div class="card">
+            <h3>${escapeHtml(item.record_type)} · ${escapeHtml(item.record_id)}</h3>
+            <p><strong>Requested by:</strong> ${escapeHtml(item.requested_by)}</p>
+            <p><strong>Rationale:</strong> ${escapeHtml(item.rationale)}</p>
+            <p class="muted">Determination ${escapeHtml(item.determination_id)}</p>
+          </div>`
+      )
+      .join("");
   }
 
   async function connect() {
@@ -180,6 +229,7 @@
       state.me = await api("/v1/me");
       renderIdentity();
       setMessage($("queue-message"), "Connected. Claim a task to begin.", "success");
+      await loadMyTasks();
     } catch (err) {
       state.me = null;
       renderIdentity();
@@ -195,8 +245,19 @@
     sessionStorage.removeItem(TOKEN_KEY);
     $("token").value = "";
     $("task-panel").classList.add("hidden");
+    renderTaskList([]);
     renderIdentity();
     setMessage($("queue-message"), "Session cleared.", "muted");
+  }
+
+  async function loadMyTasks() {
+    try {
+      const tasks = await api("/v1/my-tasks");
+      renderTaskList(tasks);
+    } catch (err) {
+      renderTaskList([]);
+      setMessage($("queue-message"), err.message, "error");
+    }
   }
 
   async function claimAdjudication() {
@@ -208,6 +269,7 @@
       renderAdjudicationTask(payload);
       setMessage($("queue-message"), `Claimed adjudication task ${task.task_id}.`, "success");
       setMessage($("submit-message"), "");
+      await loadMyTasks();
     } catch (err) {
       setMessage($("queue-message"), err.message, "error");
     }
@@ -258,6 +320,8 @@
       $("confidence-value").textContent = "0.70";
       $("task-panel").classList.add("hidden");
       state.task = null;
+      await loadAppeals();
+      await loadMyTasks();
     } catch (err) {
       setMessage($("submit-message"), err.message, "error");
     }
@@ -297,6 +361,7 @@
       $("claim-form").reset();
       $("task-panel").classList.add("hidden");
       state.task = null;
+      await loadMyTasks();
     } catch (err) {
       setMessage($("submit-message"), err.message, "error");
     }
@@ -326,14 +391,57 @@
     }
   }
 
+  async function loadAppeals() {
+    const concernId = $("appeal-concern-id").value.trim();
+    if (!concernId) {
+      setMessage($("appeal-message"), "Enter a concern id before loading appeals.", "error");
+      return;
+    }
+    try {
+      const items = await api(`/v1/concerns/${encodeURIComponent(concernId)}/appeals`);
+      renderAppeals(items);
+      setMessage($("appeal-message"), `Loaded ${items.length} appeal record(s).`, "success");
+    } catch (err) {
+      renderAppeals([]);
+      setMessage($("appeal-message"), err.message, "error");
+    }
+  }
+
+  async function submitAppeal(event) {
+    event.preventDefault();
+    const body = {
+      concern_id: $("appeal-concern-id").value.trim(),
+      determination_id: $("appeal-determination-id").value.trim(),
+      record_type: $("appeal-record-type").value,
+      predecessor_record_id: $("appeal-predecessor-record-id").value.trim() || null,
+      requested_by: $("appeal-requested-by").value.trim(),
+      rationale: $("appeal-rationale").value,
+      payload: { channel: "studio" },
+    };
+    try {
+      await api("/v1/appeals", {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+      setMessage($("appeal-message"), "Appeal record appended.", "success");
+      $("appeal-form").reset();
+      await loadAppeals();
+    } catch (err) {
+      setMessage($("appeal-message"), err.message, "error");
+    }
+  }
+
   function bind() {
     $("connect").addEventListener("click", connect);
     $("disconnect").addEventListener("click", disconnect);
     $("claim-adjudication").addEventListener("click", claimAdjudication);
     $("claim-reconstruction").addEventListener("click", claimReconstruction);
+    $("refresh-tasks").addEventListener("click", loadMyTasks);
     $("adjudication-form").addEventListener("submit", submitAdjudication);
     $("claim-form").addEventListener("submit", submitClaim);
     $("load-audit-protocol").addEventListener("click", loadAuditProtocol);
+    $("load-appeals").addEventListener("click", loadAppeals);
+    $("appeal-form").addEventListener("submit", submitAppeal);
     $("confidence").addEventListener("input", (event) => {
       $("confidence-value").textContent = Number(event.target.value).toFixed(2);
     });

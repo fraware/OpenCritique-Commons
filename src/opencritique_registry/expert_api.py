@@ -260,7 +260,7 @@ def determine_claim_reconstruction(
     return service.determine_claim(intake_id, data, principal.actor_id)
 
 
-@router.get("/v1/tasks/mine", response_model=list[TaskView])
+@router.get("/v1/my-tasks", response_model=list[TaskView])
 def my_adjudication_tasks(
     status: TaskStatus | None = Query(default=None),
     principal: PrincipalContext = Depends(require_roles(PrincipalRole.ADJUDICATOR)),

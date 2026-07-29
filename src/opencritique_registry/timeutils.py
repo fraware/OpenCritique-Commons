@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def as_utc(value: datetime) -> datetime:
@@ -11,8 +11,8 @@ def as_utc(value: datetime) -> datetime:
     stable comparison and serialization rule.
     """
     if value.tzinfo is None:
-        return value.replace(tzinfo=timezone.utc)
-    return value.astimezone(timezone.utc)
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
 
 
 def optional_utc(value: datetime | None) -> datetime | None:

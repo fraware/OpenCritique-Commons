@@ -66,7 +66,7 @@ class ExpertProfileInput(StrictModel):
     compensation_currency: str = Field(default="EUR", pattern=r"^[A-Z]{3}$")
 
     @model_validator(mode="after")
-    def attribution_is_explicit(self) -> "ExpertProfileInput":
+    def attribution_is_explicit(self) -> ExpertProfileInput:
         if self.public_attribution and not (self.attribution_name or "").strip():
             raise ValueError("public attribution requires attribution_name")
         return self
@@ -95,7 +95,7 @@ class CalibrationSetInput(StrictModel):
     active: bool = True
 
     @model_validator(mode="after")
-    def min_cases_fit(self) -> "CalibrationSetInput":
+    def min_cases_fit(self) -> CalibrationSetInput:
         if self.min_cases > len(self.case_refs):
             raise ValueError("min_cases cannot exceed number of case references")
         return self
@@ -182,7 +182,7 @@ class RightsAttestation(StrictModel):
     attests_authority: Literal[True]
 
     @model_validator(mode="after")
-    def public_license_needs_source(self) -> "RightsAttestation":
+    def public_license_needs_source(self) -> RightsAttestation:
         if self.authority_type == RightsAuthorityType.PUBLIC_LICENSE and not self.public_source_url:
             raise ValueError("public-license intake requires public_source_url")
         if (
@@ -207,7 +207,7 @@ class CaseIntakeInput(StrictModel):
     notes: str = ""
 
     @model_validator(mode="after")
-    def public_use_requires_permission(self) -> "CaseIntakeInput":
+    def public_use_requires_permission(self) -> CaseIntakeInput:
         public_uses = {DataUse.PUBLIC_RELEASE, DataUse.OPEN_MODEL_TRAINING}
         if public_uses.intersection(self.requested_uses) and not self.redistribution_allowed:
             raise ValueError("public release or training use requires redistribution_allowed")
@@ -277,7 +277,7 @@ class ClaimReconstructionInput(StrictModel):
     reconstruction_notes: str = ""
 
     @model_validator(mode="after")
-    def inferred_needs_notes(self) -> "ClaimReconstructionInput":
+    def inferred_needs_notes(self) -> ClaimReconstructionInput:
         if self.explicitness == Explicitness.INFERRED and not self.reconstruction_notes.strip():
             raise ValueError("inferred claim reconstruction requires notes")
         return self
@@ -296,7 +296,7 @@ class ClaimDeterminationInput(StrictModel):
     rationale: str = Field(min_length=20)
 
     @model_validator(mode="after")
-    def accepted_needs_claim(self) -> "ClaimDeterminationInput":
+    def accepted_needs_claim(self) -> ClaimDeterminationInput:
         if self.status == ClaimDeterminationStatus.ACCEPTED and self.canonical_claim is None:
             raise ValueError("accepted determination requires canonical_claim")
         return self
