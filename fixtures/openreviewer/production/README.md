@@ -3,13 +3,26 @@
 This tree holds **authentic, redistributable** OpenReviewer outputs when they
 become available. It is intentionally empty of review payloads until then.
 
+Sample-adapter conformance (not production authenticity) lives under
+`fixtures/openreviewer/` outside this tree.
+
 ## Intake requirements
 
 1. Affirmative rights clearance covering any embedded manuscript text
    ([rights-memorandum.md](../../docs/rights-memorandum.md); issue #7).
-2. Authentic OpenReviewer outputs with pinned upstream commit / config.
-3. Content hashes and rights record ids for every artifact in `MANIFEST.json`.
+2. At least **5** authentic OpenReviewer outputs with pinned upstream commit /
+   configuration (must not reuse the sample adapter contract id).
+3. Content hashes, byte sizes, and rights record ids for every artifact in
+   `MANIFEST.json`.
 4. Conversion without hand-editing JSON; unresolved anchors stay unresolved.
+
+Validate a cleared package (refuses incomplete / unauthorized trees):
+
+```bash
+python scripts/ingest_production_adapter_exports.py validate \
+  --adapter openreviewer --package /path/to/cleared-exports
+python scripts/ingest_production_adapter_exports.py validate-tree --adapter openreviewer
+```
 
 ## Layout
 
@@ -28,5 +41,5 @@ conversion-fidelity engineering checks only — never reviewer-quality claims.
 
 ## Current status
 
-See `MANIFEST.json` (`status: blocked`). Sample-adapter conformance lives under
-`fixtures/openreviewer/` (not this tree).
+See `MANIFEST.json` (`status: blocked`). Do not invent natural evidence or fake
+exports to clear this tree.
