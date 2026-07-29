@@ -202,6 +202,10 @@ required = [
     "governance/decisions/ADR-0003-second-adapter.md",
     "governance/policies/expert-qualification-thresholds.v0.1.json",
     "governance/policies/calibration-task-seeds.v0.1.json",
+    "governance/policies/expert-compensation-terms.v0.1.json",
+    "governance/policies/expert-attribution-policy.v0.1.json",
+    "scripts/ingest_production_adapter_exports.py",
+    "scripts/check_v09_gates.py",
     "schemas/inventory.json",
     "schemas/GOLDEN_HASHES.json",
     "openapi/registry.openapi.json",
@@ -226,5 +230,19 @@ assert not missing, missing
 assert not present, present
 print("publication paths OK")
 PY
+
+echo "==> v0.9 gate evaluator (must report NO-GO while authenticity gates unmet)"
+set +e
+$PYTHON scripts/check_v09_gates.py
+v09_status=$?
+set -e
+if [ "$v09_status" -eq 0 ]; then
+  echo "v0.9 gates unexpectedly passed; authenticity scaffolding may be wrong" >&2
+  exit 1
+fi
+if [ "$v09_status" -ne 1 ]; then
+  echo "v0.9 gate evaluator crashed with status $v09_status" >&2
+  exit 1
+fi
 
 echo "check.sh passed"
