@@ -40,6 +40,11 @@ Thumbs.db
 .runtime-smoke-artifacts/
 .runtime-smoke*
 
+# Operator-local live / demo artifacts (never publish secrets or private runs)
+.demo-e2e/
+.runtime-live/
+runs/
+
 # Local scratch notes (do not publish)
 /issue[0-9]*.md
 
