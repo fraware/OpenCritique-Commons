@@ -225,18 +225,66 @@ def _candidate_id(*parts: str) -> str:
     return f"ocaud_{digest}"
 
 
+NATURAL_SESSION_MANIFEST_DIR = Path("corpus") / "matcher-audit" / "sessions"
+
+
+def natural_session_manifest_dir(repo_root: Path | None = None) -> Path:
+    root = repo_root or Path(__file__).resolve().parents[2]
+    return root / NATURAL_SESSION_MANIFEST_DIR
+
+
+def discover_natural_decision_count(
+    repo_root: Path | None = None,
+) -> tuple[int, str]:
+    """Read natural matcher-audit session manifests; never invent volume.
+
+    Returns ``(natural_decision_count, evidence_detail)``. Missing or empty
+    session directories yield count ``0`` with a detail string pointing at the
+    expected evidence path.
+    """
+    sessions_dir = natural_session_manifest_dir(repo_root)
+    relative = NATURAL_SESSION_MANIFEST_DIR.as_posix()
+    if not sessions_dir.is_dir():
+        return 0, f"evidence missing: {relative}/ (no natural session manifests)"
+    total = 0
+    natural_files = 0
+    for path in sorted(sessions_dir.glob("*.json")):
+        try:
+            manifest = load_session_manifest(path)
+        except (OSError, ValueError, TypeError):
+            continue
+        if manifest.evidence_class != AuditEvidenceClass.NATURAL:
+            continue
+        if manifest.performance_claims_authorized:
+            continue
+        natural_files += 1
+        total += manifest.sampled_count
+    if natural_files == 0:
+        return 0, f"evidence absent: {relative}/ has no natural session manifests"
+    return (
+        total,
+        f"natural_sessions={natural_files} sampled_decisions={total} from {relative}/",
+    )
+
+
 def measure_current_denominators(
     *,
     sample_decision_count: int | None = None,
-    natural_decision_count: int = 0,
+    natural_decision_count: int | None = None,
     repo_root: Path | None = None,
 ) -> DenominatorAccount:
-    """Report honest current denominators without fabricating natural decisions."""
+    """Report honest current denominators without fabricating natural decisions.
+
+    When ``natural_decision_count`` is omitted, discover it from natural session
+    manifests under ``corpus/matcher-audit/sessions/`` (0 if absent).
+    """
+    root = repo_root or Path(__file__).resolve().parents[2]
+    if natural_decision_count is None:
+        natural_decision_count, _ = discover_natural_decision_count(root)
     if natural_decision_count < 0:
         raise ValueError("natural_decision_count must be >= 0")
     sample_count = sample_decision_count
     if sample_count is None:
-        root = repo_root or Path(__file__).resolve().parents[2]
         coarse = root / "fixtures" / "coarse" / "reviews"
         openreviewer = root / "fixtures" / "openreviewer" / "reviews"
         sample_count = 0

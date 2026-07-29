@@ -12,6 +12,7 @@ from opencritique_evaluation.matcher_audit import (
     AuditEvidenceClass,
     AuditJudgment,
     DisagreementCategory,
+    MatcherAuditSample,
     MatcherConfig,
     analyze_audit_judgments,
     build_session_manifest,
@@ -25,7 +26,7 @@ from opencritique_evaluation.models import ConcernMatch
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _sample() -> object:
+def _sample() -> MatcherAuditSample:
     match = ConcernMatch(
         submitted_local_id="s1",
         reference_concern_id="occon_ref_1",
@@ -55,6 +56,54 @@ def test_current_denominators_honest() -> None:
     assert account.natural_dod_met is False
     assert account.performance_claims_authorized is False
     assert account.sample_decisions_available >= 17  # 12 coarse + 5 openreviewer
+
+
+def test_discover_natural_decision_count_from_empty_sessions() -> None:
+    from opencritique_evaluation.matcher_audit import discover_natural_decision_count
+
+    count, detail = discover_natural_decision_count(ROOT)
+    assert count == 0
+    assert "matcher-audit/sessions" in detail
+    discovered = measure_current_denominators(repo_root=ROOT)
+    assert discovered.natural_decisions_available == 0
+    assert discovered.natural_dod_met is False
+
+
+def test_discover_natural_count_from_session_manifest(tmp_path: Path) -> None:
+    import json
+
+    from opencritique_evaluation.matcher_audit import (
+        discover_natural_decision_count,
+        natural_session_manifest_dir,
+    )
+
+    sessions = tmp_path / "corpus" / "matcher-audit" / "sessions"
+    sessions.mkdir(parents=True)
+    sample = stratify_match_decisions(
+        matches=[],
+        unmatched_submitted=[],
+        unmatched_reference=[],
+        ambiguous_anchors=[],
+        type_disagreements=[],
+        severity_disagreements=[],
+        domain_by_case={},
+        config=MatcherConfig(),
+        seed=1,
+        evidence_class=AuditEvidenceClass.NATURAL,
+        population_denominator=0,
+    )
+    manifest = build_session_manifest(sample, session_id="ocmas_natural_probe")
+    payload = manifest.model_dump(mode="json")
+    payload["population_denominator"] = 12
+    payload["sampled_count"] = 12
+    payload["natural_dod_met"] = False
+    (sessions / "natural-probe.json").write_text(
+        json.dumps(payload, indent=2) + "\n", encoding="utf-8"
+    )
+    count, detail = discover_natural_decision_count(tmp_path)
+    assert count == 12
+    assert "natural_sessions=1" in detail
+    assert natural_session_manifest_dir(tmp_path) == sessions
 
 
 def test_natural_empty_population_yields_empty_sample() -> None:

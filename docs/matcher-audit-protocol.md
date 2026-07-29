@@ -71,3 +71,6 @@ disclose that the matcher audit gate did not pass.
 - API: `GET/POST /expert/matcher-audit/...` (blinded payloads)
 - Docs+API fallback when studio is unavailable
 - Pilot fixtures: sample evaluations derived from `corpus/samples/`
+
+Private rights-owned pilots (method tooling, not natural DoD):
+[private-evaluation-pilot.md](private-evaluation-pilot.md).
