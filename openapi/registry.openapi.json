@@ -829,6 +829,10 @@
             ],
             "title": "Estimated Missed Match Rate"
           },
+          "evidence_class": {
+            "$ref": "#/components/schemas/AuditEvidenceClass",
+            "default": "sample"
+          },
           "generated_at": {
             "format": "date-time",
             "title": "Generated At",
@@ -852,10 +856,20 @@
             ],
             "title": "Matcher Config Gate Passed"
           },
+          "natural_dod_met": {
+            "default": false,
+            "title": "Natural Dod Met",
+            "type": "boolean"
+          },
           "policy_invalidated": {
             "default": false,
             "title": "Policy Invalidated",
             "type": "boolean"
+          },
+          "population_denominator": {
+            "default": 0,
+            "title": "Population Denominator",
+            "type": "integer"
           },
           "raw_agreement": {
             "anyOf": [
@@ -947,6 +961,10 @@
               }
             ],
             "title": "Domain Profile"
+          },
+          "evidence_class": {
+            "$ref": "#/components/schemas/AuditEvidenceClass",
+            "default": "sample"
           },
           "match_score": {
             "anyOf": [
@@ -1055,6 +1073,15 @@
         ],
         "title": "AuditEventView",
         "type": "object"
+      },
+      "AuditEvidenceClass": {
+        "description": "Population evidence class for denominator accounting (issue #6).",
+        "enum": [
+          "sample",
+          "natural"
+        ],
+        "title": "AuditEvidenceClass",
+        "type": "string"
       },
       "AuditJudgment": {
         "additionalProperties": false,
@@ -2908,6 +2935,60 @@
         "title": "ClaimType",
         "type": "string"
       },
+      "ClaimableTaskView": {
+        "additionalProperties": false,
+        "description": "Pending adjudication slot summary for Studio queue UX (not a claim action).",
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "case_version": {
+            "title": "Case Version",
+            "type": "string"
+          },
+          "concern_id": {
+            "title": "Concern Id",
+            "type": "string"
+          },
+          "concern_title": {
+            "title": "Concern Title",
+            "type": "string"
+          },
+          "evidence_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Class"
+          },
+          "slot": {
+            "$ref": "#/components/schemas/TaskSlot"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "task_id": {
+            "title": "Task Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "case_id",
+          "case_version",
+          "concern_id",
+          "concern_title",
+          "slot",
+          "status"
+        ],
+        "title": "ClaimableTaskView",
+        "type": "object"
+      },
       "CoauthorConsentStatus": {
         "enum": [
           "not_applicable",
@@ -4312,6 +4393,10 @@
             "title": "Candidates",
             "type": "array"
           },
+          "evidence_class": {
+            "$ref": "#/components/schemas/AuditEvidenceClass",
+            "default": "sample"
+          },
           "generated_at": {
             "format": "date-time",
             "title": "Generated At",
@@ -4319,6 +4404,12 @@
           },
           "matcher_config": {
             "$ref": "#/components/schemas/MatcherConfig"
+          },
+          "population_denominator": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Population Denominator",
+            "type": "integer"
           },
           "protocol_id": {
             "title": "Protocol Id",
@@ -7349,6 +7440,52 @@
           }
         },
         "summary": "Claim Task"
+      }
+    },
+    "/v1/tasks/claimable": {
+      "get": {
+        "operationId": "list_claimable_tasks_v1_tasks_claimable_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ClaimableTaskView"
+                  },
+                  "title": "Response List Claimable Tasks V1 Tasks Claimable Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Claimable Tasks"
       }
     },
     "/v1/tasks/{task_id}": {
