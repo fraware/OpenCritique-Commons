@@ -34,6 +34,14 @@ def test_studio_and_matcher_audit_routes_load() -> None:
     assert studio.status_code == 200
     assert "Adjudication Studio" in studio.text
     assert "Content-Security-Policy" in studio.headers
+    assert "object-src 'none'" in studio.headers["content-security-policy"]
+    script = client.get("/studio/app.js")
+    assert script.status_code == 200
+    assert script.headers.get("content-security-policy")
+    assert script.headers.get("x-content-type-options") == "nosniff"
+    styles = client.get("/studio/styles.css")
+    assert styles.status_code == 200
+    assert styles.headers.get("content-security-policy")
     proto = client.get("/v1/matcher-audit/protocol")
     assert proto.status_code == 200
     assert proto.json()["protocol_id"]

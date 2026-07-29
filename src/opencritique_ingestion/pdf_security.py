@@ -6,15 +6,29 @@ import re
 
 from opencritique_schema.document_graph import SecurityFinding, SecurityFindingKind
 
-# Lightweight byte-level markers for common PDF active content.
-_BLOCK_PATTERNS: list[tuple[SecurityFindingKind, bytes, str]] = [
+# PDF name tokens that indicate active or externally launched content.
+# Match as PDF names (delimiter after the token) to avoid false positives on
+# longer names and on ordinary catalog keys such as /Trapped.
+_BLOCK_NAME_PATTERNS: list[tuple[SecurityFindingKind, bytes, str]] = [
     (SecurityFindingKind.JAVA_SCRIPT_ACTION, b"/JavaScript", "PDF contains /JavaScript action"),
     (SecurityFindingKind.JAVA_SCRIPT_ACTION, b"/JS", "PDF contains /JS action dictionary"),
     (SecurityFindingKind.SCRIPT_PAYLOAD, b"/OpenAction", "PDF contains /OpenAction"),
     (SecurityFindingKind.EXTERNAL_STREAM, b"/EmbeddedFile", "PDF contains embedded file stream"),
     (SecurityFindingKind.EXTERNAL_STREAM, b"/Launch", "PDF contains /Launch action"),
-    (SecurityFindingKind.HIDDEN_TEXT, b"/Trapped", "PDF marks trapping metadata anomalies"),
 ]
+
+
+def _pdf_name_present(data: bytes, name: bytes) -> bool:
+    """Return True when ``name`` appears as a PDF name token, not a longer prefix."""
+    start = 0
+    while True:
+        idx = data.find(name, start)
+        if idx < 0:
+            return False
+        end = idx + len(name)
+        if end >= len(data) or data[end : end + 1] in b" \t\r\n/>[]()":
+            return True
+        start = end
 
 
 def scan_pdf_security(data: bytes) -> list[SecurityFinding]:
@@ -30,8 +44,8 @@ def scan_pdf_security(data: bytes) -> list[SecurityFinding]:
             )
         )
         return findings
-    for idx, (kind, needle, description) in enumerate(_BLOCK_PATTERNS, start=1):
-        if needle in data:
+    for idx, (kind, needle, description) in enumerate(_BLOCK_NAME_PATTERNS, start=1):
+        if _pdf_name_present(data, needle):
             findings.append(
                 SecurityFinding(
                     finding_id=f"pdf-sec-{idx}",

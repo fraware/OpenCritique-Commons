@@ -1,6 +1,6 @@
 # Rights memorandum — first external benchmark path
 
-Issue #7 / PR10.
+Issue #7 / sample-conformance path on `main`.
 
 ## Controlling principle
 
@@ -33,6 +33,43 @@ under `corpus/samples/` for tooling conformance only.
 | Derived OpenCritique records from natural text | **Not imported** | Require case-level grants |
 | Performance / comparative claims | **Disabled** | `performance_claims_authorized=false` |
 
+## Clearance checklist (before any natural import)
+
+Complete every row and archive evidence under `corpus/rights/` (or counsel vault
+referenced from the ledger). Do not invent grants.
+
+| Step | Required evidence | Owner |
+|---|---|---|
+| Identify artifact class | Manuscript PDF, figures, annotations, review text, derived JSON | Maintainer |
+| Locate controlling license / ToS | URL + retrieved copy hash | Maintainer |
+| Written grant for evaluation use | Signed email/letter or explicit license clause covering evaluation | Counsel / owner |
+| Written grant for redistribution (if public) | Explicit redistribution or “public archive” permission | Counsel / owner |
+| Training / model-use restriction check | Confirm whether training is forbidden even when eval is allowed | Counsel |
+| Attribution / share-alike obligations | Text to copy into case rights record | Maintainer |
+| Withdrawal / cancel contact | Named contact + SLA for post-import objection | Maintainer |
+| Case-level rights record | `evaluation_use_authorized`, hashes, flags; `performance_claims_authorized=false` until §12 gate | Maintainer |
+| Ledger entry | `AcquisitionLedger` status + source metadata | Maintainer |
+| Import dry-run | Prove reject path for missing grant | CI / maintainer |
+
+## Import rejection rules (already enforced)
+
+Acquisition and registry paths **reject** artifacts that fail the approved profile:
+
+- Missing or mismatched source-artifact SHA-256 / byte size
+- Rights record without evaluation-use authorization
+- Attempts to set `performance_claims_authorized=true` while the release gate is closed
+- Natural imports without an archived grant (blocked by process and issue #7 DoD)
+
+See `opencritique_acquisition` ledger validators and registry `require_use_grant`.
+
+## Withdrawal / cancel path
+
+1. Mark the acquisition source `withdrawn` or `cancelled` via acquisition CLI.
+2. Retain append-only ledger history; do not silently rewrite hashes.
+3. Remove or quarantine redistributable bytes from the public artifact root when
+   the grant is revoked.
+4. Document the incident reference on the rights record.
+
 ## Case-level requirements
 
 Every imported case must have:
@@ -42,8 +79,12 @@ Every imported case must have:
 3. Explicit evaluation-use and redistribution flags
 4. Attribution / share-alike / withdrawal notes when applicable
 
-Import tooling (`opencritique_acquisition` ledger validators and registry
-`require_use_grant`) **rejects** artifacts outside an approved rights profile.
+## What remains blocked until counsel / owner sign-off
+
+- Any natural manuscript or figure binary
+- Authentic Coarse / OpenReviewer production exports that embed uncleared text
+  (issues #3 / #5)
+- Scientific performance claims (#12 matrix / issue #7 DoD)
 
 ## Unresolved questions (archived for counsel / maintainers)
 

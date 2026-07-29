@@ -82,3 +82,22 @@ opencritique evaluation verify-scorecard \
 - Private-key compromise (see `SECURITY.md`)
 - Unauthorized signing by untrusted, test, or development-only keys under production policy
 - Stale-key acceptance after revocation or expiry
+
+## Production ceremony checklist (issue #4)
+
+Do **not** commit production private keys. Development-channel keys remain the
+only in-repo trust material until this checklist completes outside the
+repository.
+
+| Step | Done when |
+|---|---|
+| Offline root generated on air-gapped or equivalent custody media | Root public fingerprint recorded |
+| Online release key generated; root signs a rotation/issuance statement | Statement hash archived |
+| Production public keys published on ≥2 independent channels | Channel URLs/ids listed in trust store `published_channels` |
+| Custody, backup, dual-control, and incident response documented | Linked from SECURITY.md / ops runbook (not private key material) |
+| Production trust store verified to reject unknown, revoked, test, and development-only keys | CI or witnessed ceremony transcript |
+| Historical verification retained after first production rotation | `policy_mode=historical` proven against a retired key |
+| Callers use `verify_envelope_detailed` with the production trust store | Boolean `verify_envelope` without trust material is not used in production |
+
+Until issue #4 closes, release notes must state that only the **development**
+signing channel is populated.
