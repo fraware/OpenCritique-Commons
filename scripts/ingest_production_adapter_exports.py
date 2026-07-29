@@ -12,12 +12,15 @@ Examples:
 
   python scripts/ingest_production_adapter_exports.py stage \\
       --adapter openreviewer --package /path/to/cleared-exports --dry-run
+
+Refuses packages under runs/ (private live). Do not auto-promote live exports.
 """
 
 from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import NoReturn
 
 import typer
 
@@ -46,7 +49,7 @@ _TREE = {
 }
 
 
-def _fail(exc: ProductionIntakeError) -> None:
+def _fail(exc: ProductionIntakeError) -> NoReturn:
     typer.secho(format_intake_error(exc), fg=typer.colors.RED, err=True)
     raise typer.Exit(code=2)
 

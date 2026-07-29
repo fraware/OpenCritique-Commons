@@ -126,6 +126,44 @@ def test_ready_manifest_without_exports_fails_closed(tmp_path: Path) -> None:
         assert_production_tree_fail_closed("coarse", root)
 
 
+@pytest.mark.parametrize(
+    "adapter,min_count",
+    [
+        ("coarse", ADAPTER_READY_MINIMA["coarse"]),
+        ("openreviewer", ADAPTER_READY_MINIMA["openreviewer"]),
+    ],
+)
+def test_ready_below_required_export_count_fails_closed(
+    tmp_path: Path, adapter: str, min_count: int
+) -> None:
+    """READY without ≥10 / ≥5 exports must fail closed."""
+    root = tmp_path / "production"
+    (root / "reviews").mkdir(parents=True)
+    short = min_count - 1
+    assert short >= 1
+    artifacts = []
+    for idx in range(short):
+        name = f"reviews/e{idx}.json"
+        data = b'{"ok":true}' + f"{idx}".encode()
+        (root / name).write_bytes(data)
+        artifacts.append(
+            ProductionArtifact(
+                relative_path=name,
+                content_sha256=_sha(data),
+                byte_size=len(data),
+                rights_record_id="rr-1",
+            )
+        )
+    (root / "MANIFEST.json").write_text(
+        json.dumps(
+            _ready_manifest(adapter=adapter, artifacts=artifacts, rights=["rr-1"])
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ProductionReadyIncompleteError, match="at least"):
+        assert_production_tree_fail_closed(adapter, root)
+
+
 def test_ready_with_empty_reviews_fails_closed(tmp_path: Path) -> None:
     root = tmp_path / "production"
     (root / "reviews").mkdir(parents=True)
@@ -401,7 +439,18 @@ def test_loss_reports_include_production_section() -> None:
     assert report.production is not None
     assert report.production.source == "production"
     assert report.production.status != ProductionIntakeStatus.READY
+    from opencritique_adapters.coarse_loss import report_to_markdown as coarse_md
+    from opencritique_adapters.openreviewer_loss import report_to_markdown as cross_md
+    from opencritique_adapters.production_fixtures import production_section_markdown
+
+    section_md = production_section_markdown(report.production)
+    assert "NOT READY" in section_md
+    assert "refuse" in section_md.lower()
+    coarse_text = coarse_md(report)
+    assert "NOT READY" in coarse_text
     cross = build_cross_adapter_report()
     assert len(cross.production_sections) == 2
     assert all(s.source == "production" for s in cross.production_sections)
     assert all(s.status != ProductionIntakeStatus.READY for s in cross.production_sections)
+    cross_text = cross_md(cross)
+    assert cross_text.count("NOT READY") >= 2
