@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,11 +31,33 @@ def test_v09_gates_are_no_go() -> None:
     assert by_id[2].passed is False
     assert by_id[3].passed is False
     assert by_id[6].passed is False
+    assert by_id[7].passed is False
+    assert "evidence" in by_id[6].detail or "sessions" in by_id[6].detail
+    assert "natural-adjudication-staffing.json" in by_id[7].detail
     assert by_id[9].passed is True  # claims remain locked
     assert module.main() == 1
+
+
+def test_v09_gates_point_at_evidence_paths() -> None:
+    module = _load_gates()
+    results = module.evaluate_gates()
+    by_id = {item.gate_id: item for item in results}
+    assert "MANIFEST.json" in by_id[2].detail
+    assert "MANIFEST.json" in by_id[3].detail
+    assert "matcher-audit/sessions" in by_id[6].detail
+    staffing = ROOT / "governance" / "evidence" / "natural-adjudication-staffing.json"
+    roster = json.loads(staffing.read_text(encoding="utf-8"))
+    assert roster["status"] == "blocked"
+    assert roster["performance_claims_authorized"] is False
+    assert roster["domains"] == []
 
 
 def test_v09_doc_references_machine_check() -> None:
     text = (ROOT / "docs" / "v0.9-beta-go-no-go.md").read_text(encoding="utf-8")
     assert "check_v09_gates.py" in text
     assert "performance_claims_authorized" in text
+    assert "exits 0" in text or "exit 0" in text
+    milestones = (ROOT / "docs" / "MILESTONES.md").read_text(encoding="utf-8")
+    assert "check_v09_gates.py" in milestones
+    assert "GO rule" in milestones
+    assert "claims stay" in milestones and "locked" in milestones

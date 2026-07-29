@@ -3,6 +3,10 @@
 
 Exits non-zero while critical authenticity gates remain unmet.
 Does not unlock performance claims.
+
+Blocking failures point at missing or blocked **evidence artifacts**
+(session manifests, staffing roster, production MANIFESTs) — never invents
+counts or sets ``performance_claims_authorized=true``.
 """
 
 from __future__ import annotations
@@ -11,24 +15,39 @@ import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from opencritique_adapters.production_fixtures import (  # noqa: E402
+    ADAPTER_READY_MINIMA,
     COARSE_PRODUCTION,
     OPENREVIEWER_PRODUCTION,
     ProductionIntakeStatus,
     load_production_manifest,
     production_section_for,
 )
-from opencritique_evaluation.matcher_audit import measure_current_denominators  # noqa: E402
+from opencritique_evaluation.matcher_audit import (  # noqa: E402
+    discover_natural_decision_count,
+    measure_current_denominators,
+    natural_session_manifest_dir,
+)
 from opencritique_registry.expert_policy import (  # noqa: E402
     assert_calibration_seeds_resolvable,
+    assert_natural_calibration_seeds_cleared,
+    assert_paid_pilot_rates_configured,
+    compensation_rates_unset,
     load_attribution_policy,
     load_calibration_seeds_policy,
     load_compensation_policy,
     load_qualification_policy,
+)
+
+STAFFING_EVIDENCE_PATH = (
+    ROOT / "governance" / "evidence" / "natural-adjudication-staffing.json"
 )
 
 
@@ -41,23 +60,137 @@ class GateResult:
     detail: str
 
 
+class StrictModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class StaffingDomain(StrictModel):
+    domain_profile: str = Field(min_length=1)
+    independent_adjudicator_ids: list[str] = Field(default_factory=list)
+
+
+class NaturalAdjudicationStaffingRoster(StrictModel):
+    """Evidence artifact for gate 7 (two-domain natural holdout staffing)."""
+
+    roster_version: str = "0.1"
+    status: Literal["blocked", "pending", "ready"]
+    blocked_reason: str | None = None
+    performance_claims_authorized: bool = False
+    minimum_domains_required: int = Field(default=2, ge=2)
+    min_independent_adjudicators_per_domain: int = Field(default=2, ge=1)
+    domains: list[StaffingDomain] = Field(default_factory=list)
+    notes: str = ""
+
+    @field_validator("performance_claims_authorized")
+    @classmethod
+    def claims_locked(cls, value: bool) -> bool:
+        if value:
+            raise ValueError("performance_claims_authorized must remain false")
+        return value
+
+    @model_validator(mode="after")
+    def ready_requires_staffing(self) -> NaturalAdjudicationStaffingRoster:
+        if self.status == "ready":
+            if self.blocked_reason:
+                raise ValueError("ready staffing roster must not set blocked_reason")
+            staffed = [
+                domain
+                for domain in self.domains
+                if len(set(domain.independent_adjudicator_ids))
+                >= self.min_independent_adjudicators_per_domain
+            ]
+            if len(staffed) < self.minimum_domains_required:
+                raise ValueError(
+                    "ready staffing roster requires "
+                    f">={self.minimum_domains_required} domains with "
+                    f">={self.min_independent_adjudicators_per_domain} "
+                    "independent adjudicators each"
+                )
+        elif self.status == "blocked" and not (self.blocked_reason or "").strip():
+            raise ValueError("blocked staffing roster requires blocked_reason")
+        return self
+
+
+def _relative(path: Path) -> str:
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
 def _gate_production(adapter: str, root: Path, gate_id: int, name: str) -> GateResult:
+    evidence = _relative(root / "MANIFEST.json")
+    min_count = ADAPTER_READY_MINIMA.get(adapter, 10)
     try:
         section = production_section_for(adapter, root)
         manifest = load_production_manifest(root / "MANIFEST.json")
     except Exception as exc:  # noqa: BLE001
-        return GateResult(gate_id, name, False, True, f"error: {exc}")
+        return GateResult(
+            gate_id,
+            name,
+            False,
+            True,
+            f"evidence={evidence} error: {exc}",
+        )
     ready = (
         section.status == ProductionIntakeStatus.READY
-        and section.export_count > 0
+        and section.export_count >= min_count
         and manifest.performance_claims_authorized is False
     )
+    detail = (
+        f"evidence={evidence} status={section.status.value} "
+        f"exports={section.export_count} (minimum {min_count})"
+    )
+    if section.blocked_reason:
+        detail = f"{detail}; blocked_reason={section.blocked_reason}"
+    return GateResult(gate_id, name, ready, True, detail)
+
+
+def _load_staffing_roster(path: Path) -> tuple[NaturalAdjudicationStaffingRoster | None, str]:
+    if not path.is_file():
+        return None, f"evidence missing: {_relative(path)}"
+    try:
+        roster = NaturalAdjudicationStaffingRoster.model_validate(
+            json.loads(path.read_text(encoding="utf-8"))
+        )
+    except Exception as exc:  # noqa: BLE001
+        return None, f"evidence={_relative(path)} invalid: {exc}"
+    return roster, f"evidence={_relative(path)}"
+
+
+def _gate_staffing(gate_id: int) -> GateResult:
+    roster, detail_prefix = _load_staffing_roster(STAFFING_EVIDENCE_PATH)
+    if roster is None:
+        return GateResult(
+            gate_id,
+            "two_domain_natural_adjudication_staffing",
+            False,
+            True,
+            detail_prefix,
+        )
+    staffed = [
+        domain.domain_profile
+        for domain in roster.domains
+        if len(set(domain.independent_adjudicator_ids))
+        >= roster.min_independent_adjudicators_per_domain
+    ]
+    passed = (
+        roster.status == "ready"
+        and len(staffed) >= roster.minimum_domains_required
+        and roster.performance_claims_authorized is False
+    )
+    detail = (
+        f"{detail_prefix} status={roster.status} "
+        f"staffed_domains={len(staffed)}/{roster.minimum_domains_required}"
+    )
+    if roster.blocked_reason:
+        detail = f"{detail}; blocked_reason={roster.blocked_reason}"
     return GateResult(
         gate_id,
-        name,
-        ready,
+        "two_domain_natural_adjudication_staffing",
+        passed,
         True,
-        f"status={section.status.value} exports={section.export_count}",
+        detail,
     )
 
 
@@ -99,18 +232,35 @@ def evaluate_gates() -> list[GateResult]:
             "production_signing_public_keys",
             prod_keys_ok,
             False,
-            "production public keys present; private keys must stay offline",
+            f"evidence={_relative(trust)}; production public keys present; "
+            "private keys must stay offline",
         )
     )
 
     try:
         load_qualification_policy()
-        load_compensation_policy()
+        compensation = load_compensation_policy()
         load_attribution_policy()
-        load_calibration_seeds_policy()
-        assert_calibration_seeds_resolvable()
+        seeds = load_calibration_seeds_policy()
+        assert_calibration_seeds_resolvable(seeds)
+        unset = compensation_rates_unset(compensation)
+        natural_slots = seeds.natural_seed_slots
         expert_ok = True
-        expert_detail = "policy objects load; calibration seeds resolve"
+        expert_detail = (
+            "policy objects load; calibration seeds resolve; "
+            f"paid_pilot_rates={'set' if not unset else 'unset->blocked'}; "
+            f"natural_seed_slots={natural_slots.status}"
+        )
+        if unset:
+            try:
+                assert_paid_pilot_rates_configured(compensation)
+            except Exception:  # noqa: BLE001
+                pass  # informational: rates unset is expected until funded
+        try:
+            assert_natural_calibration_seeds_cleared(seeds)
+            expert_detail += "; natural seeds cleared"
+        except Exception as natural_exc:  # noqa: BLE001
+            expert_detail += f"; natural seeds blocked ({natural_exc})"
     except Exception as exc:  # noqa: BLE001
         expert_ok = False
         expert_detail = str(exc)
@@ -118,7 +268,12 @@ def evaluate_gates() -> list[GateResult]:
         GateResult(5, "expert_ops_policy_objects", expert_ok, False, expert_detail)
     )
 
-    denominators = measure_current_denominators(natural_decision_count=0, repo_root=ROOT)
+    natural_count, natural_detail = discover_natural_decision_count(ROOT)
+    denominators = measure_current_denominators(
+        natural_decision_count=natural_count,
+        repo_root=ROOT,
+    )
+    sessions = _relative(natural_session_manifest_dir(ROOT))
     results.append(
         GateResult(
             6,
@@ -126,22 +281,16 @@ def evaluate_gates() -> list[GateResult]:
             denominators.natural_dod_met,
             True,
             (
+                f"{natural_detail}; "
                 f"natural={denominators.natural_decisions_available} "
                 f"sample_fixture_reviews={denominators.sample_decisions_available} "
-                f"dod_met={denominators.natural_dod_met}"
+                f"dod_met={denominators.natural_dod_met}; "
+                f"sessions_dir={sessions}"
             ),
         )
     )
 
-    results.append(
-        GateResult(
-            7,
-            "two_domain_natural_adjudication_staffing",
-            False,
-            True,
-            "natural holdout staffing not met",
-        )
-    )
+    results.append(_gate_staffing(7))
 
     results.append(
         GateResult(
@@ -158,9 +307,10 @@ def evaluate_gates() -> list[GateResult]:
         ROOT / "corpus" / "acquisition-ledger.json",
         COARSE_PRODUCTION / "MANIFEST.json",
         OPENREVIEWER_PRODUCTION / "MANIFEST.json",
+        STAFFING_EVIDENCE_PATH,
     ):
         if path.is_file():
-            payload = json.loads(path.read_text(encoding="utf-8"))
+            payload: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
             if payload.get("performance_claims_authorized") is True:
                 claims_locked = False
     results.append(
@@ -169,7 +319,7 @@ def evaluate_gates() -> list[GateResult]:
             "performance_claims_locked",
             claims_locked,
             True,
-            "performance_claims_authorized must remain false",
+            "performance_claims_authorized must remain false (section 12 stays locked)",
         )
     )
 
@@ -179,7 +329,7 @@ def evaluate_gates() -> list[GateResult]:
             "v09_checklist_document",
             (ROOT / "docs" / "v0.9-beta-go-no-go.md").is_file(),
             False,
-            "checklist document present",
+            "checklist document present; GO only when this script exits 0",
         )
     )
     return results

@@ -1,0 +1,10 @@
+{
+  "roster_version": "0.1",
+  "status": "blocked",
+  "blocked_reason": "Natural holdout adjudication staffing not yet recruited for two domain profiles",
+  "performance_claims_authorized": false,
+  "minimum_domains_required": 2,
+  "min_independent_adjudicators_per_domain": 2,
+  "domains": [],
+  "notes": "Scaffolding only. Do not invent adjudicator IDs. Flip status=ready only after funded independent experts are assigned per domain."
+}

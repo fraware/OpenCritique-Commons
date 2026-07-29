@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "natural-adjudication-staffing.schema.json",
+  "title": "NaturalAdjudicationStaffingRoster",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "roster_version",
+    "status",
+    "performance_claims_authorized",
+    "minimum_domains_required",
+    "min_independent_adjudicators_per_domain",
+    "domains"
+  ],
+  "properties": {
+    "roster_version": { "type": "string" },
+    "status": { "type": "string", "enum": ["blocked", "pending", "ready"] },
+    "blocked_reason": { "type": ["string", "null"] },
+    "performance_claims_authorized": { "type": "boolean", "const": false },
+    "minimum_domains_required": { "type": "integer", "minimum": 2 },
+    "min_independent_adjudicators_per_domain": { "type": "integer", "minimum": 1 },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["domain_profile", "independent_adjudicator_ids"],
+        "properties": {
+          "domain_profile": { "type": "string", "minLength": 1 },
+          "independent_adjudicator_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "notes": { "type": "string" }
+  }
+}
