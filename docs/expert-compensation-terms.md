@@ -29,6 +29,10 @@ Replace `TBD` with a published schedule before paying experts. Until funded,
 volunteer / maintainer labor must be disclosed as non-independent for claim
 gates that require paid independent adjudication.
 
+Machine check: when any schedule `amount_minor` is `null`,
+`assert_paid_pilot_rates_configured` fails with `paid_pilot_rates_unset` and
+registry compensation creation is blocked (HTTP 409).
+
 ## Invoicing and retention
 
 - Retain task completion receipts separately from scientific records.

@@ -78,6 +78,40 @@ class CalibrationTaskSeed(StrictModel):
     fixture_review: str
 
 
+class NaturalCalibrationSeedSlots(StrictModel):
+    """Natural calibration slots stay blocked until rights-cleared case IDs exist."""
+
+    status: str = Field(pattern=r"^(blocked|pending|ready)$")
+    blocked_reason: str | None = None
+    tasks: list[CalibrationTaskSeed] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def enforce_blocked_until_cleared(self) -> NaturalCalibrationSeedSlots:
+        if self.status == "ready":
+            if not self.tasks:
+                raise ExpertPolicyError(
+                    "natural calibration seed slots status=ready requires rights-cleared tasks",
+                    code="natural_seeds_empty",
+                )
+            if self.blocked_reason:
+                raise ExpertPolicyError(
+                    "natural calibration seed slots status=ready must not set blocked_reason",
+                    code="natural_seeds_ready_blocked",
+                )
+            return self
+        if self.tasks:
+            raise ExpertPolicyError(
+                "natural calibration seed slots must stay empty until status=ready",
+                code="natural_seeds_premature",
+            )
+        if self.status == "blocked" and not (self.blocked_reason or "").strip():
+            raise ExpertPolicyError(
+                "blocked natural calibration seed slots require blocked_reason",
+                code="natural_seeds_blocked_reason",
+            )
+        return self
+
+
 class CalibrationTaskSeedsPolicy(StrictModel):
     policy_id: str = "calibration-task-seeds"
     policy_version: str
@@ -86,6 +120,15 @@ class CalibrationTaskSeedsPolicy(StrictModel):
     source_class: str
     notes: str = ""
     tasks: list[CalibrationTaskSeed] = Field(min_length=1)
+    natural_seed_slots: NaturalCalibrationSeedSlots = Field(
+        default_factory=lambda: NaturalCalibrationSeedSlots(
+            status="blocked",
+            blocked_reason=(
+                "No rights-cleared natural case IDs; sample seeds only until issue #7"
+            ),
+            tasks=[],
+        )
+    )
 
     @field_validator("performance_claims_authorized")
     @classmethod
@@ -103,6 +146,14 @@ class CalibrationTaskSeedsPolicy(StrictModel):
             raise ExpertPolicyError(
                 f"unsupported calibration source_class={self.source_class!r}",
                 code="bad_source_class",
+            )
+        if (
+            self.source_class == "rights_cleared_natural_corpus"
+            and self.natural_seed_slots.status != "ready"
+        ):
+            raise ExpertPolicyError(
+                "rights_cleared_natural_corpus requires natural_seed_slots.status=ready",
+                code="natural_source_blocked",
             )
         return self
 
@@ -288,3 +339,57 @@ def assert_calibration_seeds_resolvable(
             code="seed_paths_missing",
         )
     return list(active.tasks)
+
+
+def compensation_rates_unset(
+    policy: ExpertCompensationPolicy | None = None,
+) -> list[str]:
+    """Return task_class values whose schedule rates remain unset."""
+    active = policy or load_compensation_policy()
+    return [slot.task_class for slot in active.schedule if slot.amount_minor is None]
+
+
+def assert_paid_pilot_rates_configured(
+    policy: ExpertCompensationPolicy | None = None,
+) -> ExpertCompensationPolicy:
+    """Fail closed when paid pilot would run without a maintainer-approved schedule."""
+    active = policy or load_compensation_policy()
+    unset = compensation_rates_unset(active)
+    if unset:
+        raise ExpertPolicyError(
+            "paid pilot blocked: rates unset for " + ", ".join(unset),
+            code="paid_pilot_rates_unset",
+        )
+    return active
+
+
+def assert_natural_calibration_seeds_cleared(
+    policy: CalibrationTaskSeedsPolicy | None = None,
+    *,
+    repo_root: Path | None = None,
+) -> list[CalibrationTaskSeed]:
+    """Fail closed until natural seed slots carry rights-cleared case IDs."""
+    active = policy or load_calibration_seeds_policy()
+    slots = active.natural_seed_slots
+    if slots.status != "ready":
+        reason = slots.blocked_reason or f"status={slots.status}"
+        raise ExpertPolicyError(
+            f"natural calibration seed slots blocked until rights-cleared IDs: {reason}",
+            code="natural_seeds_blocked",
+        )
+    root = repo_root or ROOT
+    missing: list[str] = []
+    for task in slots.tasks:
+        corpus = root / task.corpus_path
+        review = root / task.fixture_review
+        if not corpus.exists():
+            missing.append(task.corpus_path)
+        if not review.is_file():
+            missing.append(task.fixture_review)
+    if missing:
+        raise ExpertPolicyError(
+            "natural calibration seed paths missing: "
+            + ", ".join(sorted(set(missing))),
+            code="natural_seed_paths_missing",
+        )
+    return list(slots.tasks)
