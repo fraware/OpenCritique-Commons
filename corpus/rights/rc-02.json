@@ -14,7 +14,7 @@
   "redistribution_authorized": true,
   "rights_classification": "public",
   "sample_id": "sample-stats-01",
-  "source_artifact_sha256": "a7929aa0985beda5f45c9b4938e4ab071dad84ae9184975d52a9839255bd5db1",
+  "source_artifact_sha256": "1f6a0c46c93d722fddbb92b063cd6a977d9e7bb1844dee16384e7987b1618c02",
   "source_artifact_uri": "corpus/samples/sample-stats-01/manuscript.md",
   "withdrawal_contact": "repository maintainers via GitHub Security Advisories / CITATION.cff"
 }

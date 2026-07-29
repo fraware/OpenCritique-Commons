@@ -14,7 +14,7 @@
   "redistribution_authorized": true,
   "rights_classification": "public",
   "sample_id": "sample-econ-01",
-  "source_artifact_sha256": "12c7b042c695af4a2148a4339b599861dea90ea629b1da6c0380e127fd445a99",
+  "source_artifact_sha256": "09f0c576b35e991c9f8f9d6b11a2324d176d4d0ab228430ec1f28fc6b18df889",
   "source_artifact_uri": "corpus/samples/sample-econ-01/manuscript.md",
   "withdrawal_contact": "repository maintainers via GitHub Security Advisories / CITATION.cff"
 }

@@ -14,7 +14,7 @@
   "redistribution_authorized": true,
   "rights_classification": "public",
   "sample_id": "sample-ml-01",
-  "source_artifact_sha256": "7e940f38c12356d2470512fd6b80effbf8542a9e8457e3d50c21b0ce85012aea",
+  "source_artifact_sha256": "78024f4295e9509a5ed0aaa81f412be8af222c89120ef18447fda98e09b6f019",
   "source_artifact_uri": "corpus/samples/sample-ml-01/manuscript.md",
   "withdrawal_contact": "repository maintainers via GitHub Security Advisories / CITATION.cff"
 }

@@ -124,13 +124,13 @@
         "ocanc_rights_rc_01_q1"
       ],
       "artifact_reference": {
-        "byte_size": 909,
+        "byte_size": 885,
         "media_type": "text/markdown",
-        "sha256": "12c7b042c695af4a2148a4339b599861dea90ea629b1da6c0380e127fd445a99",
+        "sha256": "09f0c576b35e991c9f8f9d6b11a2324d176d4d0ab228430ec1f28fc6b18df889",
         "uri": "corpus/samples/sample-econ-01/manuscript.md"
       },
       "concern_id": "occon_rights_rc_01_k1",
-      "content_hash": "f51605d0b077e4609c055871fdd5ce35074d62aec8e030b9fe880d208a8df9f7",
+      "content_hash": "5ff0c284dab095ea70e9a86db9fc4e92f86a4278a4a99e533adc1e2c9b02893f",
       "created_at": "2026-07-29T00:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
@@ -177,7 +177,7 @@
   },
   "manuscript_versions": [
     {
-      "content_hash": "93f7ac45b1b96a2100930a1abc18f4e28c5e257ea8cf851555f4c7a3183238b1",
+      "content_hash": "0ecafa9c5f6f57728093d8a3163920a10867f01cdf6892e50fa1f090842f5753",
       "created_at": "2026-07-29T00:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
@@ -201,9 +201,9 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 909,
+        "byte_size": 885,
         "media_type": "text/markdown",
-        "sha256": "12c7b042c695af4a2148a4339b599861dea90ea629b1da6c0380e127fd445a99",
+        "sha256": "09f0c576b35e991c9f8f9d6b11a2324d176d4d0ab228430ec1f28fc6b18df889",
         "uri": "corpus/samples/sample-econ-01/manuscript.md"
       },
       "source_format": "markdown",

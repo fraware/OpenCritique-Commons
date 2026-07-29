@@ -14,7 +14,7 @@
   "redistribution_authorized": true,
   "rights_classification": "public",
   "sample_id": "sample-theory-01",
-  "source_artifact_sha256": "312d20c236067adb489683c18d656d1679191ed2a250eb037cd8579f6f2ba1a2",
+  "source_artifact_sha256": "1f45e576576aa77ebd8d85c11860afcbf7c0cacf2701ac8ff8d9e52f2acb99c6",
   "source_artifact_uri": "corpus/samples/sample-theory-01/manuscript.tex",
   "withdrawal_contact": "repository maintainers via GitHub Security Advisories / CITATION.cff"
 }
