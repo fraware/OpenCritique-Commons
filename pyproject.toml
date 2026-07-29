@@ -32,6 +32,19 @@ dev = [
   "pyright>=1.1",
   "httpx>=0.28,<1",
   "psycopg[binary]>=3.2,<4",
+  "python-dotenv>=1.0,<2",
+]
+# Real upstream Coarse (import name `coarse`). Pin matches COARSE_LIVE_COMMIT_PIN
+# (tag v1.8.0 / 907c629369a8cf5b776dc1d23c618d2907de6d5b).
+live-coarse = [
+  "coarse-ink==1.8.0",
+  "python-dotenv>=1.0,<2",
+]
+# OpenReviewer local HF inference (GPU recommended). Does not use OpenAI/BYOK keys.
+live-openreviewer = [
+  "transformers>=4.40,<5",
+  "torch>=2.2,<3",
+  "accelerate>=0.30,<2",
 ]
 
 [project.scripts]
