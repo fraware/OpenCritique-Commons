@@ -1,21 +1,166 @@
 {
   "adjudications": [],
-  "anchors": [],
+  "anchors": [
+    {
+      "anchor_id": "ocanc_rights_rc_02_q1",
+      "anchor_type": "text_span",
+      "bounding_boxes": [],
+      "content_hash": "1b8d1baae43602b5b6ba7f1d0572e2a8ba94553cb05570110a50c174d6f7ce5d",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "extraction_confidence": 1.0,
+      "id": "ocanc_rights_rc_02_q1",
+      "manuscript_version_id": "ocver_rights_rc_02_v1",
+      "normalized_text": "all eighteen secondary endpoints are reported as significant at p < 0.05.",
+      "object_coordinates": {},
+      "object_label": null,
+      "page_end": 1,
+      "page_start": 1,
+      "rendered_reference": null,
+      "resolution_status": "exact",
+      "schema_version": "0.1.0",
+      "section_path": [],
+      "source_text": "All eighteen secondary endpoints are reported as significant at p < 0.05."
+    }
+  ],
   "case_id": "occase_rights_rc_02",
   "case_type": "microcase",
   "case_version": "1.0.0",
-  "claims": [],
-  "concerns": [],
-  "counterpositions": [],
-  "evidence": [],
+  "claims": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_02_q1"
+      ],
+      "approval_status": "candidate",
+      "claim_id": "occlm_rights_rc_02_c1",
+      "claim_type": "methodological",
+      "content_hash": "8f3b6ec19a2f60312031c7d252c560f5c79269cf5485b34985c4ec42fece5c97",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "dependency_claim_ids": [],
+      "explicitness": "explicit",
+      "id": "occlm_rights_rc_02_c1",
+      "manuscript_version_id": "ocver_rights_rc_02_v1",
+      "reconstruction_notes": "Quoted directly from maintainer-owned sample text.",
+      "schema_version": "0.1.0",
+      "scope": "sample conformance manuscript",
+      "statement": "All eighteen secondary endpoints are significant at p < 0.05."
+    }
+  ],
+  "concerns": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_02_q1"
+      ],
+      "claim_ids": [
+        "occlm_rights_rc_02_c1"
+      ],
+      "concern_id": "occon_rights_rc_02_k1",
+      "concern_type": "statistical.multiplicity",
+      "confidence": 0.8,
+      "content_hash": "66de8cd2ed96810ad3496f3c129c7afe823299fdd3e3e42f0ba992aa411d0037",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occon_rights_rc_02_k1",
+      "manuscript_version_id": "ocver_rights_rc_02_v1",
+      "origin": {
+        "origin_id": "opencritique-maintainer-sample-curation",
+        "origin_type": "human",
+        "original_confidence": null,
+        "original_severity": null,
+        "run_id": null
+      },
+      "potential_consequence": "Readers may overstate evidential strength of the sample claim.",
+      "required_resolution": "Clarify assumptions and reporting gaps in a revision.",
+      "schema_version": "0.1.0",
+      "severity": "major",
+      "status": "proposed",
+      "summary": "Secondary endpoints lack multiplicity control; false discoveries remain plausible.",
+      "title": "Missing multiplicity control",
+      "uncertainty_sources": [],
+      "verification_grade": "V1"
+    }
+  ],
+  "counterpositions": [
+    {
+      "adequacy_status": "unreviewed",
+      "concern_id": "occon_rights_rc_02_k1",
+      "content_hash": "93aa4a3fb922466695e4a796a67cddee01980fe87f0fd3d518712f6141f0c03a",
+      "counterposition_id": "occtr_rights_rc_02_cp1",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occtr_rights_rc_02_cp1",
+      "residual_disagreement": "Even as illustration, the quoted span still lacks stated safeguards.",
+      "schema_version": "0.1.0",
+      "source": "author",
+      "statement": "The sample note may intend a stylized illustration rather than a complete empirical claim; residual gap remains for conformance.",
+      "supporting_anchor_ids": [
+        "ocanc_rights_rc_02_q1"
+      ],
+      "supporting_evidence_ids": []
+    }
+  ],
+  "evidence": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_02_q1"
+      ],
+      "artifact_reference": {
+        "byte_size": 689,
+        "media_type": "text/markdown",
+        "sha256": "a7929aa0985beda5f45c9b4938e4ab071dad84ae9184975d52a9839255bd5db1",
+        "uri": "corpus/samples/sample-stats-01/manuscript.md"
+      },
+      "concern_id": "occon_rights_rc_02_k1",
+      "content_hash": "5cd294448433d9a813e10fb505286c95c4dc4c908e0d08f80a049df12775f036",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "description": "Quoted sample manuscript span supporting the concern.",
+      "evidence_id": "ocevd_rights_rc_02_e1",
+      "evidence_type": "manuscript_text",
+      "id": "ocevd_rights_rc_02_e1",
+      "independence_group": "maintainer-sample",
+      "limitations": "Sample text only; not natural science evidence.",
+      "method": "direct_quotation",
+      "producer": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "reproducibility_status": "reproducible",
+      "schema_version": "0.1.0",
+      "supports": "concern",
+      "tool_manifest": null
+    }
+  ],
   "known_ambiguities": [
-    "Synthetic rights-path placeholder; not a natural manuscript.",
+    "Maintainer-authored sample conformance material; not a natural manuscript.",
     "Scientific performance claims remain disabled."
   ],
   "manuscript": {
-    "consent_policy_id": "synthetic-maintainer-rights-v1",
-    "content_hash": "8f44d1f28c10624215b552e08c4adade5a1577543b6a5f557b1308a0988debf4",
-    "created_at": "2026-05-01T00:00:00Z",
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "9ed7036935daeb4bcbd760a67267db847393032e7be7b87153fc9943b038cdc0",
+    "created_at": "2026-07-29T00:00:00Z",
     "created_by": {
       "actor_id": "opencritique-maintainer",
       "actor_type": "organization",
@@ -26,23 +171,23 @@
     "manuscript_id": "ocms_rights_rc_02",
     "rights_classification": "public",
     "schema_version": "0.1.0",
-    "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic rights candidate: multiplicity control"
+    "title": "[SAMPLE] Sample: Multiplicity control for secondary endpoints"
   },
   "manuscript_versions": [
     {
-      "content_hash": "8399cdd41f5c8ed5c6e7bf4c5c0a63a911afd8e85fd45e3d54369379737b2317",
-      "created_at": "2026-05-01T00:00:00Z",
+      "content_hash": "8983aa31cec9e5b0c2748ee326cb188d77dca76d9a1592a9b19fb453fd9a0203",
+      "created_at": "2026-07-29T00:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
         "actor_type": "organization",
         "display_name": "OpenCritique Commons maintainers"
       },
-      "domain_profile": "statistics",
+      "domain_profile": "economics_statistics",
       "extracted_artifact": null,
       "id": "ocver_rights_rc_02_v1",
       "ingestion_metadata": {
-        "method": "rights_cleared_placeholder",
-        "notes": "",
+        "method": "maintainer_sample_import",
+        "notes": "sample_id=sample-stats-01",
         "page_indexing": "one-indexed",
         "tool": "scripts/generate_rights_candidates.py",
         "tool_version": "0.5.0a1"
@@ -54,14 +199,16 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 32,
-        "media_type": "text/plain",
-        "sha256": "eb1fdc7bebc351f66aec09ec99276efeb8107de6056608bd89354a00cccde997",
-        "uri": "synthetic://rights/rc-02"
+        "byte_size": 689,
+        "media_type": "text/markdown",
+        "sha256": "a7929aa0985beda5f45c9b4938e4ab071dad84ae9184975d52a9839255bd5db1",
+        "uri": "corpus/samples/sample-stats-01/manuscript.md"
       },
       "source_format": "markdown",
       "version_id": "ocver_rights_rc_02_v1"
     }
   ],
-  "policy_version": "case-policy-v0.1"
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
 }

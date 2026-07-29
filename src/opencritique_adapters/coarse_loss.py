@@ -73,7 +73,7 @@ class CoarseConversionLossReport(StrictModel):
     aggregate_quote_stats: QuoteResolutionStats
     omitted_field_summary: list[str]
     disclosure: str = (
-        "Synthetic maintainer fixtures exercise adapter compatibility only. "
+        "Maintainer-owned sample fixtures exercise adapter compatibility only. "
         "They do not authorize precision, recall, or comparative performance claims."
     )
 
@@ -220,7 +220,10 @@ def build_conversion_loss_report(
                 "upstream_contract_version": COARSE_UPSTREAM_CONTRACT_VERSION,
                 "adapter_status": "supported",
                 "fixture_kind": COARSE_FIXTURE_KIND,
-                "notes": "Synthetic contract fixtures; genuine production exports still pending.",
+                "notes": (
+                    "Sample-adapter contract fixtures from corpus/samples/; "
+                    "genuine production Coarse exports tracked on issue #3."
+                ),
             }
         ],
         cases=case_records,
@@ -237,7 +240,7 @@ def report_to_markdown(report: CoarseConversionLossReport) -> str:
         f"- Generated at: `{report.generated_at.isoformat()}`",
         f"- Upstream contract: `{report.upstream_contract_version}`",
         f"- Upstream repository: {report.upstream_repository}",
-        f"- Upstream commit pin: `{report.upstream_commit_pin}`",
+        f"- Sample adapter contract: `{report.upstream_commit_pin}`",
         f"- Fixture kind: `{report.fixture_kind}`",
         f"- Performance claims authorized: **{report.performance_claims_authorized}**",
         "",

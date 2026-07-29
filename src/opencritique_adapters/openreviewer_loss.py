@@ -56,7 +56,7 @@ def openreviewer_loss_profile() -> AdapterLossProfile:
         ],
         normalized=[
             "markdown weakness bullets → SubmittedConcern",
-            "absent severity → informational placeholder with explicit unavailable note",
+            "absent severity → informational severity with explicit unavailable note",
             "absent confidence → 0.0 with explicit unavailable note",
         ],
         withheld_unavailable=[

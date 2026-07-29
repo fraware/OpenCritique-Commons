@@ -1,0 +1,216 @@
+{
+  "adjudications": [],
+  "anchors": [
+    {
+      "anchor_id": "ocanc_sample_rc_06_q1",
+      "anchor_type": "text_span",
+      "bounding_boxes": [],
+      "content_hash": "bad33f66e279fe8c691d67ef9555efcbd0e9a997290e718715661d2caad4f5ba",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "extraction_confidence": 1.0,
+      "id": "ocanc_sample_rc_06_q1",
+      "manuscript_version_id": "ocver_sample_rc_06_v1",
+      "normalized_text": "la precision del modelo aumenta cuando se excluyen los casos ambiguos.",
+      "object_coordinates": {},
+      "object_label": null,
+      "page_end": 1,
+      "page_start": 1,
+      "rendered_reference": null,
+      "resolution_status": "exact",
+      "schema_version": "0.1.0",
+      "section_path": [
+        "Methods"
+      ],
+      "source_text": "La precision del modelo aumenta cuando se excluyen los casos ambiguos."
+    }
+  ],
+  "case_id": "occase_sample_rc_06",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [
+    {
+      "anchor_ids": [
+        "ocanc_sample_rc_06_q1"
+      ],
+      "approval_status": "candidate",
+      "claim_id": "occlm_sample_rc_06_c1",
+      "claim_type": "methodological",
+      "content_hash": "036924234e504517d5d4632fb2ff643d0410d60a6f7bd18687b069605757671e",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "dependency_claim_ids": [],
+      "explicitness": "explicit",
+      "id": "occlm_sample_rc_06_c1",
+      "manuscript_version_id": "ocver_sample_rc_06_v1",
+      "reconstruction_notes": "Quoted directly from maintainer-owned sample text.",
+      "schema_version": "0.1.0",
+      "scope": "sample conformance manuscript",
+      "statement": "Model precision increases when ambiguous cases are excluded (Spanish methods note)."
+    }
+  ],
+  "concerns": [
+    {
+      "anchor_ids": [
+        "ocanc_sample_rc_06_q1"
+      ],
+      "claim_ids": [
+        "occlm_sample_rc_06_c1"
+      ],
+      "concern_id": "occon_sample_rc_06_k1",
+      "concern_type": "methodological.selection",
+      "confidence": 0.8,
+      "content_hash": "8f5f49ed6cbe498711a0b868ac5fb43bc331b7a52ee154459be67cabc18bd12e",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occon_sample_rc_06_k1",
+      "manuscript_version_id": "ocver_sample_rc_06_v1",
+      "origin": {
+        "origin_id": "opencritique-maintainer-sample-curation",
+        "origin_type": "human",
+        "original_confidence": null,
+        "original_severity": null,
+        "run_id": null
+      },
+      "potential_consequence": "Readers may overstate evidential strength of the sample claim.",
+      "required_resolution": "Clarify assumptions and reporting gaps in a revision.",
+      "schema_version": "0.1.0",
+      "severity": "major",
+      "status": "proposed",
+      "summary": "Excluding ambiguous cases after seeing labels can inflate reported precision.",
+      "title": "Post-hoc exclusion of ambiguous cases",
+      "uncertainty_sources": [],
+      "verification_grade": "V1"
+    }
+  ],
+  "counterpositions": [
+    {
+      "adequacy_status": "unreviewed",
+      "concern_id": "occon_sample_rc_06_k1",
+      "content_hash": "f65806c34f063d1afad0bcbf6e82179df451b639e0c34c8177e47165b5c93d05",
+      "counterposition_id": "occtr_sample_rc_06_cp1",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occtr_sample_rc_06_cp1",
+      "residual_disagreement": "Even as illustration, the quoted span still lacks stated safeguards.",
+      "schema_version": "0.1.0",
+      "source": "author",
+      "statement": "The sample note may intend a stylized illustration rather than a complete empirical claim; residual gap remains for conformance.",
+      "supporting_anchor_ids": [
+        "ocanc_sample_rc_06_q1"
+      ],
+      "supporting_evidence_ids": []
+    }
+  ],
+  "evidence": [
+    {
+      "anchor_ids": [
+        "ocanc_sample_rc_06_q1"
+      ],
+      "artifact_reference": {
+        "byte_size": 920,
+        "media_type": "text/markdown",
+        "sha256": "3f1f462c95e441139094af9e8acb33bcaf0ceb134463284d0aa7561772c7d821",
+        "uri": "corpus/samples/sample-multi-01/manuscript.md"
+      },
+      "concern_id": "occon_sample_rc_06_k1",
+      "content_hash": "d2a421fa8497b7bf07f00f5353ce262a9b44d9aac286a812c086cd3a6fad367f",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "description": "Quoted sample manuscript span supporting the concern.",
+      "evidence_id": "ocevd_sample_rc_06_e1",
+      "evidence_type": "manuscript_text",
+      "id": "ocevd_sample_rc_06_e1",
+      "independence_group": "maintainer-sample",
+      "limitations": "Sample text only; not natural science evidence.",
+      "method": "direct_quotation",
+      "producer": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "reproducibility_status": "reproducible",
+      "schema_version": "0.1.0",
+      "supports": "concern",
+      "tool_manifest": null
+    }
+  ],
+  "known_ambiguities": [
+    "Maintainer-authored sample conformance material; not a natural manuscript.",
+    "Scientific performance claims remain disabled."
+  ],
+  "manuscript": {
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "c89658da68b157d88805b83e0cda83f6f99639d12f7a6cadb80257ab2bf6d07b",
+    "created_at": "2026-07-29T00:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_sample_rc_06_v1",
+    "id": "ocms_sample_rc_06",
+    "manuscript_id": "ocms_sample_rc_06",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SAMPLE] Sample: Multilingual methods notes"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "1a93ac6a9564f0fef67f4c15ce11eceaaaf04fd921af92a1b217fe505ad56703",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "multilingual_ish",
+      "extracted_artifact": null,
+      "id": "ocver_sample_rc_06_v1",
+      "ingestion_metadata": {
+        "method": "maintainer_sample_import",
+        "notes": "sample_id=sample-multi-01",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_rights_candidates.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "es",
+      "manuscript_id": "ocms_sample_rc_06",
+      "page_count": 1,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 920,
+        "media_type": "text/markdown",
+        "sha256": "3f1f462c95e441139094af9e8acb33bcaf0ceb134463284d0aa7561772c7d821",
+        "uri": "corpus/samples/sample-multi-01/manuscript.md"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_sample_rc_06_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

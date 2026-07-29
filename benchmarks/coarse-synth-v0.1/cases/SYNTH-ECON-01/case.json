@@ -9,13 +9,13 @@
   "counterpositions": [],
   "evidence": [],
   "known_ambiguities": [
-    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Sample fixture: reconstructed claims remain provisional.",
     "Not authorized for scientific performance claims."
   ],
   "manuscript": {
-    "consent_policy_id": "synthetic-maintainer-fixture-v1",
-    "content_hash": "cf51d8c7db27f17276b613ca2121b9e9f5083b224ad56ddaf95f4b8973447cc6",
-    "created_at": "2026-01-15T12:00:00Z",
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "a7d5e6cda27bd827b39993ab13333a149edadcb8ef0812f0e6b3264efc861cf3",
+    "created_at": "2026-07-29T12:00:00Z",
     "created_by": {
       "actor_id": "opencritique-maintainer",
       "actor_type": "organization",
@@ -26,12 +26,12 @@
     "manuscript_id": "ocms_synth_econ_01",
     "rights_classification": "public",
     "schema_version": "0.1.0",
-    "title": "[SYNTHETIC] Synthetic: Identification under clustered sampling"
+    "title": "[SAMPLE] Sample: Identification under clustered sampling"
   },
   "manuscript_versions": [
     {
-      "content_hash": "3c516c1ef5dcd474a6533a6977039f4816499f523e866e3ff7b0f81c4dda3726",
-      "created_at": "2026-01-15T12:00:00Z",
+      "content_hash": "5772086c775f9d04cac27d2c8777ca1a556587f4eeb3febd77829ce9da8a8d9f",
+      "created_at": "2026-07-29T12:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
         "actor_type": "organization",
@@ -39,15 +39,15 @@
       },
       "domain_profile": "economics_statistics",
       "extracted_artifact": {
-        "byte_size": 17,
+        "byte_size": 132,
         "media_type": "text/plain",
-        "sha256": "1c39c6026c61e26356b97aa05660d1312b90a0299e65147add8a2f576febb1d3",
-        "uri": "synthetic://opencritique/econ-01-extracted"
+        "sha256": "0db94087a54e71b9fd1b0f1c1e41a953d64d6608edc5806ab61c7a252583ba6e",
+        "uri": "corpus/samples/sample-econ-01/manuscript.md#extracted"
       },
       "id": "ocver_synth_econ_01_v1",
       "ingestion_metadata": {
-        "method": "synthetic_fixture",
-        "notes": "",
+        "method": "sample_adapter_fixture",
+        "notes": "sample=corpus/samples/sample-econ-01/manuscript.md",
         "page_indexing": "one-indexed",
         "tool": "scripts/generate_coarse_fixtures.py",
         "tool_version": "0.5.0a1"
@@ -59,10 +59,10 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 14,
-        "media_type": "text/plain",
-        "sha256": "4678dbecafbdaff8dc10e463c3c905a259638e256270682f2002d7f6113016eb",
-        "uri": "synthetic://opencritique/econ-01-source"
+        "byte_size": 909,
+        "media_type": "text/markdown",
+        "sha256": "12c7b042c695af4a2148a4339b599861dea90ea629b1da6c0380e127fd445a99",
+        "uri": "corpus/samples/sample-econ-01/manuscript.md"
       },
       "source_format": "markdown",
       "version_id": "ocver_synth_econ_01_v1"

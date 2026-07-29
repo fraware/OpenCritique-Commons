@@ -9,6 +9,6 @@
   "occase_synth_multi_02:1.0.0": "Wir verwenden eine zweistufige Regression mit robusten Standardfehlern.",
   "occase_synth_stats_03:1.0.0": "",
   "occase_synth_table_01:1.0.0": "Table 2 reports point estimates for each adjusted risk ratio.",
-  "occase_synth_theory_01:1.0.0": "Therefore the excess risk decays as O(1/sqrt(n)) uniformly.",
+  "occase_synth_theory_01:1.0.0": "Therefore the excess risk decays as $O(1/\\sqrt{n})$ uniformly.",
   "occase_synth_theory_02:1.0.0": "An efficient algorithm follows immediately from the probabilistic method."
 }

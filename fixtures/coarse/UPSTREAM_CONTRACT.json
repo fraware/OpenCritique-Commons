@@ -1,8 +1,9 @@
 {
-  "fixture_kind": "synthetic_rights_cleared_maintainer",
+  "fixture_kind": "maintainer_owned_sample_corpus",
   "genuine_production_exports_available": false,
-  "notes": "Genuine Coarse production exports were unavailable. These synthetic fixtures pin the public Review/DetailedComment contract.",
+  "notes": "Fixtures quote maintainer-owned samples under corpus/samples/. Contract id is opencritique-sample-adapter-contract-v1 (not a pretend upstream Git SHA). Genuine Coarse production exports remain blocked on issue #3.",
   "performance_claims_authorized": false,
-  "upstream_commit_pin": "9f3c2a1b8e7d6c5a4b3e2f1d0c9b8a7e6f5d4c3b",
+  "sample_adapter_contract_id": "opencritique-sample-adapter-contract-v1",
+  "upstream_commit_pin": null,
   "upstream_contract_version": "coarse-review-contract-v1"
 }

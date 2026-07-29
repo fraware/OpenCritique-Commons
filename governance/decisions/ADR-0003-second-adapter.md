@@ -25,10 +25,14 @@ schema to fit either contract.
 
 ## Data rights
 
-- Adapter fixtures in this repository are **synthetic maintainer fixtures** labeled as such.
-- They are not redistributed model outputs from real manuscripts.
-- Genuine OpenReviewer runs on third-party PDFs require separate rights clearance (PR10 path).
+- Adapter fixtures in this repository are **maintainer-owned sample fixtures**
+  quoting text under `corpus/samples/`.
+- They are not redistributed model outputs from real third-party manuscripts.
+- Genuine OpenReviewer runs on third-party PDFs require separate rights clearance
+  (issue #5 / #7 path).
 - Adapter success does **not** authorize reviewer-quality or performance claims.
+- Sample adapter contract id: `opencritique-sample-adapter-contract-v1`
+  (not a pretend upstream Git SHA).
 
 ## Integration posture (alpha)
 

@@ -19,16 +19,16 @@ target subject to verification of:
 
 At the time of this memorandum, **no PeerQA (or other natural) manuscript set has
 completed affirmative rights clearance** for public OpenCritique import.
-Accordingly this repository imports **only synthetic rights-cleared maintainer
-placeholders** labeled as such.
+Accordingly this repository imports **maintainer-owned open sample manuscripts**
+under `corpus/samples/` for tooling conformance only.
 
 ## Artifact classes (machine-readable)
 
 | Class | Status in this release | Notes |
 |---|---|---|
-| Synthetic case metadata | Authorized (maintainer) | Apache-2.0 placeholders |
-| Synthetic review fixtures | Authorized (maintainer) | No confidential text |
-| Natural manuscript PDFs | **Not imported** | Pending written clearance |
+| Maintainer-owned sample manuscripts | Authorized (maintainer) | Apache-2.0 under `corpus/samples/` |
+| Sample review fixtures | Authorized (maintainer) | Quotes only sample manuscript text |
+| Natural manuscript PDFs | **Not imported** | Pending written clearance (issue #7) |
 | Natural figure binaries | **Not imported** | Pending written clearance |
 | Derived OpenCritique records from natural text | **Not imported** | Require case-level grants |
 | Performance / comparative claims | **Disabled** | `performance_claims_authorized=false` |
@@ -54,11 +54,12 @@ Import tooling (`opencritique_acquisition` ledger validators and registry
 Until written clarification is archived, natural material stays out of the public
 corpus.
 
-## Six candidate cases
+## Six sample cases
 
-See `cases/rights-candidates/` — six synthetic/rights-cleared placeholders with
-case-level rights records. They exercise the authorization path without enabling
-scientific performance claims.
+See `cases/rights-candidates/` and `corpus/samples/` — six maintainer-authored
+open manuscripts with case-level rights records, claims, concerns, and evidence.
+They exercise the authorization path without enabling scientific performance
+claims. Natural corpus import remains blocked on issue #7.
 
 ## Claim boundary
 

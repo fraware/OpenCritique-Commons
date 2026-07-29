@@ -1,25 +1,31 @@
 {
-  "generated_at": "2026-05-01T00:00:00Z",
+  "generated_at": "2026-07-29T00:00:00Z",
   "ledger_version": "0.1",
   "performance_claims_authorized": false,
   "sources": [
     {
+      "cancellation_reason": null,
+      "cancelled_at": null,
       "code_url": null,
       "dataset_url": null,
       "declared_license": "Apache-2.0",
       "evaluation_use_authorized": true,
+      "grant_authority": "OpenCritique Commons maintainers",
+      "grant_scope": "Apache-2.0 maintainer-authored samples for tooling conformance only; no performance claims.",
       "imported_case_count": 6,
       "license_evidence_url": "https://github.com/fraware/OpenCritique-Commons/blob/main/LICENSE",
       "notes": [
-        "Six synthetic placeholders exercising the rights path.",
-        "Natural PeerQA/manuscript import remains blocked pending written clearance.",
+        "Six maintainer-authored open samples under corpus/samples/.",
+        "Natural PeerQA/manuscript import remains blocked pending written clearance (#7).",
         "performance_claims_authorized stays false on the ledger."
       ],
-      "paper_url": "https://github.com/fraware/OpenCritique-Commons",
+      "paper_url": "https://github.com/fraware/OpenCritique-Commons/tree/main/corpus/samples",
       "redistribution_authorized": true,
-      "source_id": "synthetic-maintainer-rights-candidates",
+      "source_id": "maintainer-owned-sample-corpus",
       "status": "imported",
-      "title": "Synthetic rights-cleared candidate cases (PR10 placeholders)"
+      "title": "Maintainer-owned open sample manuscripts (sample conformance)",
+      "withdrawal_reason": null,
+      "withdrawn_at": null
     }
   ],
   "total_imported_cases": 6

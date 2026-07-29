@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Generate synthetic OpenReviewer-style fixtures (≥5)."""
+"""Generate OpenReviewer-shaped adapter fixtures from maintainer-owned samples."""
 
 from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from opencritique_adapters.openreviewer import (
     OPENREVIEWER_CONTRACT_VERSION,
     OPENREVIEWER_FIXTURE_KIND,
-    provenance_hash,
+    OPENREVIEWER_SAMPLE_ADAPTER_CONTRACT_ID,
 )
 from opencritique_evaluation.models import (
     BenchmarkCaseRef,
@@ -47,7 +47,9 @@ ACTOR = ActorReference(
 SPECS = [
     {
         "slug": "orv-01",
-        "title": "Synthetic OpenReviewer: leakage concern",
+        "sample": "corpus/samples/sample-ml-01/manuscript.md",
+        "profile": "empirical_ml",
+        "title": "Sample OpenReviewer: leakage concern",
         "weaknesses": [
             "Feature scaling appears to use the full dataset before splitting folds.",
             "Baseline comparisons lack matched compute budgets.",
@@ -60,14 +62,18 @@ SPECS = [
                 "section": "weaknesses",
                 "severity": None,
                 "confidence": None,
-                "quote": None,
-                "page": None,
+                "quote": (
+                    "Features were standardized using statistics computed on the full dataset."
+                ),
+                "page": 1,
             }
         ],
     },
     {
         "slug": "orv-02",
-        "title": "Synthetic OpenReviewer: theory gap",
+        "sample": "corpus/samples/sample-theory-01/manuscript.tex",
+        "profile": "theory_heavy",
+        "title": "Sample OpenReviewer: theory gap",
         "weaknesses": [
             "The main theorem statement omits the required regularity conditions.",
         ],
@@ -75,24 +81,30 @@ SPECS = [
     },
     {
         "slug": "orv-03",
-        "title": "Synthetic OpenReviewer: with optional severity",
+        "sample": "corpus/samples/sample-ml-01/manuscript.md",
+        "profile": "empirical_ml",
+        "title": "Sample OpenReviewer: with optional severity",
         "weaknesses": [],
         "findings": [
             {
                 "finding_id": "f1",
-                "title": "Missing ablation on encoder depth",
-                "body": "Claims about architecture benefits lack depth ablations on the encoder stack.",
+                "title": "Untuned baseline comparison",
+                "body": (
+                    "Claims about proposed gains use an untuned library-default baseline."
+                ),
                 "section": "weaknesses",
                 "severity": "minor",
                 "confidence": 0.4,
-                "quote": "Deeper encoders consistently improve downstream accuracy.",
-                "page": 4,
+                "quote": "The baseline uses default hyperparameters from the reference library.",
+                "page": 1,
             }
         ],
     },
     {
         "slug": "orv-04",
-        "title": "Synthetic OpenReviewer: multilingual methods note",
+        "sample": "corpus/samples/sample-multi-01/manuscript.md",
+        "profile": "multilingual_ish",
+        "title": "Sample OpenReviewer: multilingual methods note",
         "weaknesses": [
             "Evaluation languages are listed without per-language sample sizes.",
         ],
@@ -100,22 +112,26 @@ SPECS = [
     },
     {
         "slug": "orv-05",
-        "title": "Synthetic OpenReviewer: figure interpretation",
+        "sample": "corpus/samples/sample-figtable-01/manuscript.md",
+        "profile": "figure_table_heavy",
+        "title": "Sample OpenReviewer: figure interpretation",
         "weaknesses": [
-            "Figure 2 confidence bands are described qualitatively without numeric widths.",
+            "Figure trajectories are described qualitatively without absolute effect sizes.",
         ],
         "findings": [],
     },
 ]
 
 
-def _artifact(label: str) -> ArtifactReference:
-    digest = hashlib.sha256(label.encode()).hexdigest()
+def _artifact_from_sample(relpath: str) -> ArtifactReference:
+    path = ROOT / relpath
+    data = path.read_bytes()
+    media = "text/markdown" if path.suffix == ".md" else "application/x-tex"
     return ArtifactReference(
-        uri=f"synthetic://opencritique/{label}",
-        sha256=digest,
-        media_type="text/plain",
-        byte_size=len(label),
+        uri=relpath.replace("\\", "/"),
+        sha256=hashlib.sha256(data).hexdigest(),
+        media_type=media,
+        byte_size=len(data),
     )
 
 
@@ -126,11 +142,16 @@ def _hashed(model_cls, payload: dict):
     return obj.model_copy(update={"content_hash": content_hash(obj)})
 
 
-def build_case(slug: str, title: str) -> tuple[str, dict]:
+def build_case(spec: dict) -> tuple[str, dict]:
+    slug = spec["slug"]
     case_id = f"occase_orv_{slug.replace('-', '_')}"
     version_id = f"ocver_orv_{slug.replace('-', '_')}_v1"
     manuscript_id = f"ocms_orv_{slug.replace('-', '_')}"
-    now = datetime(2026, 3, 1, tzinfo=timezone.utc)
+    now = datetime(2026, 7, 29, tzinfo=UTC)
+    sample_path = ROOT / spec["sample"]
+    source_format = (
+        SourceFormat.MARKDOWN if sample_path.suffix == ".md" else SourceFormat.TEX
+    )
     manuscript = _hashed(
         Manuscript,
         {
@@ -138,9 +159,9 @@ def build_case(slug: str, title: str) -> tuple[str, dict]:
             "manuscript_id": manuscript_id,
             "created_at": now,
             "created_by": ACTOR,
-            "title": f"[SYNTHETIC] {title}",
+            "title": f"[SAMPLE] {spec['title']}",
             "rights_classification": RightsClassification.PUBLIC,
-            "consent_policy_id": "synthetic-maintainer-fixture-v1",
+            "consent_policy_id": "maintainer-sample-corpus-v1",
             "current_version_id": version_id,
         },
     )
@@ -152,15 +173,16 @@ def build_case(slug: str, title: str) -> tuple[str, dict]:
             "created_at": now,
             "created_by": ACTOR,
             "manuscript_id": manuscript_id,
-            "source_format": SourceFormat.MARKDOWN,
-            "source_artifact": _artifact(f"{slug}-source"),
+            "source_format": source_format,
+            "source_artifact": _artifact_from_sample(spec["sample"]),
             "language": "en",
-            "domain_profile": "empirical_ml",
+            "domain_profile": spec["profile"],
             "page_count": 3,
             "ingestion_metadata": IngestionMetadata(
-                method="synthetic_fixture",
+                method="sample_adapter_fixture",
                 tool="scripts/generate_openreviewer_fixtures.py",
                 tool_version="0.5.0a1",
+                notes=f"sample={spec['sample']}",
             ),
         },
     )
@@ -180,7 +202,7 @@ def build_case(slug: str, title: str) -> tuple[str, dict]:
         "resolutions": [],
         "run_manifests": [],
         "known_ambiguities": [
-            "Synthetic OpenReviewer fixture; not a real model output.",
+            "Sample OpenReviewer-shaped fixture; not an authentic upstream model run.",
             "Performance claims are not authorized.",
         ],
     }
@@ -188,28 +210,32 @@ def build_case(slug: str, title: str) -> tuple[str, dict]:
 
 
 def build_review(spec: dict) -> dict:
-    weaknesses = "\n".join(f"- {item}" for item in spec["weaknesses"]) or "- (see structured findings)"
-    markdown = (
-        f"# Review\n\n## Summary\n\n[SYNTHETIC] {spec['title']}\n\n"
-        f"## Strengths\n\n- Synthetic strength placeholder.\n\n"
-        f"## Weaknesses\n\n{weaknesses}\n\n"
-        f"## Questions\n\n- Synthetic clarifying question?\n"
+    weaknesses = (
+        "\n".join(f"- {item}" for item in spec["weaknesses"])
+        or "- (see structured findings)"
     )
-    payload = {
-        "title": f"[SYNTHETIC][RIGHTS-CLEARED] {spec['title']}",
-        "venue_template": "ICLR2025-synthetic",
+    markdown = (
+        f"# Review\n\n## Summary\n\n[SAMPLE] {spec['title']}\n\n"
+        f"## Strengths\n\n- Clear problem framing in the sample manuscript.\n\n"
+        f"## Weaknesses\n\n{weaknesses}\n\n"
+        f"## Questions\n\n- Can the sample methods note be strengthened?\n"
+    )
+    return {
+        "title": f"[SAMPLE] {spec['title']}",
+        "venue_template": "ICLR2025-sample",
         "markdown": markdown,
         "recommendation_score": 5.0,
         "findings": spec["findings"],
-        "model_identifiers": ["synthetic-openreviewer-fixture/none"],
+        "model_identifiers": ["sample-openreviewer-fixture/none"],
         "opencritique_fixture": {
             "kind": OPENREVIEWER_FIXTURE_KIND,
             "performance_claims_authorized": False,
             "confidential_manuscript_text": False,
             "contract_version": OPENREVIEWER_CONTRACT_VERSION,
+            "sample_adapter_contract_id": OPENREVIEWER_SAMPLE_ADAPTER_CONTRACT_ID,
+            "sample_path": spec["sample"],
         },
     }
-    return payload
 
 
 def main() -> None:
@@ -219,37 +245,17 @@ def main() -> None:
     map_cases = []
     bench_cases = []
     for spec in SPECS:
-        case_id, bundle = build_case(spec["slug"], spec["title"])
+        case_id, bundle = build_case(spec)
         case_dir = CASES / f"SYNTH-{spec['slug'].upper()}"
         case_dir.mkdir(parents=True, exist_ok=True)
         case_path = case_dir / "case.json"
         case_path.write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         review = build_review(spec)
-        raw = json.dumps(review, indent=2, sort_keys=True).encode("utf-8")
-        review["original_sha256"] = provenance_hash(raw)
-        # Re-serialize with hash included and refresh hash to match final bytes.
-        provisional = json.dumps(review, indent=2, sort_keys=True).encode("utf-8")
-        review["original_sha256"] = provenance_hash(provisional)
-        final = json.dumps(review, indent=2, sort_keys=True) + "\n"
         review_name = f"{spec['slug']}.json"
-        # Fix chicken-egg: set hash of final content without the hash field, store alongside.
-        body = {k: v for k, v in review.items() if k != "original_sha256"}
-        body_bytes = (json.dumps(body, indent=2, sort_keys=True) + "\n").encode("utf-8")
-        body["original_sha256"] = provenance_hash(body_bytes)
-        # Store hash of the file including the hash field by writing body then computing —
-        # converter hashes full file. Embed hash of full file after write via two-step.
         review_path = REVIEWS / review_name
-        review_path.write_text(json.dumps(body, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        digest = provenance_hash(review_path.read_bytes())
-        body["original_sha256"] = digest
-        review_path.write_text(json.dumps(body, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        # After rewriting, digest changes — store hash of *content excluding hash* in converter
-        # OR update converter to accept mismatch when regenerating. Better: don't embed
-        # self-referential hash; store sidecar. Simpler: converter sets hash if missing and
-        # only verifies when present matches. For fixtures, omit original_sha256 from file
-        # and let converter fill it; tests check converter output provenance separately.
-        body.pop("original_sha256", None)
-        review_path.write_text(json.dumps(body, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        review_path.write_text(
+            json.dumps(review, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
         map_cases.append(
             {
                 "case_id": case_id,
@@ -273,30 +279,37 @@ def main() -> None:
     manifest = BenchmarkManifest(
         benchmark_id="ocbench_openreviewer_synth",
         version="0.1.0",
-        title="OpenReviewer synthetic adapter conformance benchmark",
+        title="OpenReviewer sample-adapter conformance benchmark",
         description=(
-            "Synthetic rights-cleared OpenReviewer-style fixtures. "
+            "Maintainer-owned sample OpenReviewer-shaped fixtures. "
             "Not authorized for scientific performance claims."
         ),
         evidence_class=BenchmarkEvidenceClass.CONFORMANCE,
         reference_completeness=ReferenceCompleteness.UNKNOWN,
-        domain_profiles=["empirical_ml", "theory_heavy"],
+        domain_profiles=sorted({s["profile"] for s in SPECS}),
         cases=bench_cases,
         license="Apache-2.0",
         case_set_hash=hashlib.sha256(case_set_material).hexdigest(),
-        created_at=datetime(2026, 3, 1, tzinfo=timezone.utc),
-        limitations=["Synthetic fixtures only", "No performance claims"],
+        created_at=datetime(2026, 7, 29, tzinfo=UTC),
+        limitations=[
+            "Sample fixtures only",
+            "No performance claims",
+            "Not authentic OpenReviewer production outputs (see issue #5)",
+        ],
     )
     (BENCH / "manifest.json").write_text(
         json.dumps(manifest.model_dump(mode="json"), indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     mapping = {
-        "system_version": "openreviewer-synth-0.1",
-        "openreviewer_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "system_version": "openreviewer-sample-0.1",
+        "openreviewer_commit": OPENREVIEWER_SAMPLE_ADAPTER_CONTRACT_ID,
         "contract_version": OPENREVIEWER_CONTRACT_VERSION,
-        "model_identifiers": ["synthetic-openreviewer-fixture/none"],
-        "configuration": {"fixture_kind": OPENREVIEWER_FIXTURE_KIND},
+        "model_identifiers": ["sample-openreviewer-fixture/none"],
+        "configuration": {
+            "fixture_kind": OPENREVIEWER_FIXTURE_KIND,
+            "sample_adapter_contract_id": OPENREVIEWER_SAMPLE_ADAPTER_CONTRACT_ID,
+        },
         "cases": map_cases,
     }
     (MAPS / "synth-map.json").write_text(
@@ -306,13 +319,18 @@ def main() -> None:
         json.dumps(
             {
                 "contract_version": OPENREVIEWER_CONTRACT_VERSION,
+                "sample_adapter_contract_id": OPENREVIEWER_SAMPLE_ADAPTER_CONTRACT_ID,
                 "repository": "https://github.com/maxidl/openreviewer",
                 "fixture_kind": OPENREVIEWER_FIXTURE_KIND,
                 "performance_claims_authorized": False,
                 "authentic_outputs_available": False,
+                "upstream_commit_pin": None,
                 "notes": (
-                    "Integration is stubbed at the adapter interface with synthetic fixtures. "
-                    "Authentic redistributable OpenReviewer outputs remain pending rights clearance."
+                    "Fixtures are hand-authored OpenReviewer-shaped reviews quoting "
+                    "maintainer-owned samples. Contract id is "
+                    "opencritique-sample-adapter-contract-v1 (not a pretend Git SHA). "
+                    "Authentic redistributable OpenReviewer outputs remain blocked "
+                    "on issue #5."
                 ),
             },
             indent=2,
@@ -321,7 +339,7 @@ def main() -> None:
         + "\n",
         encoding="utf-8",
     )
-    print(f"Wrote {len(SPECS)} OpenReviewer fixtures")
+    print(f"Wrote {len(SPECS)} OpenReviewer sample fixtures")
 
 
 if __name__ == "__main__":

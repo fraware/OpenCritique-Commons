@@ -1,18 +1,20 @@
 {
-  "attribution": "OpenCritique Commons maintainers (synthetic fixture)",
+  "attribution": "OpenCritique Commons maintainers (owned sample corpus)",
   "case_id": "occase_rights_rc_03",
   "case_version": "1.0.0",
   "declared_license": "Apache-2.0",
   "evaluation_use_authorized": true,
   "natural_manuscript_imported": false,
   "notes": [
-    "Placeholder authorized only as synthetic maintainer material.",
-    "Not derived from PeerQA or any uncleared external PDF."
+    "Maintainer-authored open sample; Apache-2.0.",
+    "Not derived from PeerQA or any uncleared external PDF.",
+    "Sample conformance only; not natural science evidence."
   ],
   "performance_claims_authorized": false,
   "redistribution_authorized": true,
   "rights_classification": "public",
-  "source_artifact_sha256": "e7f3f5d34929f20e7b70dd8a24a789e9a2ed99f74e20aa8f65679eb722dcbf24",
-  "synthetic_placeholder": true,
+  "sample_id": "sample-ml-01",
+  "source_artifact_sha256": "7e940f38c12356d2470512fd6b80effbf8542a9e8457e3d50c21b0ce85012aea",
+  "source_artifact_uri": "corpus/samples/sample-ml-01/manuscript.md",
   "withdrawal_contact": "repository maintainers via GitHub Security Advisories / CITATION.cff"
 }

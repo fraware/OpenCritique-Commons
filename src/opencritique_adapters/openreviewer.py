@@ -9,7 +9,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, TypeAdapter, model_validator
 
 from opencritique_evaluation.engine import load_case, load_manifest
 from opencritique_evaluation.models import (
@@ -22,9 +22,15 @@ from opencritique_evaluation.models import (
 from opencritique_schema.models import Severity
 
 OPENREVIEWER_CONTRACT_VERSION = "openreviewer-markdown-template-v1"
-OPENREVIEWER_REPOSITORY = "https://github.com/maxidl/openreviewer"
-OPENREVIEWER_FIXTURE_KIND = "synthetic_rights_cleared_maintainer"
+OPENREVIEWER_REPOSITORY = TypeAdapter(HttpUrl).validate_python(
+    "https://github.com/maxidl/openreviewer"
+)
+OPENREVIEWER_FIXTURE_KIND = "maintainer_owned_sample_corpus"
+OPENREVIEWER_SAMPLE_ADAPTER_CONTRACT_ID = "opencritique-sample-adapter-contract-v1"
 OPENREVIEWER_PERFORMANCE_CLAIMS_AUTHORIZED = False
+
+# Re-export alias used by maps / SystemManifest.code_commit (not a Git SHA).
+OPENREVIEWER_COMMIT_PIN = OPENREVIEWER_SAMPLE_ADAPTER_CONTRACT_ID
 
 _WEAKNESS_RE = re.compile(
     r"(?im)^(?:#{1,3}\s*)?(?:weak(?:ness(?:es)?)?|weak points?)\s*$"

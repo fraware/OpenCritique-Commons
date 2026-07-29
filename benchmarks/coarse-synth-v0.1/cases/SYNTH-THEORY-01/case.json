@@ -9,13 +9,13 @@
   "counterpositions": [],
   "evidence": [],
   "known_ambiguities": [
-    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Sample fixture: reconstructed claims remain provisional.",
     "Not authorized for scientific performance claims."
   ],
   "manuscript": {
-    "consent_policy_id": "synthetic-maintainer-fixture-v1",
-    "content_hash": "9796d3cfaa98e0fb0e4daf286a1ef350efd3795187c5a6dcd01ea0d31be2092c",
-    "created_at": "2026-01-15T12:00:00Z",
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "eabb9aec37c280ec2a277606b6ce80444f79c29c13f8204d96798f85e7541080",
+    "created_at": "2026-07-29T12:00:00Z",
     "created_by": {
       "actor_id": "opencritique-maintainer",
       "actor_type": "organization",
@@ -26,12 +26,12 @@
     "manuscript_id": "ocms_synth_theory_01",
     "rights_classification": "public",
     "schema_version": "0.1.0",
-    "title": "[SYNTHETIC] Synthetic: Bound depends on unstated Lipschitz constant"
+    "title": "[SAMPLE] Sample: Bound depends on unstated Lipschitz constant"
   },
   "manuscript_versions": [
     {
-      "content_hash": "4ef20f43f56c82edcbcf33b5c5361f34376089aad45fe3719252f5189fcd85bd",
-      "created_at": "2026-01-15T12:00:00Z",
+      "content_hash": "2d203de6f2998c79d43f424af5ffcf76292c2fc68f9c62bffa3bac8bc76e3a13",
+      "created_at": "2026-07-29T12:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
         "actor_type": "organization",
@@ -39,15 +39,15 @@
       },
       "domain_profile": "theory_heavy",
       "extracted_artifact": {
-        "byte_size": 19,
+        "byte_size": 62,
         "media_type": "text/plain",
-        "sha256": "f4ff62a2323d0ce8ab8b6eeb31b496f637de77d888ac2a73898e6e2f989e5366",
-        "uri": "synthetic://opencritique/theory-01-extracted"
+        "sha256": "5d0ee8b2cac222d5f4d2f561bffa55b19aca782969dfde3c6578fc80dd1b12f8",
+        "uri": "corpus/samples/sample-theory-01/manuscript.tex#extracted"
       },
       "id": "ocver_synth_theory_01_v1",
       "ingestion_metadata": {
-        "method": "synthetic_fixture",
-        "notes": "",
+        "method": "sample_adapter_fixture",
+        "notes": "sample=corpus/samples/sample-theory-01/manuscript.tex",
         "page_indexing": "one-indexed",
         "tool": "scripts/generate_coarse_fixtures.py",
         "tool_version": "0.5.0a1"
@@ -59,12 +59,12 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 16,
-        "media_type": "text/plain",
-        "sha256": "35f63b7ab8e332fce2ed8a751aaac862a50e28c28c7ef62d3dfcdda8f0a36b23",
-        "uri": "synthetic://opencritique/theory-01-source"
+        "byte_size": 683,
+        "media_type": "application/x-tex",
+        "sha256": "312d20c236067adb489683c18d656d1679191ed2a250eb037cd8579f6f2ba1a2",
+        "uri": "corpus/samples/sample-theory-01/manuscript.tex"
       },
-      "source_format": "markdown",
+      "source_format": "tex",
       "version_id": "ocver_synth_theory_01_v1"
     }
   ],

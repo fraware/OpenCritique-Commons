@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, TypeAdapter, model_validator
 
 from opencritique_evaluation.engine import load_case, load_manifest
 from opencritique_evaluation.models import (
@@ -17,6 +17,8 @@ from opencritique_evaluation.models import (
     SystemManifest,
 )
 from opencritique_schema.coarse_adapter import CONFIDENCE_MAP, SEVERITY_MAP
+
+_HTTP_URL = TypeAdapter(HttpUrl)
 
 
 class CoarseCompatibleModel(BaseModel):
@@ -56,7 +58,7 @@ class CoarseReview(CoarseCompatibleModel):
     language: dict[str, Any] | None = None
 
     @model_validator(mode="after")
-    def unique_comment_numbers(self) -> "CoarseReview":
+    def unique_comment_numbers(self) -> CoarseReview:
         numbers = [item.number for item in self.detailed_comments]
         if len(numbers) != len(set(numbers)):
             raise ValueError("Coarse detailed comment numbers must be unique")
@@ -72,7 +74,7 @@ class CoarseCaseMap(CoarseCompatibleModel):
     abstained: bool = False
 
     @model_validator(mode="after")
-    def state_consistency(self) -> "CoarseCaseMap":
+    def state_consistency(self) -> CoarseCaseMap:
         if self.failure and self.abstained:
             raise ValueError("case cannot be both failed and abstained")
         return self
@@ -89,7 +91,7 @@ class CoarseBenchmarkMap(CoarseCompatibleModel):
     declared_latency_seconds: float | None = None
 
     @model_validator(mode="after")
-    def unique_cases(self) -> "CoarseBenchmarkMap":
+    def unique_cases(self) -> CoarseBenchmarkMap:
         keys = [(item.case_id, item.case_version) for item in self.cases]
         if len(keys) != len(set(keys)):
             raise ValueError("Coarse benchmark map cases must be unique")
@@ -112,7 +114,7 @@ def _config_hash(payload: CoarseBenchmarkMap) -> str:
 def _local_id(case_id: str, comment: CoarseDetailedComment) -> str:
     material = (
         f"{case_id}\x1f{comment.number}\x1f{comment.title}\x1f{comment.quote}"
-    ).encode("utf-8")
+    ).encode()
     return f"coarse_{hashlib.sha256(material).hexdigest()[:20]}"
 
 
@@ -199,7 +201,7 @@ def convert_coarse_benchmark(
             "Submission converted from Coarse's public Review/DetailedComment contract. "
             "OpenCritique does not infer claim validity from this conversion."
         ),
-        repository_url="https://github.com/Davidvandijcke/coarse",
+        repository_url=_HTTP_URL.validate_python("https://github.com/Davidvandijcke/coarse"),
         license="MIT",
         code_commit=mapping.coarse_commit,
         model_identifiers=mapping.model_identifiers,
@@ -224,5 +226,5 @@ def convert_coarse_benchmark(
         benchmark_id=benchmark.benchmark_id,
         benchmark_version=benchmark.version,
         cases=cases,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )

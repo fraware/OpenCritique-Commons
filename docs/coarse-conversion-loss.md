@@ -1,21 +1,21 @@
 # Coarse conversion-loss report
 
-- Generated at: `2026-07-28T21:55:56.502266+00:00`
+- Generated at: `2026-07-29T10:15:24.600696+00:00`
 - Upstream contract: `coarse-review-contract-v1`
 - Upstream repository: https://github.com/Davidvandijcke/coarse
-- Upstream commit pin: `9f3c2a1b8e7d6c5a4b3e2f1d0c9b8a7e6f5d4c3b`
-- Fixture kind: `synthetic_rights_cleared_maintainer`
+- Sample adapter contract: `opencritique-sample-adapter-contract-v1`
+- Fixture kind: `maintainer_owned_sample_corpus`
 - Performance claims authorized: **False**
 
 ## Disclosure
 
-Synthetic maintainer fixtures exercise adapter compatibility only. They do not authorize precision, recall, or comparative performance claims.
+Maintainer-owned sample fixtures exercise adapter compatibility only. They do not authorize precision, recall, or comparative performance claims.
 
 ## Compatibility matrix
 
 | Contract | Status | Notes |
 |---|---|---|
-| `coarse-review-contract-v1` | supported | Synthetic contract fixtures; genuine production exports still pending. |
+| `coarse-review-contract-v1` | supported | Sample-adapter contract fixtures from corpus/samples/; genuine production Coarse exports tracked on issue #3. |
 
 ## Aggregate quotation resolution
 

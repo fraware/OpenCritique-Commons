@@ -1,21 +1,166 @@
 {
   "adjudications": [],
-  "anchors": [],
+  "anchors": [
+    {
+      "anchor_id": "ocanc_rights_rc_05_q1",
+      "anchor_type": "text_span",
+      "bounding_boxes": [],
+      "content_hash": "09decb009be85c08f2df2c3c33cd665d03cfad5599dd77a69234be75d11cd030",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "extraction_confidence": 1.0,
+      "id": "ocanc_rights_rc_05_q1",
+      "manuscript_version_id": "ocver_rights_rc_05_v1",
+      "normalized_text": "table 2 reports point estimates for each adjusted risk ratio.",
+      "object_coordinates": {},
+      "object_label": null,
+      "page_end": 1,
+      "page_start": 1,
+      "rendered_reference": null,
+      "resolution_status": "exact",
+      "schema_version": "0.1.0",
+      "section_path": [],
+      "source_text": "Table 2 reports point estimates for each adjusted risk ratio."
+    }
+  ],
   "case_id": "occase_rights_rc_05",
   "case_type": "microcase",
   "case_version": "1.0.0",
-  "claims": [],
-  "concerns": [],
-  "counterpositions": [],
-  "evidence": [],
+  "claims": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_05_q1"
+      ],
+      "approval_status": "candidate",
+      "claim_id": "occlm_rights_rc_05_c1",
+      "claim_type": "methodological",
+      "content_hash": "7b37344b07112447a5a66c3e1d85a0ec4524073fbf650e672a8808145135f9d7",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "dependency_claim_ids": [],
+      "explicitness": "explicit",
+      "id": "occlm_rights_rc_05_c1",
+      "manuscript_version_id": "ocver_rights_rc_05_v1",
+      "reconstruction_notes": "Quoted directly from maintainer-owned sample text.",
+      "schema_version": "0.1.0",
+      "scope": "sample conformance manuscript",
+      "statement": "Table 2 reports adjusted risk-ratio point estimates for each arm."
+    }
+  ],
+  "concerns": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_05_q1"
+      ],
+      "claim_ids": [
+        "occlm_rights_rc_05_c1"
+      ],
+      "concern_id": "occon_rights_rc_05_k1",
+      "concern_type": "reporting.uncertainty",
+      "confidence": 0.8,
+      "content_hash": "3fb76204352970b6aacc2b1865e45ceebcf528485ad50fc7a4af63ef32d611cf",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occon_rights_rc_05_k1",
+      "manuscript_version_id": "ocver_rights_rc_05_v1",
+      "origin": {
+        "origin_id": "opencritique-maintainer-sample-curation",
+        "origin_type": "human",
+        "original_confidence": null,
+        "original_severity": null,
+        "run_id": null
+      },
+      "potential_consequence": "Readers may overstate evidential strength of the sample claim.",
+      "required_resolution": "Clarify assumptions and reporting gaps in a revision.",
+      "schema_version": "0.1.0",
+      "severity": "major",
+      "status": "proposed",
+      "summary": "Point estimates without intervals impede severity assessment of uncertainty.",
+      "title": "Table omits confidence intervals",
+      "uncertainty_sources": [],
+      "verification_grade": "V1"
+    }
+  ],
+  "counterpositions": [
+    {
+      "adequacy_status": "unreviewed",
+      "concern_id": "occon_rights_rc_05_k1",
+      "content_hash": "743bf9a8e2417bd632f5213903d50bad85d999ec487249024642d840f6bcdb23",
+      "counterposition_id": "occtr_rights_rc_05_cp1",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occtr_rights_rc_05_cp1",
+      "residual_disagreement": "Even as illustration, the quoted span still lacks stated safeguards.",
+      "schema_version": "0.1.0",
+      "source": "author",
+      "statement": "The sample note may intend a stylized illustration rather than a complete empirical claim; residual gap remains for conformance.",
+      "supporting_anchor_ids": [
+        "ocanc_rights_rc_05_q1"
+      ],
+      "supporting_evidence_ids": []
+    }
+  ],
+  "evidence": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_05_q1"
+      ],
+      "artifact_reference": {
+        "byte_size": 1006,
+        "media_type": "text/markdown",
+        "sha256": "7d39565bd0979cb7511b80eb41ccd46b537c146db6c147a4df0ff15dc19c60ec",
+        "uri": "corpus/samples/sample-figtable-01/manuscript.md"
+      },
+      "concern_id": "occon_rights_rc_05_k1",
+      "content_hash": "163c143fd4e72f6d81e94bef401c319d0918dafa8fa4a15ee71c0d965e881736",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "description": "Quoted sample manuscript span supporting the concern.",
+      "evidence_id": "ocevd_rights_rc_05_e1",
+      "evidence_type": "manuscript_text",
+      "id": "ocevd_rights_rc_05_e1",
+      "independence_group": "maintainer-sample",
+      "limitations": "Sample text only; not natural science evidence.",
+      "method": "direct_quotation",
+      "producer": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "reproducibility_status": "reproducible",
+      "schema_version": "0.1.0",
+      "supports": "concern",
+      "tool_manifest": null
+    }
+  ],
   "known_ambiguities": [
-    "Synthetic rights-path placeholder; not a natural manuscript.",
+    "Maintainer-authored sample conformance material; not a natural manuscript.",
     "Scientific performance claims remain disabled."
   ],
   "manuscript": {
-    "consent_policy_id": "synthetic-maintainer-rights-v1",
-    "content_hash": "80895b9efcf9b078f41390175796c0efb9ff957e2ba7ad403ef9d8214dec8300",
-    "created_at": "2026-05-01T00:00:00Z",
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "e5cd841775fd6aea253956e51764d7fb35ce7067203d16539d83b74fa25f1b9a",
+    "created_at": "2026-07-29T00:00:00Z",
     "created_by": {
       "actor_id": "opencritique-maintainer",
       "actor_type": "organization",
@@ -26,12 +171,12 @@
     "manuscript_id": "ocms_rights_rc_05",
     "rights_classification": "public",
     "schema_version": "0.1.0",
-    "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic rights candidate: table intervals"
+    "title": "[SAMPLE] Sample: Figure and table reporting gaps"
   },
   "manuscript_versions": [
     {
-      "content_hash": "fca09fe353b4b71abffc45f47f86d7b1a53cb5b112082d4e4ed3826abfff5df8",
-      "created_at": "2026-05-01T00:00:00Z",
+      "content_hash": "e6760971181cc031beebc86b08ff675b7fe21aa657825f5bdcbe77ba507285f9",
+      "created_at": "2026-07-29T00:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
         "actor_type": "organization",
@@ -41,8 +186,8 @@
       "extracted_artifact": null,
       "id": "ocver_rights_rc_05_v1",
       "ingestion_metadata": {
-        "method": "rights_cleared_placeholder",
-        "notes": "",
+        "method": "maintainer_sample_import",
+        "notes": "sample_id=sample-figtable-01",
         "page_indexing": "one-indexed",
         "tool": "scripts/generate_rights_candidates.py",
         "tool_version": "0.5.0a1"
@@ -54,14 +199,16 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 32,
-        "media_type": "text/plain",
-        "sha256": "18c2c92b5fbfb25fbcd1dd497ea6b2ca47eae2827f98eec2f5197e6ce26682b1",
-        "uri": "synthetic://rights/rc-05"
+        "byte_size": 1006,
+        "media_type": "text/markdown",
+        "sha256": "7d39565bd0979cb7511b80eb41ccd46b537c146db6c147a4df0ff15dc19c60ec",
+        "uri": "corpus/samples/sample-figtable-01/manuscript.md"
       },
       "source_format": "markdown",
       "version_id": "ocver_rights_rc_05_v1"
     }
   ],
-  "policy_version": "case-policy-v0.1"
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
 }

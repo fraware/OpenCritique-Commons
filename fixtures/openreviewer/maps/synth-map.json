@@ -27,12 +27,13 @@
     }
   ],
   "configuration": {
-    "fixture_kind": "synthetic_rights_cleared_maintainer"
+    "fixture_kind": "maintainer_owned_sample_corpus",
+    "sample_adapter_contract_id": "opencritique-sample-adapter-contract-v1"
   },
   "contract_version": "openreviewer-markdown-template-v1",
   "model_identifiers": [
-    "synthetic-openreviewer-fixture/none"
+    "sample-openreviewer-fixture/none"
   ],
-  "openreviewer_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "system_version": "openreviewer-synth-0.1"
+  "openreviewer_commit": "opencritique-sample-adapter-contract-v1",
+  "system_version": "openreviewer-sample-0.1"
 }

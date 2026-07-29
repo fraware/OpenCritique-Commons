@@ -9,13 +9,13 @@
   "counterpositions": [],
   "evidence": [],
   "known_ambiguities": [
-    "Synthetic fixture: reconstructed claims remain provisional.",
+    "Sample fixture: reconstructed claims remain provisional.",
     "Not authorized for scientific performance claims."
   ],
   "manuscript": {
-    "consent_policy_id": "synthetic-maintainer-fixture-v1",
-    "content_hash": "aa14c0c7d577d9756f2a5b52811c1ec6d4782e5879a80e3f5777a645c5aa15b6",
-    "created_at": "2026-01-15T12:00:00Z",
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "2d4ac36a5ac4ec8bf6b3b3bf74b55e7d1214eea23ab2973e7dd60b19cebe40d5",
+    "created_at": "2026-07-29T12:00:00Z",
     "created_by": {
       "actor_id": "opencritique-maintainer",
       "actor_type": "organization",
@@ -26,12 +26,12 @@
     "manuscript_id": "ocms_synth_ml_02",
     "rights_classification": "public",
     "schema_version": "0.1.0",
-    "title": "[SYNTHETIC] Synthetic: Baseline under-tuned"
+    "title": "[SAMPLE] Sample: Baseline under-tuned"
   },
   "manuscript_versions": [
     {
-      "content_hash": "4d92344242788c628747fc068fb652d0b1d3dfc63465a1c64e2448f3a6f8d6eb",
-      "created_at": "2026-01-15T12:00:00Z",
+      "content_hash": "e6adc20a7f246753587e62fdd379ee11e34637f49dc9954265986e581a80a8a2",
+      "created_at": "2026-07-29T12:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
         "actor_type": "organization",
@@ -39,15 +39,15 @@
       },
       "domain_profile": "empirical_ml",
       "extracted_artifact": {
-        "byte_size": 15,
+        "byte_size": 69,
         "media_type": "text/plain",
-        "sha256": "b2a5b6660d307d28b9d8489137df3ac2eac9e0dd6cd741321f8a264419d7191a",
-        "uri": "synthetic://opencritique/ml-02-extracted"
+        "sha256": "692dd3e907a2e16c02b1c59c1a91a2644627f11f5f24782618e2c1cee72ad37b",
+        "uri": "corpus/samples/sample-ml-01/manuscript.md#extracted"
       },
       "id": "ocver_synth_ml_02_v1",
       "ingestion_metadata": {
-        "method": "synthetic_fixture",
-        "notes": "",
+        "method": "sample_adapter_fixture",
+        "notes": "sample=corpus/samples/sample-ml-01/manuscript.md",
         "page_indexing": "one-indexed",
         "tool": "scripts/generate_coarse_fixtures.py",
         "tool_version": "0.5.0a1"
@@ -59,10 +59,10 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 12,
-        "media_type": "text/plain",
-        "sha256": "ee7af41ffb64710fd0198bfd79bded5dcfda154fa0831d16ce798cc298180776",
-        "uri": "synthetic://opencritique/ml-02-source"
+        "byte_size": 880,
+        "media_type": "text/markdown",
+        "sha256": "7e940f38c12356d2470512fd6b80effbf8542a9e8457e3d50c21b0ce85012aea",
+        "uri": "corpus/samples/sample-ml-01/manuscript.md"
       },
       "source_format": "markdown",
       "version_id": "ocver_synth_ml_02_v1"
