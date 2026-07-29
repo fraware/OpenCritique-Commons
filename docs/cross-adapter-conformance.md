@@ -1,6 +1,6 @@
 # Cross-adapter conformance report
 
-- Generated at: `2026-07-29T10:15:32.890600+00:00`
+- Generated at: `2026-07-29T12:38:28.290977+00:00`
 - Fixture kind: `maintainer_owned_sample_corpus`
 - Performance claims authorized: **False**
 
@@ -59,3 +59,21 @@ Adapter conformance compares information preservation only. It does not validate
 - narrative strengths / questions sections (not mapped to concerns)
 - PDF extraction artifacts
 - model sampling randomness (fixtures are frozen)
+
+## source=production (`coarse`)
+
+- Status: `blocked`
+- Fixture root: `C:/Users/mateo/OpenCritique-Commons/fixtures/coarse/production`
+- Export count: 0
+- Blocked reason: No genuine rights-cleared Coarse production exports available; sample fixtures remain under fixtures/coarse/. Tracked on issue #3; rights path on issue #7.
+
+Production conversion fidelity only when status=ready; never reviewer-quality claims.
+
+## source=production (`openreviewer`)
+
+- Status: `blocked`
+- Fixture root: `C:/Users/mateo/OpenCritique-Commons/fixtures/openreviewer/production`
+- Export count: 0
+- Blocked reason: No authentic redistributable OpenReviewer production outputs available; sample fixtures remain under fixtures/openreviewer/. Tracked on issue #5; rights path on issue #7.
+
+Production conversion fidelity only when status=ready; never reviewer-quality claims.

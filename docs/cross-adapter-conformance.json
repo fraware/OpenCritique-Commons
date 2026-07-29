@@ -1,8 +1,28 @@
 {
   "disclosure": "Adapter conformance compares information preservation only. It does not validate reviewer quality or authorize performance claims.",
   "fixture_kind": "maintainer_owned_sample_corpus",
-  "generated_at": "2026-07-29T10:15:32.890600Z",
+  "generated_at": "2026-07-29T12:38:28.290977Z",
   "performance_claims_authorized": false,
+  "production_sections": [
+    {
+      "adapter": "coarse",
+      "blocked_reason": "No genuine rights-cleared Coarse production exports available; sample fixtures remain under fixtures/coarse/. Tracked on issue #3; rights path on issue #7.",
+      "export_count": 0,
+      "fixture_root": "C:/Users/mateo/OpenCritique-Commons/fixtures/coarse/production",
+      "notes": "Production conversion fidelity only when status=ready; never reviewer-quality claims.",
+      "source": "production",
+      "status": "blocked"
+    },
+    {
+      "adapter": "openreviewer",
+      "blocked_reason": "No authentic redistributable OpenReviewer production outputs available; sample fixtures remain under fixtures/openreviewer/. Tracked on issue #5; rights path on issue #7.",
+      "export_count": 0,
+      "fixture_root": "C:/Users/mateo/OpenCritique-Commons/fixtures/openreviewer/production",
+      "notes": "Production conversion fidelity only when status=ready; never reviewer-quality claims.",
+      "source": "production",
+      "status": "blocked"
+    }
+  ],
   "profiles": [
     {
       "adapter_id": "coarse",

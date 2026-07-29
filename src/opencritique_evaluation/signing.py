@@ -25,6 +25,8 @@ _MARKED_KEY_ID_PREFIXES = (
     "ed25519:TEST-",
     "ed25519:DEV-ROOT-",
     "ed25519:DEV-RELEASE-",
+    "ed25519:PROD-ROOT-",
+    "ed25519:PROD-RELEASE-",
 )
 
 
@@ -113,19 +115,47 @@ def sign_scorecard(
 
 
 def verify_envelope(
-    envelope: SignedScorecardEnvelope, trusted_public_key_path: Path | None = None
+    envelope: SignedScorecardEnvelope,
+    trusted_public_key_path: Path | None = None,
+    *,
+    trust_store: TrustStore | None = None,
+    trust_store_path: Path | None = None,
+    allow_untrusted_test: bool = False,
+    policy_mode: TrustPolicyMode | None = None,
 ) -> bool:
-    """Backward-compatible boolean verification (single trusted PEM optional)."""
-    mode = (
-        TrustPolicyMode.TEST
-        if trusted_public_key_path is None
-        else TrustPolicyMode.PRODUCTION
-    )
+    """Boolean verification wrapper. Requires trust material or explicit test opt-in.
+
+    Prefer ``verify_envelope_detailed`` with an explicit trust store for production.
+    Calling without a trust store, trust-store path, or trusted PEM raises
+    ``ValueError`` unless ``allow_untrusted_test=True`` is set deliberately.
+    """
+    from .trust import load_trust_store
+
+    loaded_store = trust_store
+    if loaded_store is None and trust_store_path is not None:
+        loaded_store = load_trust_store(trust_store_path)
+
+    has_trust_material = loaded_store is not None or trusted_public_key_path is not None
+    if not has_trust_material and not allow_untrusted_test:
+        raise ValueError(
+            "verify_envelope requires trust_store, trust_store_path, or "
+            "trusted_public_key_path; pass allow_untrusted_test=True only for "
+            "explicit ephemeral tests"
+        )
+
+    if policy_mode is None:
+        if allow_untrusted_test and not has_trust_material:
+            mode = TrustPolicyMode.TEST
+        else:
+            mode = TrustPolicyMode.PRODUCTION
+    else:
+        mode = policy_mode
+
     result = verify_envelope_detailed(
         envelope,
+        trust_store=loaded_store,
         trusted_public_key_path=trusted_public_key_path,
         policy_mode=mode,
-        trust_store=None,
     )
     return result.ok
 
@@ -141,7 +171,9 @@ def verify_envelope_detailed(
     """Verify scorecard integrity relative to a trust policy.
 
     A valid signature establishes artifact integrity relative to a trusted key; it does
-    **not** establish scientific correctness.
+    **not** establish scientific correctness. Production and development policies
+    fail closed without trust material; only ``TEST`` may verify against the
+    embedded public key alone.
     """
     now = at or datetime.now(UTC)
     payload = canonical_scorecard_bytes(envelope.scorecard)
@@ -218,11 +250,18 @@ def verify_envelope_detailed(
                 key_id=key_id,
                 policy_mode=policy_mode,
             )
-    elif policy_mode == TrustPolicyMode.PRODUCTION:
+    elif policy_mode in {
+        TrustPolicyMode.PRODUCTION,
+        TrustPolicyMode.DEVELOPMENT,
+        TrustPolicyMode.HISTORICAL,
+    }:
         return VerificationResult(
             ok=False,
             reason=VerificationFailureReason.UNKNOWN_KEY,
-            detail="production verification requires an explicit trust store or trusted PEM",
+            detail=(
+                f"{policy_mode.value} verification requires an explicit trust "
+                "store or trusted PEM"
+            ),
             key_id=key_id,
             policy_mode=policy_mode,
         )

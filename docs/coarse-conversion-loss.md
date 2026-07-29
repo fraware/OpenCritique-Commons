@@ -1,6 +1,6 @@
 # Coarse conversion-loss report
 
-- Generated at: `2026-07-29T10:15:24.600696+00:00`
+- Generated at: `2026-07-29T12:38:19.163132+00:00`
 - Upstream contract: `coarse-review-contract-v1`
 - Upstream repository: https://github.com/Davidvandijcke/coarse
 - Sample adapter contract: `opencritique-sample-adapter-contract-v1`
@@ -57,3 +57,12 @@ Unresolved quotations remain unresolved.
 | `occase_synth_multi_02` | 1 | 1 | 0 |
 | `occase_synth_stats_03` | 1 | 1 | 1 |
 | `occase_synth_ml_03` | 1 | 1 | 0 |
+
+## source=production (`coarse`)
+
+- Status: `blocked`
+- Fixture root: `C:/Users/mateo/OpenCritique-Commons/fixtures/coarse/production`
+- Export count: 0
+- Blocked reason: No genuine rights-cleared Coarse production exports available; sample fixtures remain under fixtures/coarse/. Tracked on issue #3; rights path on issue #7.
+
+Production conversion fidelity only when status=ready; never reviewer-quality claims.

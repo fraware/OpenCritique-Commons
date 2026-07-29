@@ -10,12 +10,19 @@ satisfy issues #3 or #5.
 |---|---|---|
 | `fixtures/coarse/` (synth / sample) | Deterministic conversion + loss report | Sample-adapter conformance only |
 | `fixtures/openreviewer/` (synth / sample) | Deterministic conversion + cross-adapter report | Sample-adapter conformance only |
-| `fixtures/*/production/` (future) | Rights-cleared authentic upstream exports | Production conversion fidelity only — still **not** reviewer-quality claims |
+| `fixtures/*/production/` | Rights-cleared authentic upstream exports (when available) | Production conversion fidelity only — still **not** reviewer-quality claims |
 | `benchmarks/*-synth-v0.1/` | Synthetic matching demos | Descriptive only |
 
 Upstream contract files (`fixtures/*/UPSTREAM_CONTRACT.json`) document the
 **sample** adapter contract id. Production authenticity requires a distinct
-contract pin and fixture tree.
+fixture tree under `fixtures/*/production/` with `MANIFEST.json`
+(`source=production`) and content hashes. Empty / `blocked` production trees
+fail closed: CI asserts no fabricated review payloads and that `status=ready`
+without ≥10 exports raises.
+
+Loss and cross-adapter reports include an explicit `source=production` section
+(see `ProductionSection` in `opencritique_adapters.production_fixtures`) separate
+from sample results.
 
 ## How production exports enter the repo
 

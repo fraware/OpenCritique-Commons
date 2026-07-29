@@ -1,0 +1,38 @@
+{
+  "policy_id": "expert-qualification-thresholds",
+  "policy_version": "0.1",
+  "issue": 14,
+  "performance_claims_authorized": false,
+  "notes": "Domain-profile eligibility gates for calibration. Thresholds authorize task eligibility only; they are not a public expert ranking.",
+  "domains": [
+    {
+      "domain_profile": "empirical_ml",
+      "min_calibration_cases": 3,
+      "min_validity_agreement": 0.8,
+      "max_mean_severity_distance": 1.0,
+      "false_critical_ceiling": 0.05,
+      "expiry_days": 180
+    },
+    {
+      "domain_profile": "empirical_econ",
+      "min_calibration_cases": 3,
+      "min_validity_agreement": 0.8,
+      "max_mean_severity_distance": 1.0,
+      "false_critical_ceiling": 0.05,
+      "expiry_days": 180
+    },
+    {
+      "domain_profile": "theory",
+      "min_calibration_cases": 3,
+      "min_validity_agreement": 0.8,
+      "max_mean_severity_distance": 1.0,
+      "false_critical_ceiling": 0.05,
+      "expiry_days": 180
+    }
+  ],
+  "revocation": {
+    "false_critical_breach": "immediate eligibility suspension pending review",
+    "undisclosed_conflict": "immediate suspension",
+    "recalibration_required_after_expiry": true
+  }
+}

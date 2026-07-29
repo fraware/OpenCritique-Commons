@@ -8,7 +8,8 @@ All matcher decisions from a frozen evaluation result over the active benchmark
 case set. The current pilot denominator is the **maintainer-owned sample corpus**
 (`corpus/samples/` and derived adapter fixtures). Pilots on samples **do not**
 authorize scientific performance claims and are not a substitute for a natural
-adjudicated set (tracked on issue #6).
+adjudicated set (tracked on issue #6). Measured denominators are archived in
+[matcher-audit-denominators.md](matcher-audit-denominators.md).
 
 ## Claim boundary
 

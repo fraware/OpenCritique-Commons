@@ -21,6 +21,12 @@ from .contract import (
     COARSE_UPSTREAM_CONTRACT_VERSION,
     COARSE_UPSTREAM_REPOSITORY,
 )
+from .production_fixtures import (
+    COARSE_PRODUCTION,
+    ProductionSection,
+    production_section_for,
+    production_section_markdown,
+)
 
 
 class StrictModel(BaseModel):
@@ -76,6 +82,7 @@ class CoarseConversionLossReport(StrictModel):
         "Maintainer-owned sample fixtures exercise adapter compatibility only. "
         "They do not authorize precision, recall, or comparative performance claims."
     )
+    production: ProductionSection | None = None
 
 
 def _sha256_text(text: str) -> str:
@@ -214,6 +221,7 @@ def build_conversion_loss_report(
         for fate in _baseline_field_fates()
         if fate.fate in {"omitted", "provisional"}
     ]
+    production = production_section_for("coarse", COARSE_PRODUCTION)
     return CoarseConversionLossReport(
         compatibility_matrix=[
             {
@@ -229,6 +237,7 @@ def build_conversion_loss_report(
         cases=case_records,
         aggregate_quote_stats=aggregate,
         omitted_field_summary=omitted,
+        production=production,
     )
 
 
@@ -304,6 +313,8 @@ def report_to_markdown(report: CoarseConversionLossReport) -> str:
             f"{case.quote_stats.unresolved} |"
         )
     lines.append("")
+    if report.production is not None:
+        lines.append(production_section_markdown(report.production))
     return "\n".join(lines)
 
 
