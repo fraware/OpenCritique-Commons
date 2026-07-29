@@ -37,6 +37,7 @@ from .schemas import (
     BlindedTaskPayload,
     CaseRegistration,
     CaseView,
+    ClaimableTaskView,
     DeterminationView,
     PrincipalCreate,
     PrincipalRole,
@@ -371,6 +372,22 @@ def create_app(settings: RegistrySettings | None = None, *, initialize: bool = F
         registry: RegistryService = Depends(service),
     ) -> TaskView:
         return registry.claim_task(principal.actor_id)
+
+    @app.get("/v1/tasks/claimable", response_model=list[ClaimableTaskView])
+    def list_claimable_tasks(
+        limit: int = Query(50, ge=1, le=200),
+        principal: PrincipalContext = Depends(
+            require_roles(
+                PrincipalRole.ADJUDICATOR,
+                PrincipalRole.ADMIN,
+                PrincipalRole.CASE_MANAGER,
+                PrincipalRole.AUDITOR,
+            )
+        ),
+        registry: RegistryService = Depends(service),
+    ) -> list[ClaimableTaskView]:
+        _ = principal
+        return registry.list_claimable_tasks(limit=limit)
 
     @app.get("/v1/tasks/{task_id}", response_model=BlindedTaskPayload)
     def task_payload(

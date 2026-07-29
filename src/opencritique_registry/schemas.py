@@ -156,6 +156,19 @@ class TaskView(StrictModel):
     completed_at: datetime | None
 
 
+class ClaimableTaskView(StrictModel):
+    """Pending adjudication slot summary for Studio queue UX (not a claim action)."""
+
+    task_id: str
+    case_id: str
+    case_version: str
+    concern_id: str
+    concern_title: str
+    slot: TaskSlot
+    status: TaskStatus
+    evidence_class: str | None = None
+
+
 class BlindedClaim(StrictModel):
     claim_id: str
     statement: str
