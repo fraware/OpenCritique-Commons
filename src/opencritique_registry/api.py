@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from opencritique_schema.models import CaseBundle, RightsClassification
 
-from .artifacts import LocalArtifactStore
+from .artifacts import (
+    ArtifactStoreConfigurationError,
+    ArtifactStoreWriteError,
+    LocalArtifactStore,
+)
 from .audit import record_event
 from .auth import (
     PrincipalContext,
@@ -17,12 +23,17 @@ from .auth import (
     revoke_token,
 )
 from .config import RegistrySettings
-from .db import Base, make_engine, make_session_factory
+from .db import make_engine, make_session_factory
 from .db_models import ArtifactORM, AuditEventORM, CaseORM
+from .expert_api import router as expert_router
+from .matcher_audit_api import router as matcher_audit_router
+from .migrate import upgrade_head
 from .schemas import (
     AdjudicationSubmissionInput,
-    AuditEventView,
+    AppealRecordInput,
+    AppealRecordView,
     ArtifactView,
+    AuditEventView,
     BlindedTaskPayload,
     CaseRegistration,
     CaseView,
@@ -40,20 +51,54 @@ from .schemas import (
     TokenRevoked,
 )
 from .service import RegistryService
-from .expert_api import router as expert_router
-from .matcher_audit_api import router as matcher_audit_router
 from .studio import install_studio_routes
 from .timeutils import as_utc
 
 
 def create_app(settings: RegistrySettings | None = None, *, initialize: bool = False) -> FastAPI:
-    settings = settings or RegistrySettings.from_env()
+    settings = (settings or RegistrySettings.from_env()).validated()
     engine = make_engine(settings.database_url)
     if initialize:
-        Base.metadata.create_all(engine)
+        upgrade_head(settings.database_url)
+
+    artifact_store = LocalArtifactStore(settings.artifact_root, settings.max_artifact_bytes)
+
+    def readiness_report() -> tuple[dict[str, object], bool]:
+        checks: dict[str, object] = {
+            "execution_mode": settings.execution_mode,
+            "performance_claims_authorized": settings.performance_claims_authorized,
+        }
+        ready = True
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            checks["database"] = "ok"
+        except Exception as exc:  # noqa: BLE001
+            checks["database"] = f"error: {exc}"
+            ready = False
+        try:
+            artifact_store.ensure_root()
+            checks["artifact_root"] = str(settings.artifact_root)
+        except ArtifactStoreConfigurationError as exc:
+            checks["artifact_root"] = f"error: {exc}"
+            ready = False
+        return {
+            "status": "ok" if ready else "error",
+            "version": "0.5.0-alpha",
+            "checks": checks,
+        }, ready
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        payload, ready = readiness_report()
+        if not ready:
+            raise RuntimeError(f"registry startup validation failed: {payload['checks']}")
+        yield
+
     app = FastAPI(
         title="OpenCritique Registry and Adjudication API",
         version="0.5.0-alpha",
+        lifespan=lifespan,
         description=(
             "Immutable case registry, granular data-use authorization, and blinded scientific "
             "concern adjudication, expert calibration, rights-cleared intake, "
@@ -63,9 +108,7 @@ def create_app(settings: RegistrySettings | None = None, *, initialize: bool = F
     app.state.settings = settings
     app.state.engine = engine
     app.state.session_factory = make_session_factory(engine)
-    app.state.artifact_store = LocalArtifactStore(
-        settings.artifact_root, settings.max_artifact_bytes
-    )
+    app.state.artifact_store = artifact_store
 
     def service(session: Session = Depends(get_session)) -> RegistryService:
         return RegistryService(session, app.state.artifact_store)
@@ -73,6 +116,13 @@ def create_app(settings: RegistrySettings | None = None, *, initialize: bool = F
     @app.get("/healthz")
     def health() -> dict[str, str]:
         return {"status": "ok", "version": "0.5.0-alpha"}
+
+    @app.get("/readyz")
+    def readyz(response: Response) -> dict[str, object]:
+        payload, ready = readiness_report()
+        if not ready:
+            response.status_code = 503
+        return payload
 
     @app.get("/v1/me", response_model=PrincipalView)
     def me(principal: PrincipalContext = Depends(current_principal)) -> PrincipalView:
@@ -168,12 +218,18 @@ def create_app(settings: RegistrySettings | None = None, *, initialize: bool = F
                 status_code=403,
                 detail="contributors cannot self-classify uploads as public",
             )
-        return registry.put_artifact(
-            data=data,
-            media_type=media_type,
-            rights_classification=rights_classification,
-            actor_id=principal.actor_id,
-        )
+        try:
+            return registry.put_artifact(
+                data=data,
+                media_type=media_type,
+                rights_classification=rights_classification,
+                actor_id=principal.actor_id,
+            )
+        except ArtifactStoreWriteError as exc:
+            raise HTTPException(
+                status_code=507,
+                detail=f"artifact storage unavailable: {exc}",
+            ) from exc
 
     @app.get("/v1/artifacts/{sha256}")
     def download_artifact(
@@ -362,6 +418,33 @@ def create_app(settings: RegistrySettings | None = None, *, initialize: bool = F
         ):
             raise HTTPException(status_code=403, detail="determination access denied")
         return view
+
+    @app.get("/v1/concerns/{concern_id}/appeals", response_model=list[AppealRecordView])
+    def list_appeals(
+        concern_id: str,
+        principal: PrincipalContext = Depends(current_principal),
+        registry: RegistryService = Depends(service),
+    ) -> list[AppealRecordView]:
+        determination = registry.latest_determination(concern_id)
+        if not registry.can_read_case(
+            case_id=determination.case_id,
+            case_version=determination.case_version,
+            actor_id=principal.actor_id,
+            role=principal.role,
+            concern_id=concern_id,
+        ):
+            raise HTTPException(status_code=403, detail="appeal access denied")
+        return registry.list_appeal_records(concern_id)
+
+    @app.post("/v1/appeals", response_model=AppealRecordView, status_code=201)
+    def create_appeal(
+        data: AppealRecordInput,
+        principal: PrincipalContext = Depends(
+            require_roles(PrincipalRole.ADMIN, PrincipalRole.CASE_MANAGER)
+        ),
+        registry: RegistryService = Depends(service),
+    ) -> AppealRecordView:
+        return registry.create_appeal_record(data, principal.actor_id)
 
     @app.get("/v1/audit-events", response_model=list[AuditEventView])
     def audit_events(

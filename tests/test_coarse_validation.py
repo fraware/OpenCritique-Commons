@@ -29,22 +29,35 @@ def test_upstream_contract_is_pinned() -> None:
     assert COARSE_PERFORMANCE_CLAIMS_AUTHORIZED is False
 
 
-def test_at_least_ten_synthetic_reviews_validate() -> None:
+def test_at_least_ten_sample_reviews_validate() -> None:
     reviews = sorted((FIXTURES / "reviews").glob("*.json"))
     assert len(reviews) >= 10
     domains = set()
     for path in reviews:
         review = CoarseReview.model_validate_json(path.read_text(encoding="utf-8"))
         assert review.detailed_comments
-        assert "[SYNTHETIC]" in review.title
+        assert "[SAMPLE]" in review.title
         raw = json.loads(path.read_text(encoding="utf-8"))
         assert raw["opencritique_fixture"]["confidential_manuscript_text"] is False
         assert raw["opencritique_fixture"]["performance_claims_authorized"] is False
+        assert raw["opencritique_fixture"]["sample_adapter_contract_id"] == (
+            "opencritique-sample-adapter-contract-v1"
+        )
         domains.add(review.domain)
-    # Domain coverage required by issue #3 (synthetic stand-ins).
+    # Domain coverage required by issue #3 (sample stand-ins until production exports).
     assert "economics" in domains or "statistics" in domains
     assert "machine_learning" in domains
     assert "mathematics" in domains or "theoretical_cs" in domains
+
+
+def test_upstream_contract_has_no_pretend_git_sha() -> None:
+    meta = json.loads((FIXTURES / "UPSTREAM_CONTRACT.json").read_text(encoding="utf-8"))
+    assert meta["sample_adapter_contract_id"] == "opencritique-sample-adapter-contract-v1"
+    assert meta["upstream_commit_pin"] is None
+    pin = meta.get("upstream_commit_pin")
+    assert pin is None or not (
+        isinstance(pin, str) and len(pin) == 40 and all(c in "0123456789abcdef" for c in pin)
+    )
 
 
 def test_deterministic_conversion_without_manual_json_edits() -> None:

@@ -35,6 +35,7 @@ class TrustPolicyMode(str, Enum):
     PRODUCTION = "production"
     HISTORICAL = "historical"
     TEST = "test"
+    DEVELOPMENT = "development"
 
 
 class VerificationFailureReason(str, Enum):
@@ -45,6 +46,7 @@ class VerificationFailureReason(str, Enum):
     REVOKED_KEY = "revoked_key"
     EXPIRED_KEY = "expired_key"
     TEST_KEY_IN_PRODUCTION = "test_key_in_production"
+    DEVELOPMENT_KEY_IN_PRODUCTION = "development_key_in_production"
     ROLE_NOT_PERMITTED = "role_not_permitted"
     PUBLIC_KEY_MISMATCH = "public_key_mismatch"
     NOT_YET_VALID = "not_yet_valid"
@@ -223,6 +225,26 @@ def evaluate_key_policy(
             key_role=record.role,
             policy_mode=policy_mode,
         )
+    channels = {item.lower() for item in record.channels}
+    is_dev_only = "development" in channels and "production" not in channels
+    if policy_mode == TrustPolicyMode.PRODUCTION and is_dev_only:
+        return VerificationResult(
+            ok=False,
+            reason=VerificationFailureReason.DEVELOPMENT_KEY_IN_PRODUCTION,
+            detail="development-channel keys are rejected by production verification policy",
+            key_id=key_id,
+            key_role=record.role,
+            policy_mode=policy_mode,
+        )
+    if policy_mode == TrustPolicyMode.DEVELOPMENT and "development" not in channels:
+        return VerificationResult(
+            ok=False,
+            reason=VerificationFailureReason.ROLE_NOT_PERMITTED,
+            detail="development policy requires a development-channel key",
+            key_id=key_id,
+            key_role=record.role,
+            policy_mode=policy_mode,
+        )
     revocation = store.is_revoked(key_id)
     if revocation is not None or record.status == KeyStatus.REVOKED:
         return VerificationResult(
@@ -282,6 +304,18 @@ def evaluate_key_policy(
             ok=False,
             reason=VerificationFailureReason.ROLE_NOT_PERMITTED,
             detail=f"role {record.role.value} cannot sign under production policy",
+            key_id=key_id,
+            key_role=record.role,
+            policy_mode=policy_mode,
+        )
+    if policy_mode == TrustPolicyMode.DEVELOPMENT and record.role not in {
+        KeyRole.OFFLINE_ROOT,
+        KeyRole.ONLINE_RELEASE,
+    }:
+        return VerificationResult(
+            ok=False,
+            reason=VerificationFailureReason.ROLE_NOT_PERMITTED,
+            detail=f"role {record.role.value} cannot sign under development policy",
             key_id=key_id,
             key_role=record.role,
             policy_mode=policy_mode,

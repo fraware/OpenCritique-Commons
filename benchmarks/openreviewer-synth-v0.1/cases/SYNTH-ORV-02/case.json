@@ -9,13 +9,13 @@
   "counterpositions": [],
   "evidence": [],
   "known_ambiguities": [
-    "Synthetic OpenReviewer fixture; not a real model output.",
+    "Sample OpenReviewer-shaped fixture; not an authentic upstream model run.",
     "Performance claims are not authorized."
   ],
   "manuscript": {
-    "consent_policy_id": "synthetic-maintainer-fixture-v1",
-    "content_hash": "8fabcde4724350f5e17c35d66513ac67ff4c96fa972ecc30d28e43d94f997f7a",
-    "created_at": "2026-03-01T00:00:00Z",
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "1908575c067a2910e569d9cf6e0124d2de2099b6c9f8e136839b46629afd4b53",
+    "created_at": "2026-07-29T00:00:00Z",
     "created_by": {
       "actor_id": "opencritique-maintainer",
       "actor_type": "organization",
@@ -26,23 +26,23 @@
     "manuscript_id": "ocms_orv_orv_02",
     "rights_classification": "public",
     "schema_version": "0.1.0",
-    "title": "[SYNTHETIC] Synthetic OpenReviewer: theory gap"
+    "title": "[SAMPLE] Sample OpenReviewer: theory gap"
   },
   "manuscript_versions": [
     {
-      "content_hash": "7a451556d4e5d3c4726d194e8f843aa97f784300611cda0a48eb101e4380ed6f",
-      "created_at": "2026-03-01T00:00:00Z",
+      "content_hash": "92a2cc8d8a46e72dadb43bc68f9550070e304f7997e0c088d2206f34f9a4562e",
+      "created_at": "2026-07-29T00:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
         "actor_type": "organization",
         "display_name": "OpenCritique Commons maintainers"
       },
-      "domain_profile": "empirical_ml",
+      "domain_profile": "theory_heavy",
       "extracted_artifact": null,
       "id": "ocver_orv_orv_02_v1",
       "ingestion_metadata": {
-        "method": "synthetic_fixture",
-        "notes": "",
+        "method": "sample_adapter_fixture",
+        "notes": "sample=corpus/samples/sample-theory-01/manuscript.tex",
         "page_indexing": "one-indexed",
         "tool": "scripts/generate_openreviewer_fixtures.py",
         "tool_version": "0.5.0a1"
@@ -54,12 +54,12 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 13,
-        "media_type": "text/plain",
-        "sha256": "23fe1222b5faa40767f55d940cc4ec5f51ac2f4a519adf77c88926d8cf311766",
-        "uri": "synthetic://opencritique/orv-02-source"
+        "byte_size": 683,
+        "media_type": "application/x-tex",
+        "sha256": "312d20c236067adb489683c18d656d1679191ed2a250eb037cd8579f6f2ba1a2",
+        "uri": "corpus/samples/sample-theory-01/manuscript.tex"
       },
-      "source_format": "markdown",
+      "source_format": "tex",
       "version_id": "ocver_orv_orv_02_v1"
     }
   ],

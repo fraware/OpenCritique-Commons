@@ -63,8 +63,8 @@
       "path": "cases/SYNTH-ML-03/case.json"
     }
   ],
-  "created_at": "2026-01-15T12:00:00Z",
-  "description": "Rights-cleared synthetic maintainer fixtures for Coarse adapter validation. Not authorized for scientific performance claims.",
+  "created_at": "2026-07-29T12:00:00Z",
+  "description": "Maintainer-owned sample fixtures for Coarse adapter validation. Not authorized for scientific performance claims.",
   "domain_profiles": [
     "economics_statistics",
     "empirical_ml",
@@ -77,13 +77,14 @@
   "independent_evaluation": false,
   "license": "Apache-2.0",
   "limitations": [
-    "Synthetic fixtures only.",
+    "Maintainer-owned sample fixtures only.",
     "No confidential manuscript text.",
-    "Performance claims are not authorized."
+    "Performance claims are not authorized.",
+    "Not genuine Coarse production exports (see issue #3)."
   ],
   "minimum_public_claim_cases": 40,
   "reference_completeness": "unknown",
   "source_url": null,
-  "title": "Coarse synthetic adapter conformance benchmark",
+  "title": "Coarse sample-adapter conformance benchmark",
   "version": "0.1.0"
 }

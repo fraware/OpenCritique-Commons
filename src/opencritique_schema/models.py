@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Annotated, Any, Literal
 
@@ -33,7 +33,7 @@ class ActorReference(StrictModel):
 class RecordBase(StrictModel):
     id: ID
     schema_version: str = "0.1.0"
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     created_by: ActorReference
     content_hash: SHA256
 
@@ -89,7 +89,7 @@ class Manuscript(RecordBase):
     current_version_id: ID
 
     @model_validator(mode="after")
-    def ids_align(self) -> "Manuscript":
+    def ids_align(self) -> Manuscript:
         if self.id != self.manuscript_id:
             raise ValueError("id must equal manuscript_id")
         return self
@@ -109,7 +109,7 @@ class ManuscriptVersion(RecordBase):
     ingestion_metadata: IngestionMetadata
 
     @model_validator(mode="after")
-    def ids_align(self) -> "ManuscriptVersion":
+    def ids_align(self) -> ManuscriptVersion:
         if self.id != self.version_id:
             raise ValueError("id must equal version_id")
         return self
@@ -146,7 +146,7 @@ class BoundingBox(StrictModel):
     y1: float
 
     @model_validator(mode="after")
-    def ordered(self) -> "BoundingBox":
+    def ordered(self) -> BoundingBox:
         if self.x1 <= self.x0 or self.y1 <= self.y0:
             raise ValueError("bounding-box maxima must exceed minima")
         return self
@@ -169,7 +169,7 @@ class Anchor(RecordBase):
     resolution_status: AnchorResolutionStatus
 
     @model_validator(mode="after")
-    def validate_anchor(self) -> "Anchor":
+    def validate_anchor(self) -> Anchor:
         if self.id != self.anchor_id:
             raise ValueError("id must equal anchor_id")
         if self.page_start and self.page_end and self.page_end < self.page_start:
@@ -216,7 +216,7 @@ class Claim(RecordBase):
     approval_status: Literal["candidate", "expert_approved", "rejected"] = "candidate"
 
     @model_validator(mode="after")
-    def ids_align(self) -> "Claim":
+    def ids_align(self) -> Claim:
         if self.id != self.claim_id:
             raise ValueError("id must equal claim_id")
         if self.explicitness == Explicitness.INFERRED and not self.reconstruction_notes.strip():
@@ -291,7 +291,7 @@ class Concern(RecordBase):
     origin: ConcernOrigin
 
     @model_validator(mode="after")
-    def validate_concern(self) -> "Concern":
+    def validate_concern(self) -> Concern:
         if self.id != self.concern_id:
             raise ValueError("id must equal concern_id")
         if (
@@ -353,7 +353,7 @@ class EvidenceItem(RecordBase):
     independence_group: str
 
     @model_validator(mode="after")
-    def ids_align(self) -> "EvidenceItem":
+    def ids_align(self) -> EvidenceItem:
         if self.id != self.evidence_id:
             raise ValueError("id must equal evidence_id")
         return self
@@ -378,7 +378,7 @@ class Counterposition(RecordBase):
     adequacy_status: Literal["unreviewed", "adequate", "inadequate"] = "unreviewed"
 
     @model_validator(mode="after")
-    def ids_align(self) -> "Counterposition":
+    def ids_align(self) -> Counterposition:
         if self.id != self.counterposition_id:
             raise ValueError("id must equal counterposition_id")
         return self
@@ -419,7 +419,7 @@ class Adjudication(RecordBase):
     anchors_reviewed: bool
 
     @model_validator(mode="after")
-    def validate_adjudication(self) -> "Adjudication":
+    def validate_adjudication(self) -> Adjudication:
         if self.id != self.adjudication_id:
             raise ValueError("id must equal adjudication_id")
         if self.conflict_declaration.status == "disqualifying":
@@ -449,7 +449,7 @@ class Resolution(RecordBase):
     verification_evidence_ids: list[ID] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def ids_align(self) -> "Resolution":
+    def ids_align(self) -> Resolution:
         if self.id != self.resolution_id:
             raise ValueError("id must equal resolution_id")
         return self
@@ -479,7 +479,7 @@ class RunManifest(RecordBase):
     output_hash: SHA256
 
     @model_validator(mode="after")
-    def validate_run(self) -> "RunManifest":
+    def validate_run(self) -> RunManifest:
         if self.id != self.run_id:
             raise ValueError("id must equal run_id")
         if self.completed_at < self.started_at:
@@ -519,7 +519,7 @@ class CaseBundle(StrictModel):
     known_ambiguities: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def cross_validate(self) -> "CaseBundle":
+    def cross_validate(self) -> CaseBundle:
         version_ids = {x.version_id for x in self.manuscript_versions}
         anchor_map = {x.anchor_id: x for x in self.anchors}
         claim_map = {x.claim_id: x for x in self.claims}

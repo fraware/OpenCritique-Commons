@@ -2,13 +2,48 @@
   "store_version": "0.1",
   "store_id": "opencritique-commons-scorecard-trust",
   "policy_mode_default": "production",
-  "keys": [],
+  "keys": [
+    {
+      "key_id": "ed25519:DEV-ROOT-c4167865d29706e0",
+      "role": "offline_root",
+      "status": "active",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAN9fFFQiO40ictU8JVV6o7+knYB/ZnWCc6x8boOLrPoM=\n-----END PUBLIC KEY-----\n",
+      "public_key_base64": "N9fFFQiO40ictU8JVV6o7+knYB/ZnWCc6x8boOLrPoM=",
+      "fingerprint_sha256": "c4167865d29706e0b693b6352ab05ee7eb9f720e1f5c3d45b30f100ac61c4575",
+      "not_before": "2026-07-29T07:35:12.167191Z",
+      "not_after": "2031-07-28T07:36:12.167191Z",
+      "superseded_by": null,
+      "channels": [
+        "development",
+        "https://github.com/fraware/OpenCritique-Commons/blob/main/trust/scorecard-trust-store.json",
+        "https://github.com/fraware/OpenCritique-Commons/releases"
+      ],
+      "notes": "Development-channel offline root. Not authorized for production scorecard publication. Production keys require a separate ceremony."
+    },
+    {
+      "key_id": "ed25519:DEV-RELEASE-ed031f7f373e9519",
+      "role": "online_release",
+      "status": "active",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAILfb3Qp7x3uHsWT+6MBPccjxG1ZmY+HBoLiSaf1j3/I=\n-----END PUBLIC KEY-----\n",
+      "public_key_base64": "ILfb3Qp7x3uHsWT+6MBPccjxG1ZmY+HBoLiSaf1j3/I=",
+      "fingerprint_sha256": "ed031f7f373e9519990bbefbc60ad2b7ade0a1d933b06bfc0c5b6d30bc428f3f",
+      "not_before": "2026-07-29T07:35:12.167191Z",
+      "not_after": "2027-07-29T07:36:12.167191Z",
+      "superseded_by": null,
+      "channels": [
+        "development",
+        "https://github.com/fraware/OpenCritique-Commons/blob/main/trust/scorecard-trust-store.json",
+        "https://github.com/fraware/OpenCritique-Commons/releases"
+      ],
+      "notes": "Development-channel online release key. Reject under production policy unless channels include 'production'."
+    }
+  ],
   "revocations": [],
   "rotations": [],
   "published_channels": [
     "https://github.com/fraware/OpenCritique-Commons/blob/main/trust/scorecard-trust-store.json",
     "https://github.com/fraware/OpenCritique-Commons/releases"
   ],
-  "updated_at": "2026-07-28T00:00:00Z",
-  "notes": "Production release public keys will be appended here after offline root ceremony. Private keys are never stored in this repository."
+  "updated_at": "2026-07-29T07:36:12.167191Z",
+  "notes": "Development-channel public keys only. Production-channel keys are absent until a separate production ceremony (issue #4). Private keys are never stored in this repository."
 }

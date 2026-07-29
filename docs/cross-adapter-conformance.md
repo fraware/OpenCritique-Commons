@@ -1,7 +1,7 @@
 # Cross-adapter conformance report
 
-- Generated at: `2026-07-28T21:56:02.550123+00:00`
-- Fixture kind: `synthetic_rights_cleared_maintainer`
+- Generated at: `2026-07-29T10:15:32.890600+00:00`
+- Fixture kind: `maintainer_owned_sample_corpus`
 - Performance claims authorized: **False**
 
 Adapter conformance compares information preservation only. It does not validate reviewer quality or authorize performance claims.
@@ -43,7 +43,7 @@ Adapter conformance compares information preservation only. It does not validate
 ### Normalized
 
 - markdown weakness bullets → SubmittedConcern
-- absent severity → informational placeholder with explicit unavailable note
+- absent severity → informational severity with explicit unavailable note
 - absent confidence → 0.0 with explicit unavailable note
 
 ### Withheld / unavailable

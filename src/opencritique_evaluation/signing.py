@@ -21,6 +21,22 @@ from .trust import (
     key_id_from_raw_public,
 )
 
+_MARKED_KEY_ID_PREFIXES = (
+    "ed25519:TEST-",
+    "ed25519:DEV-ROOT-",
+    "ed25519:DEV-RELEASE-",
+)
+
+
+def _key_id_matches_embedded_public(key_id: str, expected_key_id: str) -> bool:
+    if key_id == expected_key_id:
+        return True
+    raw_suffix = expected_key_id.removeprefix("ed25519:")
+    for prefix in _MARKED_KEY_ID_PREFIXES:
+        if key_id.startswith(prefix) and key_id.removeprefix(prefix) == raw_suffix:
+            return True
+    return False
+
 
 def canonical_scorecard_bytes(scorecard: PublicScorecard) -> bytes:
     return json.dumps(
@@ -148,12 +164,9 @@ def verify_envelope_detailed(
             policy_mode=policy_mode,
         )
     expected_key_id = key_id_from_raw_public(raw_public)
-    # Allow unmistakable TEST- prefixed ids that still hash-match the suffix.
+    # Allow unmistakable TEST-/DEV- prefixed ids that still hash-match the suffix.
     key_id = envelope.signature.key_id
-    if key_id != expected_key_id and not (
-        key_id.startswith("ed25519:TEST-")
-        and key_id.removeprefix("ed25519:TEST-") == expected_key_id.removeprefix("ed25519:")
-    ):
+    if not _key_id_matches_embedded_public(key_id, expected_key_id):
         return VerificationResult(
             ok=False,
             reason=VerificationFailureReason.KEY_ID_MISMATCH,

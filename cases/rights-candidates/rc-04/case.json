@@ -1,21 +1,168 @@
 {
   "adjudications": [],
-  "anchors": [],
+  "anchors": [
+    {
+      "anchor_id": "ocanc_rights_rc_04_q1",
+      "anchor_type": "text_span",
+      "bounding_boxes": [],
+      "content_hash": "b653da71bf61d43d75ce5c59ac0bf88a942ab6b789f2000dd1858ba3993968d7",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "extraction_confidence": 1.0,
+      "id": "ocanc_rights_rc_04_q1",
+      "manuscript_version_id": "ocver_rights_rc_04_v1",
+      "normalized_text": "therefore the excess risk decays as $o(1/\\sqrt{n})$ uniformly.",
+      "object_coordinates": {},
+      "object_label": null,
+      "page_end": 1,
+      "page_start": 1,
+      "rendered_reference": null,
+      "resolution_status": "exact",
+      "schema_version": "0.1.0",
+      "section_path": [
+        "Methods"
+      ],
+      "source_text": "Therefore the excess risk decays as $O(1/\\sqrt{n})$ uniformly."
+    }
+  ],
   "case_id": "occase_rights_rc_04",
   "case_type": "microcase",
   "case_version": "1.0.0",
-  "claims": [],
-  "concerns": [],
-  "counterpositions": [],
-  "evidence": [],
+  "claims": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_04_q1"
+      ],
+      "approval_status": "candidate",
+      "claim_id": "occlm_rights_rc_04_c1",
+      "claim_type": "methodological",
+      "content_hash": "6982b7c8fb96c9da137df05e7f3aa9a043e6df58d1e976537767ecf2e7108a94",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "dependency_claim_ids": [],
+      "explicitness": "explicit",
+      "id": "occlm_rights_rc_04_c1",
+      "manuscript_version_id": "ocver_rights_rc_04_v1",
+      "reconstruction_notes": "Quoted directly from maintainer-owned sample text.",
+      "schema_version": "0.1.0",
+      "scope": "sample conformance manuscript",
+      "statement": "Excess risk decays as O(1/sqrt(n)) uniformly under the stated conditions."
+    }
+  ],
+  "concerns": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_04_q1"
+      ],
+      "claim_ids": [
+        "occlm_rights_rc_04_c1"
+      ],
+      "concern_id": "occon_rights_rc_04_k1",
+      "concern_type": "theoretical.assumptions",
+      "confidence": 0.8,
+      "content_hash": "89bd4d2cfac9b2af66b27c9d7294d5ab8fe4fb43f3b971f25c1ad2dad29356c2",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occon_rights_rc_04_k1",
+      "manuscript_version_id": "ocver_rights_rc_04_v1",
+      "origin": {
+        "origin_id": "opencritique-maintainer-sample-curation",
+        "origin_type": "human",
+        "original_confidence": null,
+        "original_severity": null,
+        "run_id": null
+      },
+      "potential_consequence": "Readers may overstate evidential strength of the sample claim.",
+      "required_resolution": "Clarify assumptions and reporting gaps in a revision.",
+      "schema_version": "0.1.0",
+      "severity": "major",
+      "status": "proposed",
+      "summary": "Uniformity appears to require a Lipschitz constant that is never stated.",
+      "title": "Unstated Lipschitz constant",
+      "uncertainty_sources": [],
+      "verification_grade": "V1"
+    }
+  ],
+  "counterpositions": [
+    {
+      "adequacy_status": "unreviewed",
+      "concern_id": "occon_rights_rc_04_k1",
+      "content_hash": "32ad83f12df5bb541de82a361392eaed9e9ac2a75c015a20e0ca6409cffebb89",
+      "counterposition_id": "occtr_rights_rc_04_cp1",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occtr_rights_rc_04_cp1",
+      "residual_disagreement": "Even as illustration, the quoted span still lacks stated safeguards.",
+      "schema_version": "0.1.0",
+      "source": "author",
+      "statement": "The sample note may intend a stylized illustration rather than a complete empirical claim; residual gap remains for conformance.",
+      "supporting_anchor_ids": [
+        "ocanc_rights_rc_04_q1"
+      ],
+      "supporting_evidence_ids": []
+    }
+  ],
+  "evidence": [
+    {
+      "anchor_ids": [
+        "ocanc_rights_rc_04_q1"
+      ],
+      "artifact_reference": {
+        "byte_size": 665,
+        "media_type": "application/x-tex",
+        "sha256": "1f45e576576aa77ebd8d85c11860afcbf7c0cacf2701ac8ff8d9e52f2acb99c6",
+        "uri": "corpus/samples/sample-theory-01/manuscript.tex"
+      },
+      "concern_id": "occon_rights_rc_04_k1",
+      "content_hash": "da14f02855b63e2d2782688a49fa3a10e2864219a47b4119dbcebbefce442264",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "description": "Quoted sample manuscript span supporting the concern.",
+      "evidence_id": "ocevd_rights_rc_04_e1",
+      "evidence_type": "manuscript_text",
+      "id": "ocevd_rights_rc_04_e1",
+      "independence_group": "maintainer-sample",
+      "limitations": "Sample text only; not natural science evidence.",
+      "method": "direct_quotation",
+      "producer": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "reproducibility_status": "reproducible",
+      "schema_version": "0.1.0",
+      "supports": "concern",
+      "tool_manifest": null
+    }
+  ],
   "known_ambiguities": [
-    "Synthetic rights-path placeholder; not a natural manuscript.",
+    "Maintainer-authored sample conformance material; not a natural manuscript.",
     "Scientific performance claims remain disabled."
   ],
   "manuscript": {
-    "consent_policy_id": "synthetic-maintainer-rights-v1",
-    "content_hash": "abd97bdd6eb68ff84c37727922fe772434a2a5deefa11c8c88c537e2b83994ba",
-    "created_at": "2026-05-01T00:00:00Z",
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "7862cb1c6f7be3eed135d3041cbd51072acb615dc3005d0a94749d6d475dd0ed",
+    "created_at": "2026-07-29T00:00:00Z",
     "created_by": {
       "actor_id": "opencritique-maintainer",
       "actor_type": "organization",
@@ -26,12 +173,12 @@
     "manuscript_id": "ocms_rights_rc_04",
     "rights_classification": "public",
     "schema_version": "0.1.0",
-    "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic rights candidate: regularity conditions"
+    "title": "[SAMPLE] Sample: Uniform risk bounds and constructive algorithms"
   },
   "manuscript_versions": [
     {
-      "content_hash": "247d3d38d925aebb87eb3662ec46710fd564aa767e539ae73a74ead4c7b8cd30",
-      "created_at": "2026-05-01T00:00:00Z",
+      "content_hash": "897d18de778ab967a6df6641eb691f89ea81cf1e465d2232dffec5fc625c75b4",
+      "created_at": "2026-07-29T00:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
         "actor_type": "organization",
@@ -41,8 +188,8 @@
       "extracted_artifact": null,
       "id": "ocver_rights_rc_04_v1",
       "ingestion_metadata": {
-        "method": "rights_cleared_placeholder",
-        "notes": "",
+        "method": "maintainer_sample_import",
+        "notes": "sample_id=sample-theory-01",
         "page_indexing": "one-indexed",
         "tool": "scripts/generate_rights_candidates.py",
         "tool_version": "0.5.0a1"
@@ -54,14 +201,16 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 32,
-        "media_type": "text/plain",
-        "sha256": "81a5c3c0ef8d3c66c09c0b288ca74a56783e1e74a9ebe790621e28184d797a5f",
-        "uri": "synthetic://rights/rc-04"
+        "byte_size": 665,
+        "media_type": "application/x-tex",
+        "sha256": "1f45e576576aa77ebd8d85c11860afcbf7c0cacf2701ac8ff8d9e52f2acb99c6",
+        "uri": "corpus/samples/sample-theory-01/manuscript.tex"
       },
-      "source_format": "markdown",
+      "source_format": "tex",
       "version_id": "ocver_rights_rc_04_v1"
     }
   ],
-  "policy_version": "case-policy-v0.1"
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
 }

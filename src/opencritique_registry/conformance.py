@@ -279,7 +279,8 @@ def _audit_novel_determinations(*, session: Session, report: ConformanceReport) 
             )
             if tie is None:
                 report.failures.append(
-                    f"novel determination {row.determination_id}: tie-break required but no task exists"
+                    f"novel determination {row.determination_id}: "
+                    "tie-break required but no task exists"
                 )
         if row.finalized:
             finalized_by_candidate[row.candidate_id].append(row)
@@ -333,7 +334,8 @@ def _audit_novel_determinations(*, session: Session, report: ConformanceReport) 
                 for item in versions
             ):
                 report.warnings.append(
-                    f"benchmark {row.benchmark_id}@{row.version}: predecessor version not registered"
+                    f"benchmark {row.benchmark_id}@{row.version}: "
+                    "predecessor version not registered"
                 )
 
 

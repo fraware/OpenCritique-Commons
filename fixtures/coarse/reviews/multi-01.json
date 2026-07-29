@@ -1,5 +1,5 @@
 {
-  "date": "2026-01-15",
+  "date": "2026-07-29",
   "detailed_comments": [
     {
       "confidence": "medium",
@@ -8,35 +8,37 @@
       "quote": "La precision del modelo aumenta cuando se excluyen los casos ambiguos.",
       "severity": "major",
       "status": "Pending",
-      "title": "Synthetic: Non-English quote preserved"
+      "title": "Sample: Non-English quote preserved"
     }
   ],
   "domain": "linguistics",
   "language": {
-    "notes": "Synthetic Spanish excerpt; not a real manuscript.",
+    "notes": "Spanish excerpt from maintainer-owned multilingual sample.",
     "primary": "es"
   },
   "opencritique_fixture": {
     "case_id": "occase_synth_multi_01",
     "confidential_manuscript_text": false,
-    "kind": "synthetic_rights_cleared_maintainer",
+    "kind": "maintainer_owned_sample_corpus",
     "performance_claims_authorized": false,
+    "sample_adapter_contract_id": "opencritique-sample-adapter-contract-v1",
+    "sample_path": "corpus/samples/sample-multi-01/manuscript.md",
     "upstream_contract_version": "coarse-review-contract-v1"
   },
   "overall_feedback": {
-    "assessment": "Not a scientific judgment of any real manuscript.",
+    "assessment": "Not a scientific judgment of any natural manuscript.",
     "issues": [
       {
-        "body": "Placeholder overview issue.",
-        "title": "Synthetic issue"
+        "body": "Overview issue for contract coverage.",
+        "title": "Sample issue"
       }
     ],
-    "recommendation": "Use only for adapter conformance.",
+    "recommendation": "Use only for sample adapter conformance.",
     "revision_targets": [
       "methods"
     ],
-    "summary": "Synthetic overview feedback for adapter contract exercise."
+    "summary": "Sample overview feedback for adapter contract exercise."
   },
-  "taxonomy": "synthetic.maintainer.fixture",
-  "title": "[SYNTHETIC][RIGHTS-CLEARED] Synthetic: Non-English quote preserved"
+  "taxonomy": "sample.maintainer.fixture",
+  "title": "[SAMPLE] Sample: Non-English quote preserved"
 }

@@ -1,7 +1,7 @@
 {
   "disclosure": "Adapter conformance compares information preservation only. It does not validate reviewer quality or authorize performance claims.",
-  "fixture_kind": "synthetic_rights_cleared_maintainer",
-  "generated_at": "2026-07-28T21:56:02.550123Z",
+  "fixture_kind": "maintainer_owned_sample_corpus",
+  "generated_at": "2026-07-29T10:15:32.890600Z",
   "performance_claims_authorized": false,
   "profiles": [
     {
@@ -36,7 +36,7 @@
       ],
       "normalized": [
         "markdown weakness bullets \u2192 SubmittedConcern",
-        "absent severity \u2192 informational placeholder with explicit unavailable note",
+        "absent severity \u2192 informational severity with explicit unavailable note",
         "absent confidence \u2192 0.0 with explicit unavailable note"
       ],
       "preserved": [

@@ -1,8 +1,10 @@
 {
   "authentic_outputs_available": false,
   "contract_version": "openreviewer-markdown-template-v1",
-  "fixture_kind": "synthetic_rights_cleared_maintainer",
-  "notes": "Integration is stubbed at the adapter interface with synthetic fixtures. Authentic redistributable OpenReviewer outputs remain pending rights clearance.",
+  "fixture_kind": "maintainer_owned_sample_corpus",
+  "notes": "Fixtures are hand-authored OpenReviewer-shaped reviews quoting maintainer-owned samples. Contract id is opencritique-sample-adapter-contract-v1 (not a pretend Git SHA). Authentic redistributable OpenReviewer outputs remain blocked on issue #5.",
   "performance_claims_authorized": false,
-  "repository": "https://github.com/maxidl/openreviewer"
+  "repository": "https://github.com/maxidl/openreviewer",
+  "sample_adapter_contract_id": "opencritique-sample-adapter-contract-v1",
+  "upstream_commit_pin": null
 }

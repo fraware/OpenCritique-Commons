@@ -1,0 +1,214 @@
+{
+  "adjudications": [],
+  "anchors": [
+    {
+      "anchor_id": "ocanc_sample_rc_05_q1",
+      "anchor_type": "text_span",
+      "bounding_boxes": [],
+      "content_hash": "ffa4ad1731f98531bffc11203862cd2d09071736deb7d1b30b2a13f14c67f6eb",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "extraction_confidence": 1.0,
+      "id": "ocanc_sample_rc_05_q1",
+      "manuscript_version_id": "ocver_sample_rc_05_v1",
+      "normalized_text": "table 2 reports point estimates for each adjusted risk ratio.",
+      "object_coordinates": {},
+      "object_label": null,
+      "page_end": 1,
+      "page_start": 1,
+      "rendered_reference": null,
+      "resolution_status": "exact",
+      "schema_version": "0.1.0",
+      "section_path": [],
+      "source_text": "Table 2 reports point estimates for each adjusted risk ratio."
+    }
+  ],
+  "case_id": "occase_sample_rc_05",
+  "case_type": "microcase",
+  "case_version": "1.0.0",
+  "claims": [
+    {
+      "anchor_ids": [
+        "ocanc_sample_rc_05_q1"
+      ],
+      "approval_status": "candidate",
+      "claim_id": "occlm_sample_rc_05_c1",
+      "claim_type": "methodological",
+      "content_hash": "bdcd42c960de16d2e7c962b2c8ff2d8007b4e41b9372936aa1599db959cccbe0",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "dependency_claim_ids": [],
+      "explicitness": "explicit",
+      "id": "occlm_sample_rc_05_c1",
+      "manuscript_version_id": "ocver_sample_rc_05_v1",
+      "reconstruction_notes": "Quoted directly from maintainer-owned sample text.",
+      "schema_version": "0.1.0",
+      "scope": "sample conformance manuscript",
+      "statement": "Table 2 reports adjusted risk-ratio point estimates for each arm."
+    }
+  ],
+  "concerns": [
+    {
+      "anchor_ids": [
+        "ocanc_sample_rc_05_q1"
+      ],
+      "claim_ids": [
+        "occlm_sample_rc_05_c1"
+      ],
+      "concern_id": "occon_sample_rc_05_k1",
+      "concern_type": "reporting.uncertainty",
+      "confidence": 0.8,
+      "content_hash": "114066d210ad2a50c02a1cca2ae02fe837dcbbf5f21b7f515587ce81dc016a7d",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occon_sample_rc_05_k1",
+      "manuscript_version_id": "ocver_sample_rc_05_v1",
+      "origin": {
+        "origin_id": "opencritique-maintainer-sample-curation",
+        "origin_type": "human",
+        "original_confidence": null,
+        "original_severity": null,
+        "run_id": null
+      },
+      "potential_consequence": "Readers may overstate evidential strength of the sample claim.",
+      "required_resolution": "Clarify assumptions and reporting gaps in a revision.",
+      "schema_version": "0.1.0",
+      "severity": "major",
+      "status": "proposed",
+      "summary": "Point estimates without intervals impede severity assessment of uncertainty.",
+      "title": "Table omits confidence intervals",
+      "uncertainty_sources": [],
+      "verification_grade": "V1"
+    }
+  ],
+  "counterpositions": [
+    {
+      "adequacy_status": "unreviewed",
+      "concern_id": "occon_sample_rc_05_k1",
+      "content_hash": "5e7ac33e3706489a7aada6e4d5b6edc7334daaf532983999fd8708386d055848",
+      "counterposition_id": "occtr_sample_rc_05_cp1",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "id": "occtr_sample_rc_05_cp1",
+      "residual_disagreement": "Even as illustration, the quoted span still lacks stated safeguards.",
+      "schema_version": "0.1.0",
+      "source": "author",
+      "statement": "The sample note may intend a stylized illustration rather than a complete empirical claim; residual gap remains for conformance.",
+      "supporting_anchor_ids": [
+        "ocanc_sample_rc_05_q1"
+      ],
+      "supporting_evidence_ids": []
+    }
+  ],
+  "evidence": [
+    {
+      "anchor_ids": [
+        "ocanc_sample_rc_05_q1"
+      ],
+      "artifact_reference": {
+        "byte_size": 974,
+        "media_type": "text/markdown",
+        "sha256": "780b9a781cfccd4487be9b8d9401f01898831ad2c7a0c0bd6925e6a1e13663ff",
+        "uri": "corpus/samples/sample-figtable-01/manuscript.md"
+      },
+      "concern_id": "occon_sample_rc_05_k1",
+      "content_hash": "44a1fa213e3dddb0a107bd96abfc70027d0f10ed2c66a7e172c72cc97cad0f9f",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "description": "Quoted sample manuscript span supporting the concern.",
+      "evidence_id": "ocevd_sample_rc_05_e1",
+      "evidence_type": "manuscript_text",
+      "id": "ocevd_sample_rc_05_e1",
+      "independence_group": "maintainer-sample",
+      "limitations": "Sample text only; not natural science evidence.",
+      "method": "direct_quotation",
+      "producer": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "reproducibility_status": "reproducible",
+      "schema_version": "0.1.0",
+      "supports": "concern",
+      "tool_manifest": null
+    }
+  ],
+  "known_ambiguities": [
+    "Maintainer-authored sample conformance material; not a natural manuscript.",
+    "Scientific performance claims remain disabled."
+  ],
+  "manuscript": {
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "3f717c35d24191561c4975208a0a49018691397b7158a46352afa03147521b0b",
+    "created_at": "2026-07-29T00:00:00Z",
+    "created_by": {
+      "actor_id": "opencritique-maintainer",
+      "actor_type": "organization",
+      "display_name": "OpenCritique Commons maintainers"
+    },
+    "current_version_id": "ocver_sample_rc_05_v1",
+    "id": "ocms_sample_rc_05",
+    "manuscript_id": "ocms_sample_rc_05",
+    "rights_classification": "public",
+    "schema_version": "0.1.0",
+    "title": "[SAMPLE] Sample: Figure and table reporting gaps"
+  },
+  "manuscript_versions": [
+    {
+      "content_hash": "5607c18ae131a9bda3c07debb26aa0115d5efc9a1b1cac1bc4194a776dba9226",
+      "created_at": "2026-07-29T00:00:00Z",
+      "created_by": {
+        "actor_id": "opencritique-maintainer",
+        "actor_type": "organization",
+        "display_name": "OpenCritique Commons maintainers"
+      },
+      "domain_profile": "figure_table_heavy",
+      "extracted_artifact": null,
+      "id": "ocver_sample_rc_05_v1",
+      "ingestion_metadata": {
+        "method": "maintainer_sample_import",
+        "notes": "sample_id=sample-figtable-01",
+        "page_indexing": "one-indexed",
+        "tool": "scripts/generate_rights_candidates.py",
+        "tool_version": "0.5.0a1"
+      },
+      "language": "en",
+      "manuscript_id": "ocms_sample_rc_05",
+      "page_count": 1,
+      "previous_version_id": null,
+      "rendered_artifact": null,
+      "schema_version": "0.1.0",
+      "source_artifact": {
+        "byte_size": 974,
+        "media_type": "text/markdown",
+        "sha256": "780b9a781cfccd4487be9b8d9401f01898831ad2c7a0c0bd6925e6a1e13663ff",
+        "uri": "corpus/samples/sample-figtable-01/manuscript.md"
+      },
+      "source_format": "markdown",
+      "version_id": "ocver_sample_rc_05_v1"
+    }
+  ],
+  "policy_version": "case-policy-v0.1",
+  "resolutions": [],
+  "run_manifests": []
+}

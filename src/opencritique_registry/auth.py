@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import secrets
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy import select
@@ -56,7 +56,7 @@ def revoke_token(session: Session, token_id: str) -> datetime:
     if row is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="token not found")
     if row.revoked_at is None:
-        row.revoked_at = datetime.now(timezone.utc)
+        row.revoked_at = datetime.now(UTC)
         session.flush()
     return row.revoked_at
 
@@ -64,7 +64,7 @@ def authenticate_token(session: Session, token: str) -> PrincipalContext:
     token_row = session.scalar(
         select(ApiTokenORM).where(ApiTokenORM.token_hash == hash_token(token))
     )
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if token_row is None or token_row.revoked_at is not None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
     if token_row.expires_at is not None and as_utc(token_row.expires_at) <= now:

@@ -4,85 +4,86 @@
       "case_id": "occase_synth_econ_01",
       "case_version": "1.0.0",
       "review_path": "../reviews/econ-01.json",
-      "run_id": "ocrun_synth_econ_01"
+      "run_id": "ocrun_sample_econ_01"
     },
     {
       "case_id": "occase_synth_econ_02",
       "case_version": "1.0.0",
       "review_path": "../reviews/econ-02.json",
-      "run_id": "ocrun_synth_econ_02"
+      "run_id": "ocrun_sample_econ_02"
     },
     {
       "case_id": "occase_synth_ml_01",
       "case_version": "1.0.0",
       "review_path": "../reviews/ml-01.json",
-      "run_id": "ocrun_synth_ml_01"
+      "run_id": "ocrun_sample_ml_01"
     },
     {
       "case_id": "occase_synth_ml_02",
       "case_version": "1.0.0",
       "review_path": "../reviews/ml-02.json",
-      "run_id": "ocrun_synth_ml_02"
+      "run_id": "ocrun_sample_ml_02"
     },
     {
       "case_id": "occase_synth_theory_01",
       "case_version": "1.0.0",
       "review_path": "../reviews/theory-01.json",
-      "run_id": "ocrun_synth_theory_01"
+      "run_id": "ocrun_sample_theory_01"
     },
     {
       "case_id": "occase_synth_theory_02",
       "case_version": "1.0.0",
       "review_path": "../reviews/theory-02.json",
-      "run_id": "ocrun_synth_theory_02"
+      "run_id": "ocrun_sample_theory_02"
     },
     {
       "case_id": "occase_synth_fig_01",
       "case_version": "1.0.0",
       "review_path": "../reviews/fig-01.json",
-      "run_id": "ocrun_synth_fig_01"
+      "run_id": "ocrun_sample_fig_01"
     },
     {
       "case_id": "occase_synth_table_01",
       "case_version": "1.0.0",
       "review_path": "../reviews/table-01.json",
-      "run_id": "ocrun_synth_table_01"
+      "run_id": "ocrun_sample_table_01"
     },
     {
       "case_id": "occase_synth_multi_01",
       "case_version": "1.0.0",
       "review_path": "../reviews/multi-01.json",
-      "run_id": "ocrun_synth_multi_01"
+      "run_id": "ocrun_sample_multi_01"
     },
     {
       "case_id": "occase_synth_multi_02",
       "case_version": "1.0.0",
       "review_path": "../reviews/multi-02.json",
-      "run_id": "ocrun_synth_multi_02"
+      "run_id": "ocrun_sample_multi_02"
     },
     {
       "case_id": "occase_synth_stats_03",
       "case_version": "1.0.0",
       "review_path": "../reviews/stats-03.json",
-      "run_id": "ocrun_synth_stats_03"
+      "run_id": "ocrun_sample_stats_03"
     },
     {
       "case_id": "occase_synth_ml_03",
       "case_version": "1.0.0",
       "review_path": "../reviews/ml-03.json",
-      "run_id": "ocrun_synth_ml_03"
+      "run_id": "ocrun_sample_ml_03"
     }
   ],
-  "coarse_commit": "9f3c2a1b8e7d6c5a4b3e2f1d0c9b8a7e6f5d4c3b",
+  "coarse_commit": "opencritique-sample-adapter-contract-v1",
   "configuration": {
-    "fixture_kind": "synthetic_rights_cleared_maintainer",
+    "fixture_kind": "maintainer_owned_sample_corpus",
+    "sample_adapter_contract_id": "opencritique-sample-adapter-contract-v1",
     "upstream_contract_version": "coarse-review-contract-v1"
   },
   "declared_cost_currency": "USD",
   "declared_cost_minor": 0,
   "declared_latency_seconds": 0.0,
   "model_identifiers": [
-    "synthetic-fixture/none"
+    "sample-fixture/none"
   ],
-  "system_version": "coarse-synth-adapter-test-0.1"
+  "system_version": "coarse-sample-adapter-test-0.1"
 }

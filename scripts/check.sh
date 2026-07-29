@@ -3,46 +3,61 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+export PYTHONPATH="$ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
+
+if command -v python >/dev/null 2>&1 && python -c "import pydantic" >/dev/null 2>&1; then
+  PYTHON=python
+elif [ -n "${USERPROFILE:-}" ] && [ -x "${USERPROFILE//\\//}/miniconda3/python.exe" ]; then
+  PYTHON="${USERPROFILE//\\//}/miniconda3/python.exe"
+elif command -v cmd.exe >/dev/null 2>&1; then
+  PYTHON="$(cmd.exe /c where python 2>/dev/null | tr -d '\r' | sed -n '1p')"
+  if [ -z "$PYTHON" ]; then
+    PYTHON="$(cmd.exe /c where py 2>/dev/null | tr -d '\r' | sed -n '1p') -3"
+  fi
+elif command -v python3 >/dev/null 2>&1 && python3 -c "import pydantic" >/dev/null 2>&1; then
+  PYTHON=python3
+elif command -v py >/dev/null 2>&1; then
+  PYTHON="py -3"
+else
+  echo "python interpreter not found" >&2
+  exit 1
+fi
+
+if [ -z "${PYTHON:-}" ]; then
+  echo "python interpreter not found" >&2
+  exit 1
+fi
+
+if [[ "$PYTHON" == ?:\\* ]]; then
+  drive="$(printf '%s' "${PYTHON:0:1}" | tr '[:upper:]' '[:lower:]')"
+  rest="${PYTHON:2}"
+  rest="${rest//\\//}"
+  PYTHON="/mnt/${drive}${rest}"
+fi
 
 echo "==> compileall"
-python -m compileall -q src
+$PYTHON -m compileall -q src
 
-echo "==> ruff (new modules; recovered tree lint deferred)"
-RUFF_PATHS=(
-  src/opencritique_schema/registry.py
-  src/opencritique_schema/document_graph.py
-  src/opencritique_evaluation/novel_determination.py
-  src/opencritique_evaluation/trust.py
-  src/opencritique_evaluation/signing.py
-  src/opencritique_evaluation/matcher_audit.py
-  src/opencritique_registry/novel_service.py
-  src/opencritique_registry/matcher_audit_api.py
-  src/opencritique_evaluation/scorecard.py
-  src/opencritique_adapters/contract.py
-  src/opencritique_adapters/coarse_loss.py
-  src/opencritique_adapters/openreviewer.py
-  src/opencritique_adapters/openreviewer_loss.py
-  src/opencritique_adapters/cli.py
-  tests/test_schema_freeze.py
-  tests/test_novel_determinations.py
-  tests/test_migrations.py
-  tests/test_release_packaging.py
-  tests/test_coarse_validation.py
-  tests/test_signing_governance.py
-  tests/test_openreviewer_adapter.py
-  tests/test_document_graph.py
-  tests/test_matcher_audit.py
-  tests/test_rights_path.py
-  scripts
-)
-if command -v ruff >/dev/null 2>&1; then
-  ruff check "${RUFF_PATHS[@]}"
+echo "==> ruff"
+if "$PYTHON" -m ruff --version >/dev/null 2>&1; then
+  "$PYTHON" -m ruff check src tests scripts
+elif command -v ruff >/dev/null 2>&1; then
+  ruff check src tests scripts
 else
   echo "ruff not installed; skipping"
 fi
 
+echo "==> pyright"
+if "$PYTHON" -m pyright --version >/dev/null 2>&1; then
+  "$PYTHON" -m pyright
+elif command -v pyright >/dev/null 2>&1; then
+  pyright
+else
+  echo "pyright not installed; skipping"
+fi
+
 echo "==> schema export drift"
-python - <<'PY'
+$PYTHON - <<'PY'
 from pathlib import Path
 import json
 import hashlib
@@ -61,7 +76,9 @@ inventory = json.loads((root / "inventory.json").read_text(encoding="utf-8"))
 assert len(inventory["schemas"]) == len(list_schemas())
 golden = json.loads((root / "GOLDEN_HASHES.json").read_text(encoding="utf-8"))
 actual = {
-    path.name: hashlib.sha256(canonical_json_bytes(json.loads(path.read_text(encoding="utf-8")))).hexdigest()
+    path.name: hashlib.sha256(
+        canonical_json_bytes(json.loads(path.read_text(encoding="utf-8")))
+    ).hexdigest()
     for path in sorted(root.glob("*.schema.json"))
 }
 actual["inventory.json"] = hashlib.sha256(canonical_json_bytes(inventory)).hexdigest()
@@ -69,8 +86,22 @@ assert actual == golden, "GOLDEN_HASHES.json drift"
 print("schema freeze OK")
 PY
 
+echo "==> openapi freeze drift"
+$PYTHON - <<'PY'
+import json
+from pathlib import Path
+from opencritique_registry.api import create_app
+
+path = Path("openapi/registry.openapi.json")
+assert path.is_file(), "missing openapi/registry.openapi.json"
+on_disk = json.loads(path.read_text(encoding="utf-8"))
+generated = create_app(initialize=False).openapi()
+assert on_disk == generated, "OpenAPI drift; run python scripts/export_openapi.py"
+print("openapi freeze OK")
+PY
+
 echo "==> alembic current/head smoke"
-python - <<'PY'
+$PYTHON - <<'PY'
 from pathlib import Path
 import os
 import tempfile
@@ -89,13 +120,13 @@ print("alembic upgrade head OK")
 PY
 
 echo "==> secret scan"
-python scripts/secret_scan.py
+$PYTHON scripts/secret_scan.py
 
 echo "==> pytest"
-pytest -q
+"$PYTHON" -m pytest -q
 
 echo "==> import smoke (outside src layout assumptions)"
-python - <<'PY'
+$PYTHON - <<'PY'
 from opencritique_registry.api import app
 from opencritique_schema.models import Concern
 from opencritique_evaluation.engine import evaluate, load_case, load_manifest
@@ -103,6 +134,8 @@ from opencritique_adapters.coarse import CoarseReview
 from opencritique_acquisition.models import AcquisitionLedger
 from opencritique_schema.registry import SCHEMA_FREEZE_RELEASE
 from opencritique_evaluation.novel_determination import NOVEL_POLICY_VERSION
+from opencritique_ingestion import ingest_path
+from opencritique_verification import recompute_python
 
 assert app.title
 assert Concern.__name__ == "Concern"
@@ -111,11 +144,12 @@ assert CoarseReview.__name__ == "CoarseReview"
 assert AcquisitionLedger.__name__ == "AcquisitionLedger"
 assert SCHEMA_FREEZE_RELEASE == "0.5.0a1"
 assert NOVEL_POLICY_VERSION.startswith("novel-determination-")
+assert callable(ingest_path) and callable(recompute_python)
 print("import smoke OK")
 PY
 
 echo "==> publication paths"
-python - <<'PY'
+$PYTHON - <<'PY'
 from pathlib import Path
 
 root = Path(".")
@@ -141,6 +175,8 @@ required = [
     "docs/signing-governance.md",
     "docs/document-graph-alpha.md",
     "docs/matcher-audit-protocol.md",
+    "docs/deployment-local.md",
+    "docs/deployment-byok.md",
     "docs/rights-memorandum.md",
     "docs/MILESTONES.md",
     "docs/cross-adapter-conformance.md",
@@ -152,11 +188,20 @@ required = [
     "benchmarks/coarse-synth-v0.1/manifest.json",
     "benchmarks/openreviewer-synth-v0.1/manifest.json",
     "corpus/acquisition-ledger.json",
+    "corpus/samples/sample-econ-01/manuscript.md",
+    "cases/reference/REF-01/case.json",
+    "cases/rights-candidates/rc-01/case.json",
     "governance/decisions/ADR-0003-second-adapter.md",
     "schemas/inventory.json",
     "schemas/GOLDEN_HASHES.json",
+    "openapi/registry.openapi.json",
+    "docker-compose.yml",
+    "Dockerfile",
     "migrations/env.py",
     "alembic.ini",
+    "scripts/signing_ceremony_dev.py",
+    "scripts/export_openapi.py",
+    "governance/decisions/ADR-0004-appeals-and-corrections.md",
 ]
 missing = [p for p in required if not (root / p).is_file()]
 prohibited = [

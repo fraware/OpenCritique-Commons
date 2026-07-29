@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Annotated
 
 import typer
 import uvicorn
@@ -11,8 +12,9 @@ from .artifacts import LocalArtifactStore
 from .auth import issue_token
 from .config import RegistrySettings
 from .conformance import audit_registry
-from .db import Base, make_engine, make_session_factory
+from .db import make_engine, make_session_factory
 from .db_models import PrincipalORM
+from .migrate import upgrade_head
 from .schemas import (
     CaseRegistration,
     DataUse,
@@ -25,31 +27,49 @@ from .service import RegistryService
 app = typer.Typer(no_args_is_help=True)
 
 
-def settings(database_url: str, artifact_root: Path) -> RegistrySettings:
-    return RegistrySettings(database_url=database_url, artifact_root=artifact_root)
+ExecutionModeOption = Annotated[
+    str | None,
+    typer.Option(help="Execution mode override: local, byok, or compose."),
+]
+
+
+def settings(
+    database_url: str | None,
+    artifact_root: Path | None,
+    execution_mode: str | None,
+) -> RegistrySettings:
+    return RegistrySettings.from_env().with_overrides(
+        database_url=database_url,
+        artifact_root=artifact_root,
+        execution_mode=execution_mode,  # type: ignore[arg-type]
+    )
 
 
 @app.command("init")
 def init_registry(
-    database_url: str = typer.Option("sqlite:///./opencritique.db"),
-    artifact_root: Path = typer.Option(Path("./opencritique-artifacts")),
+    database_url: str | None = typer.Option(None),
+    artifact_root: Path | None = typer.Option(None),
+    execution_mode: ExecutionModeOption = None,
 ) -> None:
-    cfg = settings(database_url, artifact_root)
-    engine = make_engine(cfg.database_url)
-    Base.metadata.create_all(engine)
+    cfg = settings(database_url, artifact_root, execution_mode)
+    upgrade_head(cfg.database_url)
     LocalArtifactStore(cfg.artifact_root, cfg.max_artifact_bytes).ensure_root()
-    typer.echo(f"Initialized registry at {database_url}")
+    typer.echo(f"Initialized registry at {cfg.database_url}")
     typer.echo(f"Artifact root: {cfg.artifact_root.resolve()}")
+    typer.echo(f"Execution mode: {cfg.execution_mode}")
 
 
 @app.command("bootstrap-admin")
 def bootstrap_admin(
     actor_id: str = typer.Option("opencritique-admin"),
     display_name: str = typer.Option("OpenCritique Administrator"),
-    database_url: str = typer.Option("sqlite:///./opencritique.db"),
+    database_url: str | None = typer.Option(None),
+    artifact_root: Path | None = typer.Option(None),
+    execution_mode: ExecutionModeOption = None,
 ) -> None:
-    engine = make_engine(database_url)
-    Base.metadata.create_all(engine)
+    cfg = settings(database_url, artifact_root, execution_mode)
+    upgrade_head(cfg.database_url)
+    engine = make_engine(cfg.database_url)
     factory = make_session_factory(engine)
     with factory.begin() as session:
         row = session.get(PrincipalORM, actor_id)
@@ -74,12 +94,13 @@ def import_reference(
     cases_path: Path = typer.Argument(..., exists=True, file_okay=False),
     project_root: Path = typer.Option(Path("."), exists=True, file_okay=False),
     actor_id: str = typer.Option("opencritique-admin"),
-    database_url: str = typer.Option("sqlite:///./opencritique.db"),
-    artifact_root: Path = typer.Option(Path("./opencritique-artifacts")),
+    database_url: str | None = typer.Option(None),
+    artifact_root: Path | None = typer.Option(None),
+    execution_mode: ExecutionModeOption = None,
 ) -> None:
-    cfg = settings(database_url, artifact_root)
+    cfg = settings(database_url, artifact_root, execution_mode)
+    upgrade_head(cfg.database_url)
     engine = make_engine(cfg.database_url)
-    Base.metadata.create_all(engine)
     factory = make_session_factory(engine)
     store = LocalArtifactStore(cfg.artifact_root, cfg.max_artifact_bytes)
     files = sorted(cases_path.glob("REF-*/case.json"))
@@ -110,8 +131,8 @@ def import_reference(
                 RightsGrantInput(
                     use=use,
                     basis=GrantBasis.PROJECT_CREATED,
-                    authority="OpenCritique synthetic reference-corpus authorship",
-                    scope="Synthetic conformance fixture only; no reviewer-quality claims.",
+                    authority="OpenCritique maintainer-owned sample-corpus authorship",
+                    scope="Sample conformance fixture only; no reviewer-quality claims.",
                 )
                 for use in (
                     DataUse.OPERATIONAL_PROCESSING,
@@ -129,10 +150,11 @@ def import_reference(
 
 @app.command("conformance")
 def registry_conformance(
-    database_url: str = typer.Option("sqlite:///./opencritique.db"),
-    artifact_root: Path = typer.Option(Path("./opencritique-artifacts")),
+    database_url: str | None = typer.Option(None),
+    artifact_root: Path | None = typer.Option(None),
+    execution_mode: ExecutionModeOption = None,
 ) -> None:
-    cfg = settings(database_url, artifact_root)
+    cfg = settings(database_url, artifact_root, execution_mode)
     engine = make_engine(cfg.database_url)
     factory = make_session_factory(engine)
     store = LocalArtifactStore(cfg.artifact_root, cfg.max_artifact_bytes)
@@ -162,15 +184,18 @@ def registry_conformance(
 
 @app.command("serve")
 def serve(
-    database_url: str = typer.Option("sqlite:///./opencritique.db"),
-    artifact_root: Path = typer.Option(Path("./opencritique-artifacts")),
+    database_url: str | None = typer.Option(None),
+    artifact_root: Path | None = typer.Option(None),
+    execution_mode: ExecutionModeOption = None,
     host: str = typer.Option("127.0.0.1"),
     port: int = typer.Option(8000),
 ) -> None:
     import os
 
-    os.environ["OPENCRITIQUE_DATABASE_URL"] = database_url
-    os.environ["OPENCRITIQUE_ARTIFACT_ROOT"] = str(artifact_root)
+    cfg = settings(database_url, artifact_root, execution_mode)
+    os.environ["OPENCRITIQUE_DATABASE_URL"] = cfg.database_url
+    os.environ["OPENCRITIQUE_ARTIFACT_ROOT"] = str(cfg.artifact_root)
+    os.environ["OPENCRITIQUE_EXECUTION_MODE"] = cfg.execution_mode
     uvicorn.run("opencritique_registry.api:app", host=host, port=port, reload=False)
 
 

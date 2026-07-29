@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import (
@@ -20,7 +20,7 @@ from .db import Base
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class PrincipalORM(Base):
@@ -170,6 +170,25 @@ class DeterminationORM(Base):
     requires_tie_break: Mapped[bool] = mapped_column(Boolean, nullable=False)
     rationale: Mapped[str] = mapped_column(Text, nullable=False)
     submission_ids: Mapped[list[str]] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class AppealRecordORM(Base):
+    __tablename__ = "appeal_records"
+    __table_args__ = (
+        Index("ix_appeal_concern_created", "concern_id", "created_at"),
+    )
+
+    record_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    case_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    case_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    concern_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    determination_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    record_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    predecessor_record_id: Mapped[str | None] = mapped_column(String(64))
+    requested_by: Mapped[str] = mapped_column(String(255), nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, nullable=False)
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 

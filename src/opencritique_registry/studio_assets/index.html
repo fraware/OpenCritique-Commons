@@ -7,42 +7,47 @@
   <link rel="stylesheet" href="/studio/styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main workflow</a>
   <header>
     <div>
       <p class="eyebrow">OpenCritique Commons</p>
       <h1>Adjudication Studio</h1>
       <p class="subtitle">Inspect claims, evidence, defenses, and uncertainty before deciding.</p>
     </div>
-    <div id="identity" class="identity">Not authenticated</div>
+    <div id="identity" class="identity" role="status" aria-live="polite">Not authenticated</div>
   </header>
 
-  <main>
+  <div id="status-announcer" class="sr-only" aria-live="polite"></div>
+
+  <main id="main-content">
     <section class="panel auth-panel" aria-labelledby="auth-heading">
       <h2 id="auth-heading">Session</h2>
       <label for="token">Bearer token</label>
       <div class="row">
-        <input id="token" type="password" autocomplete="off" placeholder="Paste an ephemeral token">
+        <input id="token" type="password" autocomplete="off" aria-describedby="token-hint" placeholder="Paste an ephemeral token">
         <button id="connect">Connect</button>
         <button id="disconnect" class="secondary">Clear</button>
       </div>
-      <p class="hint">The token is stored in this browser tab only and is cleared when the tab closes.</p>
+      <p id="token-hint" class="hint">The token is stored in this browser tab only and is cleared when the tab closes.</p>
     </section>
 
-    <section class="panel">
+    <section class="panel" aria-labelledby="queue-heading">
       <div class="section-heading">
         <div>
           <p class="eyebrow">Work queue</p>
-          <h2>Assigned scientific work</h2>
+          <h2 id="queue-heading">Assigned scientific work</h2>
         </div>
         <div class="row wrap">
           <button id="claim-adjudication">Claim adjudication</button>
           <button id="claim-reconstruction" class="secondary">Claim reconstruction</button>
+          <button id="refresh-tasks" class="secondary">Refresh my tasks</button>
         </div>
       </div>
       <div id="queue-message" class="message muted">Connect to begin.</div>
+      <div id="task-list" class="card" aria-live="polite">No claimed tasks loaded.</div>
     </section>
 
-    <section id="task-panel" class="panel hidden" aria-live="polite">
+    <section id="task-panel" class="panel hidden" aria-live="polite" tabindex="-1">
       <div id="task-header"></div>
       <div class="document-actions">
         <a id="source-link" target="_blank" rel="noopener">Open source manuscript</a>
@@ -163,6 +168,49 @@
         </label>
         <p class="hint">Partial matches must not be recorded as exact correct matches.</p>
       </div>
+    </section>
+
+    <section class="panel" aria-labelledby="appeals-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Appeals and corrections</p>
+          <h2 id="appeals-heading">Case-manager follow-up</h2>
+          <p class="subtitle">Inspect appeal history for a concern and append new records without mutating earlier ones.</p>
+        </div>
+      </div>
+      <div class="grid two">
+        <label>Concern id
+          <input id="appeal-concern-id" autocomplete="off" placeholder="occon_...">
+        </label>
+        <label>Determination id
+          <input id="appeal-determination-id" autocomplete="off" placeholder="ocdet_...">
+        </label>
+      </div>
+      <div class="row wrap">
+        <button id="load-appeals" class="secondary">Load appeals</button>
+      </div>
+      <div id="appeals-list" class="card" aria-live="polite">No appeal history loaded.</div>
+      <form id="appeal-form">
+        <div class="grid two">
+          <label>Record type
+            <select id="appeal-record-type">
+              <option value="appeal">Appeal</option>
+              <option value="correction">Correction</option>
+            </select>
+          </label>
+          <label>Requested by
+            <input id="appeal-requested-by" autocomplete="off" placeholder="sample-author">
+          </label>
+        </div>
+        <label>Predecessor record id
+          <input id="appeal-predecessor-record-id" autocomplete="off" placeholder="Optional for corrections">
+        </label>
+        <label>Rationale
+          <textarea id="appeal-rationale" minlength="10" required></textarea>
+        </label>
+        <button type="submit">Append appeal record</button>
+      </form>
+      <div id="appeal-message" class="message muted">Appeal tools require a case-manager or admin token.</div>
     </section>
   </main>
   <script src="/studio/app.js" defer></script>

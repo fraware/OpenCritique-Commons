@@ -274,6 +274,31 @@ class DeterminationView(StrictModel):
     submission_ids: list[str]
     created_at: datetime
 
+
+class AppealRecordInput(StrictModel):
+    concern_id: str = Field(min_length=1)
+    determination_id: str = Field(min_length=1)
+    record_type: Literal["appeal", "correction"]
+    rationale: str = Field(min_length=10)
+    requested_by: str = Field(min_length=1)
+    predecessor_record_id: str | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class AppealRecordView(StrictModel):
+    record_id: str
+    case_id: str
+    case_version: str
+    concern_id: str
+    determination_id: str
+    record_type: Literal["appeal", "correction"]
+    predecessor_record_id: str | None
+    requested_by: str
+    rationale: str
+    payload: dict[str, Any]
+    created_at: datetime
+
+
 class TokenRevoked(StrictModel):
     token_id: str
     revoked_at: datetime

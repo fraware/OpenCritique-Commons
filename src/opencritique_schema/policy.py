@@ -4,7 +4,6 @@ from collections import Counter
 
 from .models import Adjudication, ConcernStatus, Severity, ValidityDecision
 
-
 _SEVERITY_ORDER = {
     Severity.INFORMATIONAL: 0,
     Severity.MINOR: 1,
@@ -42,7 +41,7 @@ def conservative_severity(adjudications: list[Adjudication]) -> Severity | None:
     severities = [item.severity for item in adjudications]
     if len(set(severities)) == 1:
         return severities[0]
-    ordered = sorted(severities, key=_SEVERITY_ORDER.get)
+    ordered = sorted(severities, key=lambda s: _SEVERITY_ORDER[s])
     if _SEVERITY_ORDER[ordered[-1]] - _SEVERITY_ORDER[ordered[0]] <= 1:
         return ordered[0]
     return None

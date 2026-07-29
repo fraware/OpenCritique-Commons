@@ -9,13 +9,13 @@
   "counterpositions": [],
   "evidence": [],
   "known_ambiguities": [
-    "Synthetic OpenReviewer fixture; not a real model output.",
+    "Sample OpenReviewer-shaped fixture; not an authentic upstream model run.",
     "Performance claims are not authorized."
   ],
   "manuscript": {
-    "consent_policy_id": "synthetic-maintainer-fixture-v1",
-    "content_hash": "8eb7df19eef829ce547570a5d4e84eeb6832226257418a98498a34ff9fabe02e",
-    "created_at": "2026-03-01T00:00:00Z",
+    "consent_policy_id": "maintainer-sample-corpus-v1",
+    "content_hash": "590b6804d8f6edebbb24c2d1701a6d0537e076f3cf366605d125412380466cda",
+    "created_at": "2026-07-29T00:00:00Z",
     "created_by": {
       "actor_id": "opencritique-maintainer",
       "actor_type": "organization",
@@ -26,23 +26,23 @@
     "manuscript_id": "ocms_orv_orv_04",
     "rights_classification": "public",
     "schema_version": "0.1.0",
-    "title": "[SYNTHETIC] Synthetic OpenReviewer: multilingual methods note"
+    "title": "[SAMPLE] Sample OpenReviewer: multilingual methods note"
   },
   "manuscript_versions": [
     {
-      "content_hash": "ac05f59b93f212cf866f9a915d901b5220a9c1a61443a645d9ae4abfb6882de4",
-      "created_at": "2026-03-01T00:00:00Z",
+      "content_hash": "e8f44b970d3bdce10282f723c85e2186ef81d2651eba63fa0293d43c1698db34",
+      "created_at": "2026-07-29T00:00:00Z",
       "created_by": {
         "actor_id": "opencritique-maintainer",
         "actor_type": "organization",
         "display_name": "OpenCritique Commons maintainers"
       },
-      "domain_profile": "empirical_ml",
+      "domain_profile": "multilingual_ish",
       "extracted_artifact": null,
       "id": "ocver_orv_orv_04_v1",
       "ingestion_metadata": {
-        "method": "synthetic_fixture",
-        "notes": "",
+        "method": "sample_adapter_fixture",
+        "notes": "sample=corpus/samples/sample-multi-01/manuscript.md",
         "page_indexing": "one-indexed",
         "tool": "scripts/generate_openreviewer_fixtures.py",
         "tool_version": "0.5.0a1"
@@ -54,10 +54,10 @@
       "rendered_artifact": null,
       "schema_version": "0.1.0",
       "source_artifact": {
-        "byte_size": 13,
-        "media_type": "text/plain",
-        "sha256": "89ff9105773ab83866bf83c77766a613c3a4a77ed596f195574599a723a000c6",
-        "uri": "synthetic://opencritique/orv-04-source"
+        "byte_size": 920,
+        "media_type": "text/markdown",
+        "sha256": "3f1f462c95e441139094af9e8acb33bcaf0ceb134463284d0aa7561772c7d821",
+        "uri": "corpus/samples/sample-multi-01/manuscript.md"
       },
       "source_format": "markdown",
       "version_id": "ocver_orv_orv_04_v1"

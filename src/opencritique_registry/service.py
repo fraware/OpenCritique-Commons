@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Any
+from datetime import UTC, datetime
+from typing import Any, Literal, cast
 
 from fastapi import HTTPException
 from sqlalchemy import select
@@ -14,6 +14,7 @@ from opencritique_schema.models import (
     Adjudication,
     CaseBundle,
     RightsClassification,
+    Severity,
 )
 
 from .artifacts import LocalArtifactStore
@@ -21,29 +22,31 @@ from .audit import record_event
 from .db_models import (
     AdjudicationSubmissionORM,
     AdjudicationTaskORM,
+    AppealRecordORM,
     ArtifactCaseLinkORM,
     ArtifactORM,
-    CaseORM,
-    ConcernIndexORM,
-    DeterminationORM,
-    PrincipalORM,
-    UseGrantORM,
-    CalibrationSetORM,
     CalibrationAttemptORM,
+    CalibrationSetORM,
     CalibrationTaskORM,
     CaseIntakeORM,
+    CaseORM,
     ClaimReconstructionTaskORM,
-    ExpertQualificationORM,
+    ConcernIndexORM,
     ContributionCreditORM,
+    DeterminationORM,
     ExpertProfileORM,
+    ExpertQualificationORM,
+    PrincipalORM,
+    UseGrantORM,
     utcnow,
 )
 from .determination import determine
 from .ids import new_id
 from .rights import active_grant, require_use_grant
-from .timeutils import as_utc, optional_utc
 from .schemas import (
     AdjudicationSubmissionInput,
+    AppealRecordInput,
+    AppealRecordView,
     ArtifactView,
     BlindedAnchor,
     BlindedClaim,
@@ -54,6 +57,7 @@ from .schemas import (
     CaseView,
     DataUse,
     DeterminationView,
+    GrantBasis,
     GrantStatus,
     PrincipalCreate,
     PrincipalRole,
@@ -65,6 +69,7 @@ from .schemas import (
     TaskStatus,
     TaskView,
 )
+from .timeutils import as_utc, optional_utc
 
 POLICY_VERSION = "adjudication-v0.2"
 PRIMARY_BLINDED_FIELDS = [
@@ -132,11 +137,11 @@ def _grant_view(row: UseGrantORM) -> RightsGrantView:
         grant_id=row.grant_id,
         case_id=row.case_id,
         case_version=row.case_version,
-        use=row.use_type,
-        basis=row.basis,
+        use=DataUse(row.use_type),
+        basis=GrantBasis(row.basis),
         authority=row.authority,
         scope=row.scope,
-        status=row.status,
+        status=GrantStatus(row.status),
         granted_by=row.granted_by,
         created_at=as_utc(row.created_at),
         revoked_at=optional_utc(row.revoked_at),
@@ -454,7 +459,7 @@ class RegistryService:
         )
         if active_set is None:
             return True
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         qualifications = self.session.scalars(
             select(ExpertQualificationORM).where(
                 ExpertQualificationORM.actor_id == adjudicator_id,
@@ -764,7 +769,7 @@ class RegistryService:
                 "id": adjudication_id,
                 "adjudication_id": adjudication_id,
                 "schema_version": "0.1.0",
-                "created_at": datetime.now(timezone.utc),
+                "created_at": datetime.now(UTC),
                 "created_by": ActorReference(
                     actor_id=actor_id,
                     actor_type=ActorType.HUMAN,
@@ -834,6 +839,56 @@ class RegistryService:
         if row is None:
             raise HTTPException(status_code=404, detail="determination not found")
         return self._determination_view(row)
+
+    def create_appeal_record(self, data: AppealRecordInput, actor_id: str) -> AppealRecordView:
+        determination = self.session.get(DeterminationORM, data.determination_id)
+        if determination is None:
+            raise HTTPException(status_code=404, detail="determination not found")
+        if determination.concern_id != data.concern_id:
+            raise HTTPException(status_code=422, detail="determination does not match concern_id")
+        if data.predecessor_record_id is not None:
+            predecessor = self.session.get(AppealRecordORM, data.predecessor_record_id)
+            if predecessor is None:
+                raise HTTPException(status_code=404, detail="predecessor appeal record not found")
+            if predecessor.concern_id != data.concern_id:
+                raise HTTPException(
+                    status_code=422, detail="predecessor record does not match concern"
+                )
+        row = AppealRecordORM(
+            record_id=new_id("ocapp"),
+            case_id=determination.case_id,
+            case_version=determination.case_version,
+            concern_id=data.concern_id,
+            determination_id=data.determination_id,
+            record_type=data.record_type,
+            predecessor_record_id=data.predecessor_record_id,
+            requested_by=data.requested_by,
+            rationale=data.rationale,
+            payload_json=data.payload,
+        )
+        self.session.add(row)
+        record_event(
+            self.session,
+            actor_id=actor_id,
+            action=f"{data.record_type}.recorded",
+            target_type=data.record_type,
+            target_id=row.record_id,
+            event_data={
+                "concern_id": data.concern_id,
+                "determination_id": data.determination_id,
+                "predecessor_record_id": data.predecessor_record_id,
+            },
+        )
+        self.session.flush()
+        return self._appeal_view(row)
+
+    def list_appeal_records(self, concern_id: str) -> list[AppealRecordView]:
+        rows = self.session.scalars(
+            select(AppealRecordORM)
+            .where(AppealRecordORM.concern_id == concern_id)
+            .order_by(AppealRecordORM.created_at)
+        ).all()
+        return [self._appeal_view(row) for row in rows]
 
     def can_read_case(
         self,
@@ -1031,10 +1086,26 @@ class RegistryService:
             concern_id=row.concern_id,
             policy_version=row.policy_version,
             status=row.status,
-            severity=row.severity,
+            severity=Severity(row.severity) if row.severity is not None else None,
             requires_tie_break=row.requires_tie_break,
             rationale=row.rationale,
             submission_ids=row.submission_ids,
+            created_at=as_utc(row.created_at),
+        )
+
+    @staticmethod
+    def _appeal_view(row: AppealRecordORM) -> AppealRecordView:
+        return AppealRecordView(
+            record_id=row.record_id,
+            case_id=row.case_id,
+            case_version=row.case_version,
+            concern_id=row.concern_id,
+            determination_id=row.determination_id,
+            record_type=cast(Literal["appeal", "correction"], row.record_type),
+            predecessor_record_id=row.predecessor_record_id,
+            requested_by=row.requested_by,
+            rationale=row.rationale,
+            payload=row.payload_json,
             created_at=as_utc(row.created_at),
         )
 

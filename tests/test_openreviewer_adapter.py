@@ -29,6 +29,8 @@ def test_adr_and_contract_pinned() -> None:
     meta = json.loads((FIXTURES / "UPSTREAM_CONTRACT.json").read_text(encoding="utf-8"))
     assert meta["contract_version"] == OPENREVIEWER_CONTRACT_VERSION
     assert meta["authentic_outputs_available"] is False
+    assert meta["sample_adapter_contract_id"] == "opencritique-sample-adapter-contract-v1"
+    assert meta["upstream_commit_pin"] is None
     assert OPENREVIEWER_PERFORMANCE_CLAIMS_AUTHORIZED is False
 
 

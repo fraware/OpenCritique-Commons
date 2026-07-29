@@ -1,19 +1,40 @@
 # Signing-key governance and rotation
 
-Issue #4 / PR6. A valid signature establishes **artifact integrity** relative to a
-trusted key. It does **not** establish scientific correctness or authorize
-performance claims.
+Issue #4 tracks the **production** ceremony. Development-channel keys are published
+via `scripts/signing_ceremony_dev.py` (Wave 4.1). A valid signature establishes
+**artifact integrity** relative to a trusted key. It does **not** establish
+scientific correctness or authorize performance claims.
+
+## Channels
+
+| Channel | Trust-store contents | Verification policy |
+|---|---|---|
+| `development` | Offline root + online release public keys (committed) | `policy_mode=development` |
+| `production` | Empty until separate production ceremony | `policy_mode=production` rejects development-only keys |
+
+Development keys are unmistakably labeled (`ed25519:DEV-…`) and list `development`
+in `channels` without `production`. Production verification fail-closes on them.
 
 ## Key roles
 
 | Role | Purpose | Production signing |
 |---|---|---|
 | `offline_root` | Offline root of trust; publishes and revokes release keys | Rare / ceremony |
-| `online_release` | Signs public scorecard envelopes for published releases | Yes |
+| `online_release` | Signs public scorecard envelopes for published releases | Yes (production channel only) |
 | `test` | Ephemeral CI / developer keys; unmistakably marked | **Rejected** |
 
 Separation of duties: root operators must not routinely hold online release private
 keys on networked build hosts.
+
+## Development ceremony
+
+```bash
+# Private keys go OUTSIDE the repo (temp dir by default).
+python scripts/signing_ceremony_dev.py --private-dir /secure/offline/dev-keys
+```
+
+Only public keys and roles are written to `trust/scorecard-trust-store.json`.
+Private keys must never be committed.
 
 ## Trust store
 
@@ -26,18 +47,22 @@ Published through at least two independent channels (documented in
 2. Release attestation notes / signed Git tags referencing key fingerprints
 
 Private keys **never** enter the repository, wheels, CI logs, test fixtures, or
-release archives. Tests generate ephemeral keys in temporary directories.
+release archives. Tests generate ephemeral keys in temporary directories, and the
+development ceremony keeps private material under `--private-dir`.
 
 ## Validity, rotation, revocation
 
 - Each trusted key has `not_before` / optional `not_after` and a `status`.
 - Rotation records (`RotationStatement`) link retiring and successor keys while
   retaining historical verification (`policy_mode=historical`).
-- Revocation records fail **current** production verification with an actionable
-  reason (`revoked_key`).
+- Revocation records fail **current** development/production verification with an
+  actionable reason (`revoked_key`).
 - Unknown keys fail closed (`unknown_key`).
 - Superseded keys verify only under `historical` policy so past scorecards remain
   attributable after rotation.
+- Suspected private-key exposure: revoke immediately, rotate successor keys, publish
+  revocation through both channels, and treat outstanding envelopes as untrusted
+  under current policy (see `SECURITY.md`).
 
 ## CLI
 
@@ -47,7 +72,7 @@ opencritique evaluation sign-scorecard --scorecard scorecard.json --private-key 
 opencritique evaluation verify-scorecard \
   --envelope scorecard.signed.json \
   --trust-store trust/scorecard-trust-store.json \
-  --policy-mode production
+  --policy-mode development
 ```
 
 ## Threat model coverage
@@ -55,5 +80,5 @@ opencritique evaluation verify-scorecard \
 - Substitution of scorecard payload
 - Rollback / reuse of stale keys beyond validity
 - Private-key compromise (see `SECURITY.md`)
-- Unauthorized signing by untrusted or test keys
+- Unauthorized signing by untrusted, test, or development-only keys under production policy
 - Stale-key acceptance after revocation or expiry

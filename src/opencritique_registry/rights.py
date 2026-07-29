@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy import select
@@ -18,7 +18,7 @@ def active_grant(
     case_version: str,
     use: DataUse,
 ) -> UseGrantORM | None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     rows = session.scalars(
         select(UseGrantORM)
         .where(

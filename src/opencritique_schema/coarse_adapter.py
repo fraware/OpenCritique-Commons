@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import re
 import unicodedata
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from .canonical import content_hash
@@ -69,7 +69,7 @@ def convert_coarse_review(
     extracted_text: str | None = None,
 ) -> tuple[list[Anchor], list[Claim], list[Concern]]:
     actor = ActorReference(actor_id="coarse", actor_type=ActorType.SYSTEM, display_name="Coarse")
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     anchors: list[Anchor] = []
     claims: list[Claim] = []
     concerns: list[Concern] = []
