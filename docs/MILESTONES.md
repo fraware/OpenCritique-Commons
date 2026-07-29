@@ -5,9 +5,10 @@ Honest tracking after stubs-closed product hardening landed on `main`
 
 Annotated tag `v0.5.0a1` remains pinned at the restored canonical source merge
 (PR #13). Annotated engineering tag **`v0.6.0a0`** / **`v0.6-alpha`** marks the
-post-hardening seven-package runtime on `main` after PR #15 / #20 (CIR-04
-signing API harden + claim-free engineering surface). Scientific performance
-claims remain unauthorized.
+post-hardening seven-package runtime on `main` after PR #15 / #20 / #21
+(CIR-04 signing API harden + claim-free engineering surface) at
+`11c95d40532b5ce42f359a83f0a64305e7f945f0`. Scientific performance claims remain
+unauthorized.
 
 Scientific performance claims remain **disabled** until the claim-authorization
 matrix (§12) and v1.0 gate (§14) are satisfied with natural adjudicated evidence.
