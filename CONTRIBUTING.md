@@ -7,8 +7,25 @@ Thank you for helping keep scientific-critique infrastructure inspectable.
 1. Read [GOVERNANCE.md](GOVERNANCE.md), [SECURITY.md](SECURITY.md), and
    [docs/REPOSITORY_PUBLICATION.md](docs/REPOSITORY_PUBLICATION.md).
 2. Confirm the change does **not** authorize scientific performance claims.
-3. Prefer a linked issue. Feature work on issues #2–#7 must wait until Milestone 0
-   (restored `src/` and green fresh-clone gate) is on `main`.
+3. Prefer a linked issue. External-validity work on issues #3–#7 and #14 stays
+   blocked until hard DoD evidence lands; do not invent natural corpus or
+   production keys.
+4. Skim [docs/MILESTONES.md](docs/MILESTONES.md) for claim boundaries and the
+   runtime release checklist.
+
+## Packages
+
+Editable install exposes seven packages under `src/`:
+
+| Package | Role |
+|---|---|
+| `opencritique_schema` | Shared critique schemas |
+| `opencritique_registry` | Registry API, rights, studio, appeals |
+| `opencritique_evaluation` | Matching, scoring, signing |
+| `opencritique_adapters` | Coarse / OpenReviewer bridges |
+| `opencritique_acquisition` | Rights-aware acquisition ledger |
+| `opencritique_ingestion` | Markdown/LaTeX/PDF → document graph |
+| `opencritique_verification` | Deterministic table/citation/Python checks |
 
 ## Development setup
 
@@ -20,6 +37,11 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 bash scripts/check.sh
 ```
+
+Operator entry points:
+
+- Local stack: [docs/deployment-local.md](docs/deployment-local.md)
+- BYOK / bring-your-own-keys: [docs/deployment-byok.md](docs/deployment-byok.md)
 
 ### Database URL
 
