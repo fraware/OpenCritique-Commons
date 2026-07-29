@@ -35,3 +35,7 @@ _inspect_wheel/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local runtime smoke outputs
+.runtime-smoke-artifacts/
+
