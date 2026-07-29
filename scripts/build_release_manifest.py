@@ -32,7 +32,7 @@ def _project_version() -> str:
     try:
         return version("opencritique-commons")
     except PackageNotFoundError:
-        return "0.5.0a1"
+        return "0.6.0a0"
 
 
 def main(dist_dir: Path | None = None, out_dir: Path | None = None) -> int:

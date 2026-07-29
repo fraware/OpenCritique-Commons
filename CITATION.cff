@@ -9,12 +9,12 @@ authors:
   - name: OpenCritique Commons contributors
 repository-code: https://github.com/fraware/OpenCritique-Commons
 license: Apache-2.0
-version: 0.5.0a1
+version: 0.6.0a0
 abstract: >-
   Open, system-neutral infrastructure for representing, adjudicating, and
-  evaluating scientific concerns. Recovered v0.5.0a1 source is published for
-  engineering use; scientific performance claims remain unauthorized until
-  rights-cleared natural cases and independent adjudication gates are met.
+  evaluating scientific concerns. Engineering release 0.6.0a0; schema freeze
+  identity remains 0.5.0a1. Scientific performance claims remain unauthorized
+  until rights-cleared natural cases and independent adjudication gates are met.
 keywords:
   - scientific critique
   - adjudication

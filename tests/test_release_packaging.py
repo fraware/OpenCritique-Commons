@@ -22,7 +22,7 @@ def test_build_release_manifest_script(tmp_path) -> None:
     out = tmp_path / "dist"
     out.mkdir()
     # Create a fake wheel for checksum coverage.
-    fake = out / "opencritique_commons-0.5.0a1-py3-none-any.whl"
+    fake = out / "opencritique_commons-0.6.0a0-py3-none-any.whl"
     fake.write_bytes(b"PK\x03\x04fake-wheel")
     subprocess.check_call([sys.executable, str(script), str(out)])
     assert (out / "RELEASE_MANIFEST.json").is_file()
