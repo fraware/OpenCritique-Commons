@@ -1,6 +1,6 @@
 # Rights memorandum — first external benchmark path
 
-Issue #7 / sample-conformance path on `main`.
+Issue #7. Sample-conformance path ships maintainer-owned manuscripts only.
 
 ## Controlling principle
 
@@ -53,6 +53,35 @@ referenced from the ledger). Do not invent grants.
 | Ledger entry | `AcquisitionLedger` status + source metadata | Maintainer |
 | Import dry-run | Prove reject path for missing grant | CI / maintainer |
 
+## Approved-profile importer (command sequence)
+
+When the first rights-cleared external case is ready, land it with the approved
+profile importer (no fabricated manuscripts):
+
+1. Place the manuscript bytes under a path inside the repo (or a vault path
+   referenced by the profile) and compute SHA-256.
+2. Write a case-level rights record under `corpus/rights/` with
+   `natural_manuscript_imported=true`, `evaluation_use_authorized=true`, and
+   `performance_claims_authorized=false`.
+3. Author an approved-profile JSON (`profile_kind=natural`) binding
+   `source_artifact_sha256`, grant fields, and `rights_record_path`.
+4. Dry-run validate:
+
+```bash
+opencritique-acquisition validate-approved-profile path/to/approved-profile.json
+opencritique-acquisition import-approved-profile path/to/approved-profile.json --dry-run
+```
+
+5. Persist only after counsel sign-off:
+
+```bash
+opencritique-acquisition import-approved-profile path/to/approved-profile.json --no-dry-run
+```
+
+Reject paths (already enforced): hash mismatch, missing grant flags, sample
+profiles claiming natural import, natural profiles relying on “public
+availability” alone, and any attempt to set `performance_claims_authorized=true`.
+
 ## Import rejection rules (already enforced)
 
 Acquisition and registry paths **reject** artifacts that fail the approved profile:
@@ -61,8 +90,10 @@ Acquisition and registry paths **reject** artifacts that fail the approved profi
 - Rights record without evaluation-use authorization
 - Attempts to set `performance_claims_authorized=true` while the release gate is closed
 - Natural imports without an archived grant (blocked by process and issue #7 DoD)
+- Sample vs natural profile contamination (`natural_manuscript_imported` flag)
 
-See `opencritique_acquisition` ledger validators and registry `require_use_grant`.
+See `opencritique_acquisition.approved_profile` and ledger validators /
+registry `require_use_grant`.
 
 ## Withdrawal / cancel path
 
