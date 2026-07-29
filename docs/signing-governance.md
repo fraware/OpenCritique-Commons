@@ -69,6 +69,24 @@ development ceremony keeps private material under `--private-dir`.
   revocation through both channels, and treat outstanding envelopes as untrusted
   under current policy (see `SECURITY.md`).
 
+## Production rotation drill checklist (no private keys)
+
+Run this dry-run periodically **without** placing private keys in the repository,
+CI logs, or chat. Private material stays on offline / HSM custody media only.
+
+| Step | Operator action | Pass criterion |
+|---|---|---|
+| 1. Inventory | Confirm published `PROD-ROOT` / `PROD-RELEASE` fingerprints in `trust/scorecard-trust-store.json` match offline custody labels | Fingerprints match on ≥2 published channels |
+| 2. Dual control | Two custodians present for any production rotation; neither alone holds both root and release private material | Dual-control log entry (ops, not in-repo) |
+| 3. Successor issuance | Generate successor release key **offline**; root signs a `RotationStatement` | Statement hash archived outside repo |
+| 4. Publish public only | Merge **public** successor key + rotation/revocation records into the trust store; never commit private PEMs | `git` diff shows public keys / statements only |
+| 5. Fail-closed verify | Verify a known-good production envelope under `policy_mode=production`; confirm development-only and revoked keys fail | CI trust tests + witnessed verify transcript |
+| 6. Historical retain | Verify a pre-rotation envelope under `policy_mode=historical` with the retired public key | Historical verify succeeds; current production rejects retired key |
+| 7. Incident path | Walk the SECURITY.md compromise checklist verbally (revoke → rotate → republish) | Checklist signed off; no private key material recorded |
+
+This drill does **not** authorize performance claims. It only proves signing
+custody and rotation readiness for issue #4.
+
 ## CLI
 
 ```bash

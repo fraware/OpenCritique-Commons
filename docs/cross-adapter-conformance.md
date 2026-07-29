@@ -1,6 +1,6 @@
 # Cross-adapter conformance report
 
-- Generated at: `2026-07-29T12:38:28.290977+00:00`
+- Generated at: `2026-07-29T17:53:13.762117+00:00`
 - Fixture kind: `maintainer_owned_sample_corpus`
 - Performance claims authorized: **False**
 
@@ -65,7 +65,10 @@ Adapter conformance compares information preservation only. It does not validate
 - Status: `blocked`
 - Fixture root: `C:/Users/mateo/OpenCritique-Commons/fixtures/coarse/production`
 - Export count: 0
+- Rights record count: 0
 - Blocked reason: No genuine rights-cleared Coarse production exports available; sample fixtures remain under fixtures/coarse/. Tracked on issue #3; rights path on issue #7.
+
+NOT READY: refuse production conversion-fidelity / readiness language until `status=ready` with ≥10 hashed exports (currently 0).
 
 Production conversion fidelity only when status=ready; never reviewer-quality claims.
 
@@ -74,6 +77,9 @@ Production conversion fidelity only when status=ready; never reviewer-quality cl
 - Status: `blocked`
 - Fixture root: `C:/Users/mateo/OpenCritique-Commons/fixtures/openreviewer/production`
 - Export count: 0
+- Rights record count: 0
 - Blocked reason: No authentic redistributable OpenReviewer production outputs available; sample fixtures remain under fixtures/openreviewer/. Tracked on issue #5; rights path on issue #7.
+
+NOT READY: refuse production conversion-fidelity / readiness language until `status=ready` with ≥5 hashed exports (currently 0).
 
 Production conversion fidelity only when status=ready; never reviewer-quality claims.
