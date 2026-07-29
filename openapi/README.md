@@ -13,5 +13,6 @@ python scripts/export_openapi.py
 pytest -q tests/test_openapi_freeze.py
 ```
 
-Object schemas for the v0.5 freeze live under [`schemas/`](../schemas/) and are
-gated by golden hash tests.
+Object schemas for the **v0.5 schema freeze** (`SCHEMA_FREEZE_RELEASE = 0.5.0a1`)
+live under [`schemas/`](../schemas/) and are gated by golden hash tests. Package
+engineering version may advance independently (currently `0.6.0a0`).

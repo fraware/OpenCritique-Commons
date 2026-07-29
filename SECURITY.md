@@ -30,9 +30,17 @@ Test keys must be unmistakably marked and are rejected by production verificatio
 policy. Development-channel keys are rejected under `policy_mode=production`.
 A valid signature never authorizes scientific performance claims.
 
-Production private-key custody, backup, dual-control, and incident response follow
-this document plus [docs/signing-governance.md](docs/signing-governance.md).
-Ceremony private material is generated only under an out-of-repo `--private-dir`
+## Trust store today
+
+`trust/scorecard-trust-store.json` publishes:
+
+- Development-channel public keys (`ed25519:DEV-…`)
+- Production-channel public keys (`ed25519:PROD-ROOT-…`, `ed25519:PROD-RELEASE-…`)
+
+Private keys are never committed. Production private-key custody, backup,
+dual-control, and incident response follow this document plus
+[docs/signing-governance.md](docs/signing-governance.md). Ceremony private
+material is generated only under an out-of-repo `--private-dir`
 (`scripts/signing_ceremony_prod.py`).
 
 ## Repository invariants
@@ -40,3 +48,4 @@ Ceremony private material is generated only under an out-of-repo `--private-dir`
 - No production private keys in git, wheels, CI logs, or fixtures
 - Secret scan runs in `scripts/check.sh` / CI
 - Malicious document-graph fixtures are for security regression only
+- `performance_claims_authorized` remains false until claim gates are met
