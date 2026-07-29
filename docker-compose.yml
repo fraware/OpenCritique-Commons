@@ -17,7 +17,17 @@ services:
   registry:
     build:
       context: .
-    command: opencritique-registry serve --host 0.0.0.0 --port 8000 --execution-mode compose
+    command:
+      [
+        "opencritique-registry",
+        "serve",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--execution-mode",
+        "compose",
+      ]
     environment:
       OPENCRITIQUE_DATABASE_URL: postgresql+psycopg://opencritique:opencritique@postgres:5432/opencritique
       OPENCRITIQUE_ARTIFACT_ROOT: /app/opencritique-artifacts
