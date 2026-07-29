@@ -1,7 +1,7 @@
 # Signing-key governance and rotation
 
 Issue #4 tracks the **production** ceremony. Development-channel keys are published
-via `scripts/signing_ceremony_dev.py` (Wave 4.1). A valid signature establishes
+via `scripts/signing_ceremony_dev.py`. A valid signature establishes
 **artifact integrity** relative to a trusted key. It does **not** establish
 scientific correctness or authorize performance claims.
 
@@ -15,6 +15,10 @@ scientific correctness or authorize performance claims.
 Development keys are unmistakably labeled (`ed25519:DEV-…`) and list `development`
 in `channels` without `production`. Production verification fail-closes on them.
 Production keys are labeled (`ed25519:PROD-…`) and list `production` in `channels`.
+
+**Current status:** production public keys (`PROD-ROOT` / `PROD-RELEASE`) are
+published in `trust/scorecard-trust-store.json`. Private keys remain out of the
+repository.
 
 ## Key roles
 
@@ -90,17 +94,17 @@ Do **not** commit production private keys. Run
 `scripts/signing_ceremony_prod.py` with `--private-dir` **outside** the
 repository. Development-channel keys remain development-only.
 
-| Step | Done when |
-|---|---|
-| Offline root generated on air-gapped or equivalent custody media | Root public fingerprint recorded |
-| Online release key generated; root signs a rotation/issuance statement | Statement hash archived |
-| Production public keys published on ≥2 independent channels | Channel URLs/ids listed in trust store `published_channels` |
-| Custody, backup, dual-control, and incident response documented | Linked from SECURITY.md / ops runbook (not private key material) |
-| Production trust store verified to reject unknown, revoked, test, and development-only keys | CI or witnessed ceremony transcript |
-| Historical verification retained after first production rotation | `policy_mode=historical` proven against a retired key |
-| Callers use `verify_envelope_detailed` with the production trust store | Boolean `verify_envelope` without trust material is not used in production |
+| Step | Done when | Status |
+|---|---|---|
+| Offline root generated on air-gapped or equivalent custody media | Root public fingerprint recorded | Met (public key published) |
+| Online release key generated; root signs a rotation/issuance statement | Statement hash archived | Met (public key published) |
+| Production public keys published on ≥2 independent channels | Channel URLs/ids listed in trust store `published_channels` | Met |
+| Custody, backup, dual-control, and incident response documented | Linked from SECURITY.md / ops runbook (not private key material) | Met (see SECURITY.md) |
+| Production trust store verified to reject unknown, revoked, test, and development-only keys | CI or witnessed ceremony transcript | Met (CI trust tests) |
+| Historical verification retained after first production rotation | `policy_mode=historical` proven against a retired key | Pending first production rotation |
+| Callers use `verify_envelope_detailed` with the production trust store | Boolean `verify_envelope` without trust material is not used in production | Met (CIR-04) |
 
-## Boolean `verify_envelope` API (CIR-04)
+## Boolean `verify_envelope` API
 
 `verify_envelope` is a convenience boolean wrapper. It **requires** one of:
 
