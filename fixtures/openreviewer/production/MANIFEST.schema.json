@@ -1,0 +1,102 @@
+{
+  "$defs": {
+    "ProductionIntakeStatus": {
+      "enum": [
+        "pending",
+        "blocked",
+        "ready"
+      ],
+      "title": "ProductionIntakeStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Schema for ``fixtures/*/production/MANIFEST.json``.",
+  "properties": {
+    "adapter": {
+      "title": "Adapter",
+      "type": "string"
+    },
+    "artifacts": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "blocked_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Blocked Reason"
+    },
+    "manifest_version": {
+      "default": "0.1",
+      "title": "Manifest Version",
+      "type": "string"
+    },
+    "performance_claims_authorized": {
+      "default": false,
+      "title": "Performance Claims Authorized",
+      "type": "boolean"
+    },
+    "retrieval_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retrieval Date"
+    },
+    "rights_record_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Rights Record Ids",
+      "type": "array"
+    },
+    "source": {
+      "pattern": "^production$",
+      "title": "Source",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ProductionIntakeStatus"
+    },
+    "upstream_commit_or_config": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Upstream Commit Or Config"
+    },
+    "upstream_repository": {
+      "title": "Upstream Repository",
+      "type": "string"
+    }
+  },
+  "required": [
+    "adapter",
+    "source",
+    "status",
+    "upstream_repository"
+  ],
+  "title": "ProductionManifest",
+  "type": "object"
+}

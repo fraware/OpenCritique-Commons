@@ -16,6 +16,13 @@ from .openreviewer import (
     OpenReviewerReview,
     convert_openreviewer_benchmark,
 )
+from .production_fixtures import (
+    COARSE_PRODUCTION,
+    OPENREVIEWER_PRODUCTION,
+    ProductionSection,
+    production_section_for,
+    production_section_markdown,
+)
 
 
 class StrictModel(BaseModel):
@@ -41,6 +48,7 @@ class CrossAdapterConformanceReport(StrictModel):
         "Adapter conformance compares information preservation only. "
         "It does not validate reviewer quality or authorize performance claims."
     )
+    production_sections: list[ProductionSection] = Field(default_factory=list)
 
 
 def openreviewer_loss_profile() -> AdapterLossProfile:
@@ -91,7 +99,11 @@ def coarse_loss_profile() -> AdapterLossProfile:
 
 def build_cross_adapter_report() -> CrossAdapterConformanceReport:
     return CrossAdapterConformanceReport(
-        profiles=[coarse_loss_profile(), openreviewer_loss_profile()]
+        profiles=[coarse_loss_profile(), openreviewer_loss_profile()],
+        production_sections=[
+            production_section_for("coarse", COARSE_PRODUCTION),
+            production_section_for("openreviewer", OPENREVIEWER_PRODUCTION),
+        ],
     )
 
 
@@ -129,6 +141,8 @@ def report_to_markdown(report: CrossAdapterConformanceReport) -> str:
                 "",
             ]
         )
+    for section in report.production_sections:
+        lines.append(production_section_markdown(section))
     return "\n".join(lines)
 
 

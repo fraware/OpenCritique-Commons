@@ -4,8 +4,10 @@ Honest tracking after stubs-closed product hardening landed on `main`
 ([PR #15](https://github.com/fraware/OpenCritique-Commons/pull/15)).
 
 Annotated tag `v0.5.0a1` remains pinned at the restored canonical source merge
-(PR #13). The next engineering tag for the post-hardening seven-package runtime
-is **`v0.6.0a0`** / **`v0.6-alpha`** (not cut yet).
+(PR #13). Annotated engineering tag **`v0.6.0a0`** / **`v0.6-alpha`** marks the
+post-hardening seven-package runtime on `main` after PR #15 / #20 (CIR-04
+signing API harden + claim-free engineering surface). Scientific performance
+claims remain unauthorized.
 
 Scientific performance claims remain **disabled** until the claim-authorization
 matrix (§12) and v1.0 gate (§14) are satisfied with natural adjudicated evidence.
@@ -66,7 +68,7 @@ leaderboards.
 | Four deployment modes (local / hosted / BYOK / external) | Local + BYOK runbooks and Compose reference stack present; hosted production ops still external |
 | Appeals process | Append-only appeal/correction records present for registry determinations |
 | Ecosystem adapters with authentic redistributable outputs | **Partial** (interfaces + synthetic fixtures) |
-| Security review of production signing keys | **Pending** (development keys only; issue #4) |
+| Security review of production signing keys | **Production public keys published** (issue #4); private keys offline |
 | Matcher-audit gate on production configs | Protocol present; natural pilot volume **missing** (issue #6) |
 
 ## Honest gaps carried forward (blocked issues)
@@ -74,9 +76,9 @@ leaderboards.
 1. Genuine Coarse production exports — issue #3
 2. Authentic OpenReviewer redistributable outputs — issue #5
 3. Natural rights-cleared manuscript corpus — issue #7
-4. Production signing ceremony — issue #4 (development channel populated)
-5. Matcher-audit pilot ≥100 **natural** decisions — issue #6
-6. Expert program epic — issue #14
+4. Production signing ceremony — issue #4 (**production public keys published**; private keys offline)
+5. Matcher-audit pilot ≥100 **natural** decisions — issue #6 (sample denominators measured; natural = 0)
+6. Expert program epic — issue #14 (ops docs/policy objects present; paid natural pilot pending)
 
 Until these close, release notes and README must not assert scientific reviewer performance.
 

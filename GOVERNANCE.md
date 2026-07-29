@@ -51,6 +51,13 @@ Contributor attestation establishes a declared basis for processing; it does not
 
 Scientific expert labor should be compensated under a transparent schedule when funding permits. Payment must be tied to task completion, never to a particular decision. Public attribution is opt-in and independent from payment. Compensation records are private.
 
+Operational templates and versioned qualification thresholds for the expert program (issue #14):
+
+- [docs/expert-program-ops.md](docs/expert-program-ops.md)
+- [docs/expert-compensation-terms.md](docs/expert-compensation-terms.md)
+- [docs/expert-attribution-policy.md](docs/expert-attribution-policy.md)
+- [governance/policies/expert-qualification-thresholds.v0.1.json](governance/policies/expert-qualification-thresholds.v0.1.json)
+
 ## Changes
 
 Changes to constitutional requirements, calibration scoring, blinding rules, severity policy, qualification gates, or public-core licensing require a public decision record under `governance/decisions/`. Historical records are superseded, not edited after acceptance.

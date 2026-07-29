@@ -27,7 +27,13 @@ If an OpenCritique scorecard signing private key is suspected compromised:
    artifacts without publishing private key material.
 
 Test keys must be unmistakably marked and are rejected by production verification
-policy. A valid signature never authorizes scientific performance claims.
+policy. Development-channel keys are rejected under `policy_mode=production`.
+A valid signature never authorizes scientific performance claims.
+
+Production private-key custody, backup, dual-control, and incident response follow
+this document plus [docs/signing-governance.md](docs/signing-governance.md).
+Ceremony private material is generated only under an out-of-repo `--private-dir`
+(`scripts/signing_ceremony_prod.py`).
 
 ## Repository invariants
 

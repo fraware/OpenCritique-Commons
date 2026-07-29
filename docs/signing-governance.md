@@ -10,10 +10,11 @@ scientific correctness or authorize performance claims.
 | Channel | Trust-store contents | Verification policy |
 |---|---|---|
 | `development` | Offline root + online release public keys (committed) | `policy_mode=development` |
-| `production` | Empty until separate production ceremony | `policy_mode=production` rejects development-only keys |
+| `production` | Offline root + online release public keys (committed; private keys offline) | `policy_mode=production` rejects development-only keys |
 
 Development keys are unmistakably labeled (`ed25519:DEV-…`) and list `development`
 in `channels` without `production`. Production verification fail-closes on them.
+Production keys are labeled (`ed25519:PROD-…`) and list `production` in `channels`.
 
 ## Key roles
 
@@ -85,9 +86,9 @@ opencritique evaluation verify-scorecard \
 
 ## Production ceremony checklist (issue #4)
 
-Do **not** commit production private keys. Development-channel keys remain the
-only in-repo trust material until this checklist completes outside the
-repository.
+Do **not** commit production private keys. Run
+`scripts/signing_ceremony_prod.py` with `--private-dir` **outside** the
+repository. Development-channel keys remain development-only.
 
 | Step | Done when |
 |---|---|
@@ -99,5 +100,25 @@ repository.
 | Historical verification retained after first production rotation | `policy_mode=historical` proven against a retired key |
 | Callers use `verify_envelope_detailed` with the production trust store | Boolean `verify_envelope` without trust material is not used in production |
 
-Until issue #4 closes, release notes must state that only the **development**
-signing channel is populated.
+## Boolean `verify_envelope` API (CIR-04)
+
+`verify_envelope` is a convenience boolean wrapper. It **requires** one of:
+
+- `trusted_public_key_path` (PEM),
+- `trust_store` / `trust_store_path`, or
+- explicit `allow_untrusted_test=True` (ephemeral CI / unit tests only).
+
+Calling it without trust material and without the opt-in flag raises `ValueError`
+(fail closed). Production and development `verify_envelope_detailed` policies also
+fail closed when no trust store or trusted PEM is supplied. Prefer
+`verify_envelope_detailed` for all production verification paths.
+
+## Production ceremony script
+
+```bash
+# Private keys go OUTSIDE the repo (temp dir by default).
+python scripts/signing_ceremony_prod.py --private-dir /secure/offline/prod-keys
+```
+
+Only public keys and roles are merged into `trust/scorecard-trust-store.json`.
+Private keys must never be committed. Development keys remain development-only.

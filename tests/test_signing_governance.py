@@ -346,6 +346,33 @@ def test_expiration_and_key_substitution(tmp_path: Path) -> None:
     _ = substituted
 
 
+def test_verify_envelope_requires_trust_or_explicit_test_flag(tmp_path: Path) -> None:
+    priv, pub = tmp_path / "t.pem", tmp_path / "t.pub.pem"
+    generate_keypair(priv, pub)
+    envelope = sign_scorecard(_scorecard(), priv, key_role=KeyRole.TEST)
+    try:
+        verify_envelope(envelope)
+        raise AssertionError("expected ValueError without trust material")
+    except ValueError as exc:
+        assert "allow_untrusted_test" in str(exc)
+    assert verify_envelope(envelope, allow_untrusted_test=True) is True
+    assert verify_envelope(envelope, pub) is True
+
+
+def test_production_and_development_fail_closed_without_trust(tmp_path: Path) -> None:
+    priv, pub = tmp_path / "u.pem", tmp_path / "u.pub.pem"
+    generate_keypair(priv, pub)
+    envelope = sign_scorecard(_scorecard(), priv, key_role=KeyRole.ONLINE_RELEASE)
+    for mode in (TrustPolicyMode.PRODUCTION, TrustPolicyMode.DEVELOPMENT):
+        result = verify_envelope_detailed(envelope, policy_mode=mode)
+        assert not result.ok
+        assert result.reason == VerificationFailureReason.UNKNOWN_KEY
+    # TEST policy may still crypto-verify without a store (explicit ephemeral path).
+    assert verify_envelope_detailed(
+        envelope, policy_mode=TrustPolicyMode.TEST
+    ).ok
+
+
 def test_no_private_keys_in_tree() -> None:
     root = Path(__file__).resolve().parents[1]
     banned = []
@@ -380,11 +407,22 @@ def test_shipped_trust_store_has_no_secrets() -> None:
     assert path.is_file()
     store = TrustStore.model_validate_json(path.read_text(encoding="utf-8"))
     assert len(store.published_channels) >= 2
-    assert len(store.keys) >= 2
+    assert len(store.keys) >= 4
     assert any(key.role == KeyRole.OFFLINE_ROOT for key in store.keys)
     assert any(key.role == KeyRole.ONLINE_RELEASE for key in store.keys)
-    assert all("development" in key.channels for key in store.keys)
-    assert all("production" not in key.channels for key in store.keys)
+    dev_keys = [
+        key
+        for key in store.keys
+        if "development" in {c.lower() for c in key.channels}
+        and "production" not in {c.lower() for c in key.channels}
+    ]
+    prod_keys = [
+        key for key in store.keys if "production" in {c.lower() for c in key.channels}
+    ]
+    assert len(dev_keys) >= 2
+    assert len(prod_keys) >= 2
+    assert all(key.key_id.startswith("ed25519:DEV-") for key in dev_keys)
+    assert all(key.key_id.startswith("ed25519:PROD-") for key in prod_keys)
     blob = path.read_text(encoding="utf-8")
     assert "PRIVATE KEY" not in blob
     write_trust_store(store, path)  # round-trip format stability

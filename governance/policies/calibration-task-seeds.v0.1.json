@@ -1,0 +1,42 @@
+{
+  "policy_id": "calibration-task-seeds",
+  "policy_version": "0.1",
+  "issue": 14,
+  "performance_claims_authorized": false,
+  "source_class": "maintainer_owned_sample_corpus",
+  "notes": "Seed calibration definitions from sample cases only. Move to natural cases only after issue #7 clearance.",
+  "tasks": [
+    {
+      "seed_id": "cal-seed-econ-01",
+      "domain_profile": "empirical_econ",
+      "case_id": "occase_synth_econ_01",
+      "case_version": "1",
+      "corpus_path": "corpus/samples/sample-econ-01/",
+      "fixture_review": "fixtures/coarse/reviews/econ-01.json"
+    },
+    {
+      "seed_id": "cal-seed-ml-01",
+      "domain_profile": "empirical_ml",
+      "case_id": "occase_synth_ml_01",
+      "case_version": "1",
+      "corpus_path": "corpus/samples/sample-ml-01/",
+      "fixture_review": "fixtures/coarse/reviews/ml-01.json"
+    },
+    {
+      "seed_id": "cal-seed-theory-01",
+      "domain_profile": "theory",
+      "case_id": "occase_synth_theory_01",
+      "case_version": "1",
+      "corpus_path": "corpus/samples/sample-theory-01/",
+      "fixture_review": "fixtures/coarse/reviews/theory-01.json"
+    },
+    {
+      "seed_id": "cal-seed-multi-01",
+      "domain_profile": "empirical_ml",
+      "case_id": "occase_synth_multi_01",
+      "case_version": "1",
+      "corpus_path": "corpus/samples/sample-multi-01/",
+      "fixture_review": "fixtures/coarse/reviews/multi-01.json"
+    }
+  ]
+}

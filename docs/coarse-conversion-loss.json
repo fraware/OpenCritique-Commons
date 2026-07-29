@@ -847,7 +847,7 @@
   ],
   "disclosure": "Maintainer-owned sample fixtures exercise adapter compatibility only. They do not authorize precision, recall, or comparative performance claims.",
   "fixture_kind": "maintainer_owned_sample_corpus",
-  "generated_at": "2026-07-29T10:15:24.600696Z",
+  "generated_at": "2026-07-29T12:38:19.163132Z",
   "omitted_field_summary": [
     "detailed_comments[].status",
     "overall_feedback",
@@ -855,6 +855,15 @@
     "claim reconstruction"
   ],
   "performance_claims_authorized": false,
+  "production": {
+    "adapter": "coarse",
+    "blocked_reason": "No genuine rights-cleared Coarse production exports available; sample fixtures remain under fixtures/coarse/. Tracked on issue #3; rights path on issue #7.",
+    "export_count": 0,
+    "fixture_root": "C:/Users/mateo/OpenCritique-Commons/fixtures/coarse/production",
+    "notes": "Production conversion fidelity only when status=ready; never reviewer-quality claims.",
+    "source": "production",
+    "status": "blocked"
+  },
   "report_version": "0.1",
   "upstream_commit_pin": "opencritique-sample-adapter-contract-v1",
   "upstream_contract_version": "coarse-review-contract-v1",

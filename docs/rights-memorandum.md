@@ -20,7 +20,9 @@ target subject to verification of:
 At the time of this memorandum, **no PeerQA (or other natural) manuscript set has
 completed affirmative rights clearance** for public OpenCritique import.
 Accordingly this repository imports **maintainer-owned open sample manuscripts**
-under `corpus/samples/` for tooling conformance only.
+under `corpus/samples/` for tooling conformance only. The formal negative finding
+and checklist archive for the current investigation are in
+[rights-clearance-status.md](rights-clearance-status.md).
 
 ## Artifact classes (machine-readable)
 

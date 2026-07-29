@@ -36,6 +36,40 @@
         "https://github.com/fraware/OpenCritique-Commons/releases"
       ],
       "notes": "Development-channel online release key. Reject under production policy unless channels include 'production'."
+    },
+    {
+      "key_id": "ed25519:PROD-ROOT-9e39f0b8ece9cd01",
+      "role": "offline_root",
+      "status": "active",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAfBAyoSau/8BbCIbSP4qSk7aExNeO0k0cXGowKcpOgBo=\n-----END PUBLIC KEY-----\n",
+      "public_key_base64": "fBAyoSau/8BbCIbSP4qSk7aExNeO0k0cXGowKcpOgBo=",
+      "fingerprint_sha256": "9e39f0b8ece9cd0153c40f200a0afa8c913aaf6f9850ce325ebf2c54ef278986",
+      "not_before": "2026-07-29T12:33:17.367351Z",
+      "not_after": "2031-07-28T12:34:17.367351Z",
+      "superseded_by": null,
+      "channels": [
+        "production",
+        "https://github.com/fraware/OpenCritique-Commons/blob/main/trust/scorecard-trust-store.json",
+        "https://github.com/fraware/OpenCritique-Commons/releases"
+      ],
+      "notes": "Production-channel offline root. Custody outside the repository. Private key must never be committed."
+    },
+    {
+      "key_id": "ed25519:PROD-RELEASE-051220501bafa21c",
+      "role": "online_release",
+      "status": "active",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAqxO7YwYeRh1hxOrJodAEFEJYuYYUgUODua4IHUPBUn0=\n-----END PUBLIC KEY-----\n",
+      "public_key_base64": "qxO7YwYeRh1hxOrJodAEFEJYuYYUgUODua4IHUPBUn0=",
+      "fingerprint_sha256": "051220501bafa21cb7c63c1463a22910098d9b789906a94ea9f5d824963a702a",
+      "not_before": "2026-07-29T12:33:17.367351Z",
+      "not_after": "2027-07-29T12:34:17.367351Z",
+      "superseded_by": null,
+      "channels": [
+        "production",
+        "https://github.com/fraware/OpenCritique-Commons/blob/main/trust/scorecard-trust-store.json",
+        "https://github.com/fraware/OpenCritique-Commons/releases"
+      ],
+      "notes": "Production-channel online release key. Authorized for production scorecard publication under policy_mode=production."
     }
   ],
   "revocations": [],
@@ -44,6 +78,6 @@
     "https://github.com/fraware/OpenCritique-Commons/blob/main/trust/scorecard-trust-store.json",
     "https://github.com/fraware/OpenCritique-Commons/releases"
   ],
-  "updated_at": "2026-07-29T07:36:12.167191Z",
-  "notes": "Development-channel public keys only. Production-channel keys are absent until a separate production ceremony (issue #4). Private keys are never stored in this repository."
+  "updated_at": "2026-07-29T12:34:17.367351Z",
+  "notes": "Public keys only. Development-channel keys are development-only; production-channel keys are present after the production ceremony (issue #4). Private keys are never stored in this repository. Issuance statement SHA-256: 9dc99f7e62d345212729ac24eccb019d4c4b9b196f6cf6a9feea1bfdd390acce."
 }

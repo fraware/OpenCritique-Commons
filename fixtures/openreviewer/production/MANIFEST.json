@@ -1,0 +1,13 @@
+{
+  "manifest_version": "0.1",
+  "adapter": "openreviewer",
+  "source": "production",
+  "status": "blocked",
+  "upstream_repository": "https://github.com/maxidl/openreviewer",
+  "upstream_commit_or_config": null,
+  "retrieval_date": null,
+  "rights_record_ids": [],
+  "artifacts": [],
+  "blocked_reason": "No authentic redistributable OpenReviewer production outputs available; sample fixtures remain under fixtures/openreviewer/. Tracked on issue #5; rights path on issue #7.",
+  "performance_claims_authorized": false
+}
