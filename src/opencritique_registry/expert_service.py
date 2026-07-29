@@ -36,6 +36,10 @@ from .db_models import (
     PrincipalORM,
     utcnow,
 )
+from .expert_policy import (
+    qualification_expiry_at,
+    require_conflict_disclosure,
+)
 from .expert_schemas import (
     AgreementMetrics,
     CalibrationAttemptStatus,
@@ -521,11 +525,14 @@ class ExpertProgramService:
                 status_code=422,
                 detail={"unknown_evidence_ids": sorted(unknown)},
             )
-        if data.conflict_declaration.status == "disqualifying":
-            raise HTTPException(
-                status_code=409,
-                detail="disqualifying conflict requires reassignment",
+        try:
+            require_conflict_disclosure(
+                data.conflict_declaration.status,
+                data.conflict_declaration.description,
             )
+        except ValueError as exc:
+            status_code = 409 if "disqualifying" in str(exc) else 422
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
         decision = {
             **data.model_dump(mode="json"),
             "task_id": task.task_id,
@@ -641,6 +648,7 @@ class ExpertProgramService:
                 )
             )
             if existing is None:
+                valid_from = utcnow()
                 self.session.add(
                     ExpertQualificationORM(
                         qualification_id=new_id("ocqual"),
@@ -649,6 +657,11 @@ class ExpertProgramService:
                         status=QualificationStatus.ACTIVE.value,
                         source_attempt_id=attempt.attempt_id,
                         created_by=calibration_set.created_by,
+                        valid_from=valid_from,
+                        expires_at=qualification_expiry_at(
+                            valid_from=valid_from,
+                            domain_profile=calibration_set.domain_profile,
+                        ),
                     )
                 )
             if profile is not None:

@@ -7,15 +7,23 @@ import json
 import random
 from datetime import UTC, datetime
 from enum import Enum
+from pathlib import Path
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from .models import ConcernMatch, MatcherConfig
+from .models import BenchmarkEvidenceClass, ConcernMatch, MatcherConfig
 
 
 class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
+
+
+class AuditEvidenceClass(str, Enum):
+    """Population evidence class for denominator accounting (issue #6)."""
+
+    SAMPLE = "sample"
+    NATURAL = "natural"
 
 
 class AuditStratum(str, Enum):
@@ -55,6 +63,7 @@ class AuditCandidate(StrictModel):
     reference_concern_id: str | None = None
     match_score: float | None = None
     domain_profile: str | None = None
+    evidence_class: AuditEvidenceClass = AuditEvidenceClass.SAMPLE
     blinded_payload: dict[str, Any]
     system_identity_hidden: bool = True
 
@@ -87,6 +96,8 @@ class MatcherAuditSample(StrictModel):
     protocol_id: str
     random_seed: int
     matcher_config: MatcherConfig
+    evidence_class: AuditEvidenceClass = AuditEvidenceClass.SAMPLE
+    population_denominator: int = Field(ge=0, default=0)
     candidates: list[AuditCandidate]
     generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -95,12 +106,77 @@ class MatcherAuditSample(StrictModel):
         ids = [c.candidate_id for c in self.candidates]
         if len(ids) != len(set(ids)):
             raise ValueError("audit candidate ids must be unique")
+        for candidate in self.candidates:
+            if candidate.evidence_class != self.evidence_class:
+                raise ValueError(
+                    "candidate evidence_class must match sample evidence_class "
+                    f"({self.evidence_class.value})"
+                )
+        return self
+
+
+class DenominatorAccount(StrictModel):
+    """Honest sample vs natural decision accounting (issue #6)."""
+
+    account_version: str = "0.1"
+    sample_decisions_available: int = Field(ge=0)
+    natural_decisions_available: int = Field(ge=0)
+    natural_dod_target: int = 100
+    natural_dod_met: bool = False
+    performance_claims_authorized: bool = False
+    notes: str = (
+        "Natural DoD requires ≥100 audited natural decisions (or every available "
+        "natural decision when fewer exist). Sample decisions never satisfy natural DoD."
+    )
+
+    @model_validator(mode="after")
+    def enforce_honesty(self) -> DenominatorAccount:
+        if self.performance_claims_authorized:
+            raise ValueError("performance_claims_authorized must remain false")
+        met = self.natural_decisions_available >= self.natural_dod_target
+        if self.natural_dod_met != met:
+            raise ValueError(
+                "natural_dod_met must equal "
+                f"(natural_decisions_available >= {self.natural_dod_target})"
+            )
+        return self
+
+
+class MatcherAuditSessionManifest(StrictModel):
+    """Persisted audit session with configuration hash (issue #6)."""
+
+    manifest_version: str = "0.1"
+    session_id: str
+    protocol_id: str
+    evidence_class: AuditEvidenceClass
+    random_seed: int
+    target_sample_size: int
+    population_denominator: int = Field(ge=0)
+    sampled_count: int = Field(ge=0)
+    matcher_config: MatcherConfig
+    configuration_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    sample_id_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    natural_dod_met: bool = False
+    performance_claims_authorized: bool = False
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    notes: str = ""
+
+    @model_validator(mode="after")
+    def claims_and_natural_gate(self) -> MatcherAuditSessionManifest:
+        if self.performance_claims_authorized:
+            raise ValueError("performance_claims_authorized must remain false")
+        if self.evidence_class == AuditEvidenceClass.SAMPLE and self.natural_dod_met:
+            raise ValueError("sample sessions cannot mark natural_dod_met=true")
+        if self.sampled_count > self.population_denominator:
+            raise ValueError("sampled_count cannot exceed population_denominator")
         return self
 
 
 class AuditAgreementReport(StrictModel):
     report_version: str = "0.1"
     sample_id_hash: str
+    evidence_class: AuditEvidenceClass = AuditEvidenceClass.SAMPLE
+    population_denominator: int = 0
     judgments: list[AuditJudgment]
     raw_agreement: float | None
     chance_corrected_agreement: float | None
@@ -111,6 +187,7 @@ class AuditAgreementReport(StrictModel):
     uncertainty_note: str
     matcher_config_gate_passed: bool | None = None
     policy_invalidated: bool = False
+    natural_dod_met: bool = False
     generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
@@ -138,9 +215,41 @@ DEFAULT_PROTOCOL = MatcherAuditProtocol(
 )
 
 
+def configuration_hash(config: MatcherConfig) -> str:
+    payload = json.dumps(config.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
 def _candidate_id(*parts: str) -> str:
     digest = hashlib.sha256("\x1f".join(parts).encode()).hexdigest()[:20]
     return f"ocaud_{digest}"
+
+
+def measure_current_denominators(
+    *,
+    sample_decision_count: int | None = None,
+    natural_decision_count: int = 0,
+    repo_root: Path | None = None,
+) -> DenominatorAccount:
+    """Report honest current denominators without fabricating natural decisions."""
+    if natural_decision_count < 0:
+        raise ValueError("natural_decision_count must be >= 0")
+    sample_count = sample_decision_count
+    if sample_count is None:
+        root = repo_root or Path(__file__).resolve().parents[2]
+        coarse = root / "fixtures" / "coarse" / "reviews"
+        openreviewer = root / "fixtures" / "openreviewer" / "reviews"
+        sample_count = 0
+        if coarse.is_dir():
+            sample_count += sum(1 for p in coarse.glob("*.json") if p.is_file())
+        if openreviewer.is_dir():
+            sample_count += sum(1 for p in openreviewer.glob("*.json") if p.is_file())
+    return DenominatorAccount(
+        sample_decisions_available=sample_count,
+        natural_decisions_available=natural_decision_count,
+        natural_dod_met=natural_decision_count >= 100,
+        performance_claims_authorized=False,
+    )
 
 
 def stratify_match_decisions(
@@ -155,8 +264,23 @@ def stratify_match_decisions(
     config: MatcherConfig,
     seed: int,
     target_size: int = 100,
+    evidence_class: AuditEvidenceClass = AuditEvidenceClass.SAMPLE,
+    population_denominator: int | None = None,
 ) -> MatcherAuditSample:
     """Build a stratified, blinded audit sample (versioned seed)."""
+    if evidence_class == AuditEvidenceClass.NATURAL and (
+        population_denominator is not None and population_denominator == 0
+    ):
+        # Fail closed: do not invent natural audit volume.
+        return MatcherAuditSample(
+            protocol_id=DEFAULT_PROTOCOL.protocol_id,
+            random_seed=seed,
+            matcher_config=config,
+            evidence_class=evidence_class,
+            population_denominator=0,
+            candidates=[],
+        )
+
     rng = random.Random(seed)
     pool: list[AuditCandidate] = []
 
@@ -165,6 +289,7 @@ def stratify_match_decisions(
             "case_id": case_id,
             "case_version": case_version,
             "domain_profile": domain_by_case.get((case_id, case_version)),
+            "evidence_class": evidence_class.value,
             **fields,
         }
         # Explicitly omit system identity / leaderboard fields.
@@ -172,8 +297,8 @@ def stratify_match_decisions(
         payload.pop("leaderboard_rank", None)
         return payload
 
-    near = []
-    far = []
+    near: list[AuditCandidate] = []
+    far: list[AuditCandidate] = []
     for case_id, case_version, _domain, match in matches:
         distance = abs(match.score - config.threshold)
         stratum = (
@@ -192,6 +317,7 @@ def stratify_match_decisions(
             reference_concern_id=match.reference_concern_id,
             match_score=match.score,
             domain_profile=domain_by_case.get((case_id, case_version)),
+            evidence_class=evidence_class,
             blinded_payload=blind(
                 case_id,
                 case_version,
@@ -217,6 +343,7 @@ def stratify_match_decisions(
                     submitted_local_id=value if "submitted" in stratum.value else None,
                     reference_concern_id=value if "reference" in stratum.value else None,
                     domain_profile=domain_by_case.get((case_id, case_version)),
+                    evidence_class=evidence_class,
                     blinded_payload=blind(case_id, case_version, **{field_name: value}),
                 )
             )
@@ -236,6 +363,7 @@ def stratify_match_decisions(
                 reference_concern_id=match.reference_concern_id,
                 match_score=match.score,
                 domain_profile=domain_by_case.get((case_id, case_version)),
+                evidence_class=evidence_class,
                 blinded_payload=blind(
                     case_id,
                     case_version,
@@ -256,6 +384,7 @@ def stratify_match_decisions(
                 reference_concern_id=match.reference_concern_id,
                 match_score=match.score,
                 domain_profile=domain_by_case.get((case_id, case_version)),
+                evidence_class=evidence_class,
                 blinded_payload=blind(
                     case_id,
                     case_version,
@@ -278,6 +407,7 @@ def stratify_match_decisions(
                 case_id=case_id,
                 case_version=case_version,
                 domain_profile=domain,
+                evidence_class=evidence_class,
                 blinded_payload=blind(case_id, case_version, domain_profile=domain),
             )
         )
@@ -308,12 +438,75 @@ def stratify_match_decisions(
         seen.add(item.candidate_id)
         dedup.append(item)
 
+    denom = (
+        population_denominator
+        if population_denominator is not None
+        else len(near) + len(far) + len(pool)
+    )
     return MatcherAuditSample(
         protocol_id=DEFAULT_PROTOCOL.protocol_id,
         random_seed=seed,
         matcher_config=config,
+        evidence_class=evidence_class,
+        population_denominator=denom,
         candidates=dedup,
     )
+
+
+def build_session_manifest(
+    sample: MatcherAuditSample,
+    *,
+    session_id: str | None = None,
+    notes: str = "",
+) -> MatcherAuditSessionManifest:
+    sample_hash = hashlib.sha256(
+        json.dumps(
+            [c.candidate_id for c in sample.candidates],
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    sid = session_id or f"ocmas_{sample_hash[:20]}"
+    natural_met = (
+        sample.evidence_class == AuditEvidenceClass.NATURAL
+        and sample.population_denominator >= 100
+        and len(sample.candidates) >= min(100, max(sample.population_denominator, 1))
+    )
+    return MatcherAuditSessionManifest(
+        session_id=sid,
+        protocol_id=sample.protocol_id,
+        evidence_class=sample.evidence_class,
+        random_seed=sample.random_seed,
+        target_sample_size=DEFAULT_PROTOCOL.target_sample_size,
+        population_denominator=sample.population_denominator,
+        sampled_count=len(sample.candidates),
+        matcher_config=sample.matcher_config,
+        configuration_hash=configuration_hash(sample.matcher_config),
+        sample_id_hash=sample_hash,
+        natural_dod_met=natural_met,
+        performance_claims_authorized=False,
+        notes=notes
+        or (
+            "Sample evidence only; natural DoD unmet."
+            if sample.evidence_class == AuditEvidenceClass.SAMPLE
+            else "Natural evidence class session."
+        ),
+    )
+
+
+def persist_session_manifest(
+    manifest: MatcherAuditSessionManifest,
+    path: Path,
+) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(manifest.model_dump(mode="json"), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def load_session_manifest(path: Path) -> MatcherAuditSessionManifest:
+    return MatcherAuditSessionManifest.model_validate_json(path.read_text(encoding="utf-8"))
 
 
 def cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float | None:
@@ -379,8 +572,14 @@ def analyze_audit_judgments(
         ).encode()
     ).hexdigest()
 
+    natural_met = (
+        sample.evidence_class == AuditEvidenceClass.NATURAL
+        and sample.population_denominator >= 100
+    )
     return AuditAgreementReport(
         sample_id_hash=sample_hash,
+        evidence_class=sample.evidence_class,
+        population_denominator=sample.population_denominator,
         judgments=judgments,
         raw_agreement=raw,
         chance_corrected_agreement=kappa,
@@ -390,10 +589,13 @@ def analyze_audit_judgments(
         estimated_missed_match_rate=missed_rate,
         uncertainty_note=(
             "Rates are descriptive for the pilot sample; wide uncertainty is expected "
-            "until natural adjudicated volume reaches protocol targets."
+            "until natural adjudicated volume reaches protocol targets. "
+            f"evidence_class={sample.evidence_class.value}; "
+            f"population_denominator={sample.population_denominator}."
         ),
         matcher_config_gate_passed=not invalidated,
         policy_invalidated=invalidated,
+        natural_dod_met=natural_met,
     )
 
 
@@ -410,3 +612,14 @@ def configuration_gate(
     if report.policy_invalidated or report.matcher_config_gate_passed is False:
         return "failed"
     return "passed"
+
+
+def evidence_class_for_benchmark(
+    evidence: BenchmarkEvidenceClass,
+) -> AuditEvidenceClass:
+    if evidence in {
+        BenchmarkEvidenceClass.EXPERT_NATURAL,
+        BenchmarkEvidenceClass.LIVE_PRIVATE,
+    }:
+        return AuditEvidenceClass.NATURAL
+    return AuditEvidenceClass.SAMPLE

@@ -1,8 +1,8 @@
 # Expert compensation terms template (issue #14)
 
 **Policy version:** `expert-compensation-v0.1`  
-**Status:** template for funded pilots; amounts are placeholders until a funding
-schedule is adopted by maintainers.
+**Status:** template for funded pilots; rates are `TBD` until a funding schedule
+is adopted by maintainers.
 
 ## Principles
 
@@ -17,7 +17,7 @@ schedule is adopted by maintainers.
 
 ## Task classes (schedule slots)
 
-| Task class | Unit | Placeholder rate (USD) | Notes |
+| Task class | Unit | Rate (USD) | Notes |
 |---|---|---:|---|
 | Calibration attempt (domain profile) | attempt | TBD | Eligibility only; not a public rank |
 | Primary adjudication (sample case) | concern task | TBD | Blinded payload |

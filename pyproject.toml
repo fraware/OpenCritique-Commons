@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opencritique-commons"
-version = "0.5.0a1"
+version = "0.6.0a0"
 description = "Open scientific-critique schemas, human adjudication, deterministic evaluation, and public scorecards."
 readme = "README.md"
 requires-python = ">=3.12"

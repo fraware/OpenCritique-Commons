@@ -18,6 +18,7 @@ from opencritique_schema.models import (
 )
 
 from .artifacts import LocalArtifactStore
+from .assignment_guards import AssignmentRecord, blocks_duplicate_primary
 from .audit import record_event
 from .db_models import (
     AdjudicationSubmissionORM,
@@ -41,6 +42,7 @@ from .db_models import (
     utcnow,
 )
 from .determination import determine
+from .expert_policy import is_qualification_expired
 from .ids import new_id
 from .rights import active_grant, require_use_grant
 from .schemas import (
@@ -467,10 +469,14 @@ class RegistryService:
                 ExpertQualificationORM.status == "active",
             )
         ).all()
-        return any(
-            item.expires_at is None or as_utc(item.expires_at) > now
-            for item in qualifications
-        )
+        active = []
+        for item in qualifications:
+            if is_qualification_expired(expires_at=optional_utc(item.expires_at), now=now):
+                if item.status == "active":
+                    item.status = "expired"
+                continue
+            active.append(item)
+        return bool(active)
 
     def _case_domain_profile(self, case_id: str, case_version: str, concern_id: str) -> str:
         row = _case_row(self.session, case_id, case_version)
@@ -504,17 +510,31 @@ class RegistryService:
             )
             if not self._adjudicator_is_qualified(adjudicator_id, domain_profile):
                 continue
-            prior = self.session.scalar(
+            sibling_rows = self.session.scalars(
                 select(AdjudicationTaskORM).where(
                     AdjudicationTaskORM.concern_id == task.concern_id,
-                    AdjudicationTaskORM.assigned_to == adjudicator_id,
-                    AdjudicationTaskORM.task_id != task.task_id,
-                    AdjudicationTaskORM.status.in_(
-                        [TaskStatus.CLAIMED.value, TaskStatus.COMPLETED.value]
-                    ),
                 )
-            )
-            if prior is not None:
+            ).all()
+            if blocks_duplicate_primary(
+                candidate=AssignmentRecord(
+                    task_id=task.task_id,
+                    concern_id=task.concern_id,
+                    slot=task.slot,
+                    assigned_to=task.assigned_to,
+                    status=task.status,
+                ),
+                existing=[
+                    AssignmentRecord(
+                        task_id=row.task_id,
+                        concern_id=row.concern_id,
+                        slot=row.slot,
+                        assigned_to=row.assigned_to,
+                        status=row.status,
+                    )
+                    for row in sibling_rows
+                ],
+                adjudicator_id=adjudicator_id,
+            ):
                 continue
             task.status = TaskStatus.CLAIMED.value
             task.assigned_to = adjudicator_id
@@ -762,6 +782,19 @@ class RegistryService:
             and not data.counterposition_assessment.strip()
         ):
             raise HTTPException(status_code=422, detail="counterposition assessment is required")
+        if (
+            data.conflict_declaration.status == "disclosed"
+            and not data.conflict_declaration.description.strip()
+        ):
+            raise HTTPException(
+                status_code=422,
+                detail="disclosed conflicts require a non-empty description",
+            )
+        if data.conflict_declaration.status == "disqualifying":
+            raise HTTPException(
+                status_code=409,
+                detail="disqualifying conflict requires reassignment",
+            )
         adjudication_id = new_id("ocj")
         adjudication = _hashed_model(
             Adjudication,

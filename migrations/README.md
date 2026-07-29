@@ -16,6 +16,9 @@ alembic upgrade head
 alembic current
 ```
 
+Prefer Alembic (or `opencritique registry init`) over `Base.metadata.create_all`.
+See [docs/deployment-local.md](../docs/deployment-local.md).
+
 ## Tests
 
 `tests/test_migrations.py` covers:

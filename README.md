@@ -10,7 +10,7 @@
                 / ____/___  ____ ___  ____ ___  ____  ____  _____
                / /   / __ \/ __ `__ \/ __ `__ \/ __ \/ __ \/ ___/
               / /___/ /_/ / / / / / / / / / / / /_/ / / / (__  )
-              \____/\____/_/ /_/ /_/_/ /_/ /_/\____/_/ /_/____/
+              \____/\____/_/ /_/_/ /_/ /_/_/ /_/\____/_/ /_/____/
 ```
 
 <p align="center"><em>Infrastructure for scientific criticism you can inspect, challenge, and reproduce.</em></p>
@@ -37,7 +37,9 @@ This is early work. It aims to be useful, honest, and welcoming to contributors.
 | `opencritique_ingestion` | Markdown/LaTeX/PDF → document graph |
 | `opencritique_verification` | Deterministic table, citation, and Python verifiers |
 
-The repo also includes schemas, fixtures, synthetic benchmark cases, docs, and tests — enough to develop against today. The evaluation story is still unfinished, and we say so.
+The repo also includes schemas, fixtures, synthetic benchmark cases, docs, and tests — enough to develop against today.
+
+**Version identity:** package/engineering release **`0.6.0a0`**; frozen schema inventory remains **`0.5.0a1`** (`SCHEMA_FREEZE_RELEASE`). See [docs/MILESTONES.md](docs/MILESTONES.md).
 
 ## Quick start
 
@@ -56,6 +58,17 @@ bash scripts/check.sh              # lint, types, and tests
 ```
 
 On Windows, Git Bash or WSL works well for `scripts/check.sh`. After the editable install you can also run `ruff`, `pyright`, and `pytest` directly.
+
+## Operator entry points
+
+| Path | Doc |
+|---|---|
+| Local Compose / Postgres / Studio | [docs/deployment-local.md](docs/deployment-local.md) |
+| Bring-your-own-keys (BYOK) | [docs/deployment-byok.md](docs/deployment-byok.md) |
+| Scorecard signing and trust store | [docs/signing-governance.md](docs/signing-governance.md) |
+| Security / key compromise | [SECURITY.md](SECURITY.md) |
+| Release checklist and claim gates | [docs/MILESTONES.md](docs/MILESTONES.md) |
+| v0.9-beta go / no-go | [docs/v0.9-beta-go-no-go.md](docs/v0.9-beta-go-no-go.md) |
 
 ## How to contribute
 
@@ -86,7 +99,15 @@ Not sure where to start? Open an issue and say what you enjoy working on. We wou
 
 This repository is **early infrastructure**. Packages, schemas, and fixtures exist so people can build and test together.
 
-We are **not** claiming that any AI reviewer is accurate, calibrated, or better than another. Synthetic fixtures exercise software behavior. They do not establish scientific reliability. Performance-style claims stay off until stronger evidence and independent review are in place.
+Terminology used throughout the docs:
+
+| Term | Meaning |
+|---|---|
+| **Sample conformance** | Maintainer-owned fixtures prove software contracts |
+| **Production authenticity** | Rights-cleared upstream exports (issues #3 / #5) — not yet in tree |
+| **Scientific performance claims** | Precision/recall, rankings, leaderboards — **unauthorized** (`performance_claims_authorized=false`) |
+
+We are **not** claiming that any AI reviewer is accurate, calibrated, or better than another. Synthetic fixtures exercise software behavior. They do not establish scientific reliability. Production signing **public** keys are published under `trust/`; private keys stay offline. Natural manuscript import remains blocked pending affirmative rights clearance ([docs/rights-clearance-status.md](docs/rights-clearance-status.md)).
 
 ## License and citation
 
@@ -98,7 +119,9 @@ We are **not** claiming that any AI reviewer is accurate, calibrated, or better 
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) — setup, commits, and pull requests
 - [docs/MILESTONES.md](docs/MILESTONES.md) — release checklist and claim gates
-- [docs/deployment-local.md](docs/deployment-local.md) / [docs/deployment-byok.md](docs/deployment-byok.md) — operator entry
+- [docs/adapter-authenticity.md](docs/adapter-authenticity.md) — sample vs production fixtures
+- [docs/rights-memorandum.md](docs/rights-memorandum.md) — external import rules
 - [GOVERNANCE.md](GOVERNANCE.md) — how decisions are made
 - [SECURITY.md](SECURITY.md) — how to report vulnerabilities
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — community expectations
+- [docs/REPOSITORY_PUBLICATION.md](docs/REPOSITORY_PUBLICATION.md) — publication integrity boundary

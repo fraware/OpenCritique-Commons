@@ -29,7 +29,8 @@ repository tree. The test suite rejects known repair paths, including:
 - `.github/workflows/publish-blobs.yml`
 - `.github/workflows/repair-publish.yml`
 
-Local inspection trees such as `_inspect_wheel/` must remain untracked.
+Local inspection trees such as `_inspect_wheel/`, runtime smoke databases, and
+scratch root notes (`issue*.md`) must remain untracked / gitignored.
 
 ## Validation rule
 
@@ -40,9 +41,18 @@ A source publication is accepted only when all of the following hold:
 3. `bash scripts/check.sh` passes (compile, tests, import smoke).
 4. Temporary publication machinery is absent.
 5. Scientific-performance claims remain disabled until the natural-case and
-   independent-adjudication gates are satisfied.
+   independent-adjudication gates are satisfied
+   (`performance_claims_authorized=false`).
 
-## v0.5.0a1 recovery record
+## Schema freeze vs engineering release
+
+- Schema freeze identity: **`0.5.0a1`** (`SCHEMA_FREEZE_RELEASE`, golden hashes)
+- Package / engineering release: **`0.6.0a0`**
+
+Changing frozen schema bytes or canonicalization rules requires a major schema
+bump and ADR — not merely a package version bump.
+
+## Recovery record (`v0.5.0a1`)
 
 Recovered package modules were republished from ZIP-carved source. Missing
 evaluation orchestration and studio script modules were reimplemented against

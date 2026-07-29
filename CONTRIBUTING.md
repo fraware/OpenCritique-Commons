@@ -6,10 +6,11 @@ Thank you for helping keep scientific-critique infrastructure inspectable.
 
 1. Read [GOVERNANCE.md](GOVERNANCE.md), [SECURITY.md](SECURITY.md), and
    [docs/REPOSITORY_PUBLICATION.md](docs/REPOSITORY_PUBLICATION.md).
-2. Confirm the change does **not** authorize scientific performance claims.
+2. Confirm the change does **not** authorize scientific performance claims
+   (`performance_claims_authorized` stays false).
 3. Prefer a linked issue. External-validity work on issues #3–#7 and #14 stays
    blocked until hard DoD evidence lands; do not invent natural corpus or
-   production keys.
+   fabricate production adapter exports.
 4. Skim [docs/MILESTONES.md](docs/MILESTONES.md) for claim boundaries and the
    runtime release checklist.
 
@@ -27,6 +28,9 @@ Editable install exposes seven packages under `src/`:
 | `opencritique_ingestion` | Markdown/LaTeX/PDF → document graph |
 | `opencritique_verification` | Deterministic table/citation/Python checks |
 
+Package/engineering version is **`0.6.0a0`**. Schema freeze identity remains
+**`0.5.0a1`** (golden hashes).
+
 ## Development setup
 
 ```bash
@@ -42,6 +46,7 @@ Operator entry points:
 
 - Local stack: [docs/deployment-local.md](docs/deployment-local.md)
 - BYOK / bring-your-own-keys: [docs/deployment-byok.md](docs/deployment-byok.md)
+- Signing / trust store: [docs/signing-governance.md](docs/signing-governance.md)
 
 ### Database URL
 
@@ -81,7 +86,7 @@ Use the repository PR template. Every PR must:
 - include verification commands actually run;
 - keep scientific-performance claims disabled unless an authorized gate is met;
 - avoid committing transport residue (`.bootstrap/`, repair publish workflows,
-  `_inspect_wheel/`, private keys).
+  `_inspect_wheel/`, private keys, local scratch `issue*.md` notes).
 
 ## Architecture decisions
 

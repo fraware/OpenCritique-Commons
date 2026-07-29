@@ -6,5 +6,12 @@
   (`performance_claims_authorized=false`)
 - `rights/` — case-level rights records for sample rights-candidate cases
 
-Public accessibility is not authorization. See `docs/rights-memorandum.md`.
-Natural corpus import remains blocked on issue #7.
+## Claim boundary
+
+Public accessibility is not authorization. See
+[docs/rights-memorandum.md](../docs/rights-memorandum.md) and the archived
+negative finding in
+[docs/rights-clearance-status.md](../docs/rights-clearance-status.md).
+
+Natural corpus import remains blocked on issue #7. Sample manuscripts authorize
+tooling conformance only — never scientific performance claims.

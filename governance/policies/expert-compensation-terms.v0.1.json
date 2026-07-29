@@ -1,0 +1,50 @@
+{
+  "policy_id": "expert-compensation-terms",
+  "policy_version": "0.1",
+  "issue": 14,
+  "performance_claims_authorized": false,
+  "payment_secrets_prohibited": true,
+  "notes": "Linkage fields only. Amounts stay null until a funded schedule is adopted. Never store payment credentials in-repo.",
+  "schedule": [
+    {
+      "task_class": "calibration_attempt",
+      "unit": "attempt",
+      "amount_minor": null,
+      "currency": "USD",
+      "external_payout_ref_allowed": true,
+      "notes": "Eligibility only; not a public rank"
+    },
+    {
+      "task_class": "primary_adjudication_sample",
+      "unit": "concern_task",
+      "amount_minor": null,
+      "currency": "USD",
+      "external_payout_ref_allowed": true,
+      "notes": "Blinded sample-case adjudication"
+    },
+    {
+      "task_class": "primary_adjudication_natural",
+      "unit": "concern_task",
+      "amount_minor": null,
+      "currency": "USD",
+      "external_payout_ref_allowed": true,
+      "notes": "Requires rights-cleared natural cases"
+    },
+    {
+      "task_class": "tie_break_adjudication",
+      "unit": "concern_task",
+      "amount_minor": null,
+      "currency": "USD",
+      "external_payout_ref_allowed": true,
+      "notes": "Independent of primaries"
+    },
+    {
+      "task_class": "matcher_audit_judgment",
+      "unit": "decision",
+      "amount_minor": null,
+      "currency": "USD",
+      "external_payout_ref_allowed": true,
+      "notes": "See matcher-audit protocol"
+    }
+  ]
+}

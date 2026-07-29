@@ -38,4 +38,8 @@ Thumbs.db
 
 # Local runtime smoke outputs
 .runtime-smoke-artifacts/
+.runtime-smoke*
+
+# Local scratch notes (do not publish)
+/issue[0-9]*.md
 

@@ -1,7 +1,8 @@
 # Schema compatibility and deprecation
 
 This policy governs the frozen v0.5 OpenCritique Commons schemas
-(`SCHEMA_FREEZE_RELEASE = 0.5.0a1`).
+(`SCHEMA_FREEZE_RELEASE = 0.5.0a1`). Package/engineering releases (for example
+`0.6.0a0`) may advance without changing freeze identity.
 
 ## Identifiers
 

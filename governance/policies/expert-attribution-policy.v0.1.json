@@ -1,0 +1,10 @@
+{
+  "policy_id": "expert-attribution-policy",
+  "policy_version": "0.1",
+  "issue": 14,
+  "performance_claims_authorized": false,
+  "default_public_attribution": false,
+  "opt_in_required": true,
+  "conflict_disclosure_required": true,
+  "notes": "Public attribution is opt-in and independent from compensation. Conflict disclosure remains mandatory."
+}

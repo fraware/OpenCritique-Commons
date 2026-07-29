@@ -1,5 +1,40 @@
 {
   "$defs": {
+    "ProductionArtifact": {
+      "additionalProperties": false,
+      "description": "One rights-cleared production export recorded in the MANIFEST.",
+      "properties": {
+        "byte_size": {
+          "minimum": 1,
+          "title": "Byte Size",
+          "type": "integer"
+        },
+        "content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        },
+        "relative_path": {
+          "description": "Path relative to the production fixture root (e.g. reviews/export-01.json).",
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "rights_record_id": {
+          "minLength": 1,
+          "title": "Rights Record Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "content_sha256",
+        "byte_size",
+        "rights_record_id"
+      ],
+      "title": "ProductionArtifact",
+      "type": "object"
+    },
     "ProductionIntakeStatus": {
       "enum": [
         "pending",
@@ -14,13 +49,13 @@
   "description": "Schema for ``fixtures/*/production/MANIFEST.json``.",
   "properties": {
     "adapter": {
+      "pattern": "^(coarse|openreviewer)$",
       "title": "Adapter",
       "type": "string"
     },
     "artifacts": {
       "items": {
-        "additionalProperties": true,
-        "type": "object"
+        "$ref": "#/$defs/ProductionArtifact"
       },
       "title": "Artifacts",
       "type": "array"
@@ -66,6 +101,11 @@
       "title": "Rights Record Ids",
       "type": "array"
     },
+    "sample_contract_forbidden": {
+      "default": true,
+      "title": "Sample Contract Forbidden",
+      "type": "boolean"
+    },
     "source": {
       "pattern": "^production$",
       "title": "Source",
@@ -87,6 +127,7 @@
       "title": "Upstream Commit Or Config"
     },
     "upstream_repository": {
+      "minLength": 1,
       "title": "Upstream Repository",
       "type": "string"
     }
