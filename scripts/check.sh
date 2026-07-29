@@ -178,6 +178,8 @@ required = [
     "docs/deployment-local.md",
     "docs/deployment-byok.md",
     "docs/rights-memorandum.md",
+    "docs/core-integrity-review.md",
+    "docs/adapter-authenticity.md",
     "docs/MILESTONES.md",
     "docs/cross-adapter-conformance.md",
     "SECURITY.md",

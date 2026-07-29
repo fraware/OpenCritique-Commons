@@ -68,6 +68,32 @@ def test_pdf_malicious_fail_closed() -> None:
     assert surface.extraction_uncertainty == ExtractionUncertainty.SECURITY_BLOCKED
 
 
+def test_pdf_js_name_token_blocks_and_prefix_does_not() -> None:
+    blocked = ingest_to_graph(
+        data=b"%PDF-1.4\n1 0 obj<< /JS (evil) >>endobj\n%%EOF\n",
+        media_type="application/pdf",
+        manuscript_version_id="ocver_ingest_pdf_js_v1",
+    )
+    assert blocked.blocked()
+    # Longer name containing the letters JS must not trip the /JS token rule.
+    prefix = ingest_to_graph(
+        data=b"%PDF-1.4\n1 0 obj<< /JScriptCompat (ok) >>endobj\nBT (safe) Tj ET\n%%EOF\n",
+        media_type="application/pdf",
+        manuscript_version_id="ocver_ingest_pdf_jscript_v1",
+    )
+    assert not prefix.blocked()
+
+
+def test_pdf_trapped_catalog_is_not_security_block() -> None:
+    data = b"%PDF-1.4\n1 0 obj<< /Trapped /False >>endobj\nBT (Hello) Tj ET\n%%EOF\n"
+    graph = ingest_to_graph(
+        data=data,
+        media_type="application/pdf",
+        manuscript_version_id="ocver_ingest_pdf_trapped_v1",
+    )
+    assert not graph.blocked()
+
+
 def test_pdf_benign_text_layer() -> None:
     data = b"%PDF-1.4\nBT (Hello sample PDF text) Tj ET\n%%EOF\n"
     graph = ingest_to_graph(

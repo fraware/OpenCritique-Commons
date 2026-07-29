@@ -34,6 +34,8 @@ This is early work. It aims to be useful, honest, and welcoming to contributors.
 | `opencritique_evaluation` | Matching, scoring, sensitivity checks, and signed scorecards |
 | `opencritique_adapters` | Bridges from external reviewer systems into the shared schemas |
 | `opencritique_acquisition` | Records for bringing external sources in with rights in mind |
+| `opencritique_ingestion` | Markdown/LaTeX/PDF → document graph |
+| `opencritique_verification` | Deterministic table, citation, and Python verifiers |
 
 The repo also includes schemas, fixtures, synthetic benchmark cases, docs, and tests — enough to develop against today. The evaluation story is still unfinished, and we say so.
 
@@ -95,6 +97,8 @@ We are **not** claiming that any AI reviewer is accurate, calibrated, or better 
 ## Further reading
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) — setup, commits, and pull requests
+- [docs/MILESTONES.md](docs/MILESTONES.md) — release checklist and claim gates
+- [docs/deployment-local.md](docs/deployment-local.md) / [docs/deployment-byok.md](docs/deployment-byok.md) — operator entry
 - [GOVERNANCE.md](GOVERNANCE.md) — how decisions are made
 - [SECURITY.md](SECURITY.md) — how to report vulnerabilities
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — community expectations
