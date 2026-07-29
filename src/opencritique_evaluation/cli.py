@@ -12,15 +12,16 @@ from .models import EvaluationResult, EvaluationSubmission, PublicScorecard, Sig
 from .novel import build_novel_queue
 from .scorecard import build_scorecard, write_html, write_json
 from .sensitivity import analyze_sensitivity
-from .signing import generate_keypair, sign_scorecard, verify_envelope
+from .signing import generate_keypair, sign_scorecard
 
 app = typer.Typer(no_args_is_help=True)
 
 
 def _write_model(path: Path, payload: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    if hasattr(payload, "model_dump"):
-        text = json.dumps(payload.model_dump(mode="json"), indent=2, sort_keys=True)
+    dump = getattr(payload, "model_dump", None)
+    if callable(dump):
+        text = json.dumps(dump(mode="json"), indent=2, sort_keys=True)
     else:
         text = json.dumps(payload, indent=2, sort_keys=True)
     path.write_text(text, encoding="utf-8")

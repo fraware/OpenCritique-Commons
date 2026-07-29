@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Literal
 
@@ -51,7 +51,7 @@ class BenchmarkManifest(StrictModel):
     limitations: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def unique_cases(self) -> "BenchmarkManifest":
+    def unique_cases(self) -> BenchmarkManifest:
         keys = [(item.case_id, item.case_version) for item in self.cases]
         if len(keys) != len(set(keys)):
             raise ValueError("benchmark case references must be unique")
@@ -69,6 +69,41 @@ class BenchmarkManifest(StrictModel):
         )
 
 
+class ByokConfig(StrictModel):
+    """Bring-your-own-key deployment descriptor (no credential retention)."""
+
+    provider_id: str = Field(min_length=1)
+    retain_credentials: Literal[False] = False
+    notes: str = ""
+
+    @model_validator(mode="before")
+    @classmethod
+    def reject_secret_fields(cls, data: object) -> object:
+        if isinstance(data, dict):
+            banned = {
+                "api_key",
+                "secret",
+                "secrets",
+                "credential",
+                "credentials",
+                "credential_reference",
+                "token",
+                "password",
+                "private_key",
+            }
+            for key in data:
+                lowered = str(key).lower()
+                if lowered in banned or "secret" in lowered or lowered.endswith("_key"):
+                    if lowered in {"provider_id"}:
+                        continue
+                    raise ValueError(
+                        f"BYOK configs must not persist secret field {key!r}"
+                    )
+            if data.get("retain_credentials") is True:
+                raise ValueError("BYOK configs must not retain credentials")
+        return data
+
+
 class SystemManifest(StrictModel):
     system_id: str
     version: str
@@ -79,16 +114,25 @@ class SystemManifest(StrictModel):
     code_commit: str | None = None
     model_identifiers: list[str] = Field(default_factory=list)
     configuration_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
-    execution_mode: Literal["external", "local", "hosted"] = "external"
+    execution_mode: Literal["external", "local", "hosted", "byok"] = "external"
+    byok: ByokConfig | None = None
     output_contract: Literal["opencritique-evaluation-v0.1"] = "opencritique-evaluation-v0.1"
     declared_cost_currency: str | None = Field(default=None, pattern=r"^[A-Z]{3}$")
     declared_cost_minor: int | None = Field(default=None, ge=0)
     declared_latency_seconds: float | None = Field(default=None, ge=0)
 
     @model_validator(mode="after")
-    def cost_pair(self) -> "SystemManifest":
+    def cost_pair(self) -> SystemManifest:
         if (self.declared_cost_currency is None) != (self.declared_cost_minor is None):
             raise ValueError("declared cost currency and amount must be provided together")
+        return self
+
+    @model_validator(mode="after")
+    def byok_mode_consistency(self) -> SystemManifest:
+        if self.execution_mode == "byok" and self.byok is None:
+            raise ValueError("execution_mode=byok requires a byok config")
+        if self.execution_mode != "byok" and self.byok is not None:
+            raise ValueError("byok config is only valid when execution_mode=byok")
         return self
 
 
@@ -98,7 +142,7 @@ class SubmittedAnchor(StrictModel):
     object_label: str | None = None
 
     @model_validator(mode="after")
-    def nonempty(self) -> "SubmittedAnchor":
+    def nonempty(self) -> SubmittedAnchor:
         if self.page is None and not (self.source_text or "").strip() and not (
             self.object_label or ""
         ).strip():
@@ -125,7 +169,7 @@ class CaseSubmission(StrictModel):
     failure: str | None = None
 
     @model_validator(mode="after")
-    def abstention_consistency(self) -> "CaseSubmission":
+    def abstention_consistency(self) -> CaseSubmission:
         if self.abstained and self.concerns:
             raise ValueError("abstained case submission cannot contain concerns")
         if self.failure and self.concerns:
@@ -139,10 +183,10 @@ class EvaluationSubmission(StrictModel):
     benchmark_id: str
     benchmark_version: str
     cases: list[CaseSubmission]
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     @model_validator(mode="after")
-    def unique_cases(self) -> "EvaluationSubmission":
+    def unique_cases(self) -> EvaluationSubmission:
         keys = [(item.case_id, item.case_version) for item in self.cases]
         if len(keys) != len(set(keys)):
             raise ValueError("submission case identities must be unique")
@@ -221,7 +265,7 @@ class MatcherConfig(StrictModel):
     threshold: float = Field(default=0.55, ge=0, le=1)
 
     @model_validator(mode="after")
-    def weights_sum_to_one(self) -> "MatcherConfig":
+    def weights_sum_to_one(self) -> MatcherConfig:
         total = self.anchor_weight + self.type_weight + self.lexical_weight
         if abs(total - 1.0) > 1e-9:
             raise ValueError("matcher weights must sum to 1.0")
@@ -252,7 +296,7 @@ class MatcherSensitivityReport(StrictModel):
     precision_max: float | None
     recall_min: float | None
     recall_max: float | None
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class NovelCandidateState(str, Enum):
@@ -283,7 +327,7 @@ class NovelConcernCandidate(StrictModel):
     concern: SubmittedConcern
     anchor_resolutions: list[AnchorResolution]
     state: NovelCandidateState = NovelCandidateState.PENDING
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class NovelConcernQueue(StrictModel):
@@ -293,7 +337,7 @@ class NovelConcernQueue(StrictModel):
     candidates: list[NovelConcernCandidate]
     source_result_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     source_submission_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class NovelPrimaryDecision(StrictModel):
@@ -305,7 +349,7 @@ class NovelPrimaryDecision(StrictModel):
     reasoning: str = Field(min_length=1)
     blinded_fields: list[str] = Field(default_factory=list)
     content_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class NovelConcernDetermination(StrictModel):
@@ -340,7 +384,7 @@ class NovelConcernDetermination(StrictModel):
     predecessor_scorecard_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     recompute_scorecard_id: str | None = None
     recompute_scorecard_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class EvaluationResult(StrictModel):
@@ -354,7 +398,7 @@ class EvaluationResult(StrictModel):
     metrics: EvaluationMetrics
     performance_claim_authorized: bool
     claim_boundary: str
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     predecessor_result_id: str | None = None
     scoring_policy_version: str = "scoring-policy-v0.1"
 
@@ -379,13 +423,13 @@ class ScorecardSignature(StrictModel):
     public_key_base64: str
     payload_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     signature_base64: str
-    signed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    signed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     key_role: Literal["offline_root", "online_release", "test"] | None = None
     not_before: datetime | None = None
     not_after: datetime | None = None
 
     @model_validator(mode="after")
-    def validity_interval(self) -> "ScorecardSignature":
+    def validity_interval(self) -> ScorecardSignature:
         if (
             self.not_before is not None
             and self.not_after is not None

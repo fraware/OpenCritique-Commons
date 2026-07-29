@@ -102,7 +102,7 @@ def test_agreement_and_policy_invalidation() -> None:
 
 
 def test_partial_not_collapsed_and_api() -> None:
-    app = create_app(initialize=True)
+    app = create_app(initialize=False)
     client = TestClient(app)
     proto = client.get("/v1/matcher-audit/protocol")
     assert proto.status_code == 200

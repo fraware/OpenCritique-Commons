@@ -10,9 +10,9 @@ from .models import (
     AnchorResolution,
     AnchorResolutionStatus,
     ConcernMatch,
+    MatcherConfig,
     SubmittedAnchor,
     SubmittedConcern,
-    MatcherConfig,
 )
 
 _TOKEN_RE = re.compile(r"[\w]+", re.UNICODE)

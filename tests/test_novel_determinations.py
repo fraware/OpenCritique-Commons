@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
 from fastapi import HTTPException
@@ -37,7 +38,7 @@ from opencritique_evaluation.novel_determination import (
 from opencritique_evaluation.scorecard import build_scorecard
 from opencritique_registry.artifacts import LocalArtifactStore
 from opencritique_registry.conformance import audit_registry
-from opencritique_registry.db import Base, make_engine, make_session_factory
+from opencritique_registry.db import make_engine, make_session_factory
 from opencritique_registry.db_models import (
     NovelAdjudicationTaskORM,
     NovelCandidateORM,
@@ -190,9 +191,12 @@ def _decision(
 
 
 @pytest.fixture()
-def session(tmp_path):
-    engine = make_engine(f"sqlite:///{tmp_path / 'novel.db'}")
-    Base.metadata.create_all(engine)
+def session(tmp_path: Path):
+    from opencritique_registry.migrate import upgrade_head
+
+    url = f"sqlite:///{(tmp_path / 'novel.db').as_posix()}"
+    upgrade_head(url)
+    engine = make_engine(url)
     factory = make_session_factory(engine)
     with factory() as sess:
         for actor_id in ("expert-a", "expert-b", "expert-c"):
@@ -326,8 +330,10 @@ def test_conflicting_primaries_create_exactly_one_tie_break(session: Session) ->
     )
     assert len(tie_tasks) == 1
     # Recompute again must not create a second tie-break task.
+    candidate_row = session.get(NovelCandidateORM, candidate.candidate_id)
+    assert candidate_row is not None
     service._recompute(
-        candidate_row=session.get(NovelCandidateORM, candidate.candidate_id),
+        candidate_row=candidate_row,
         original_scorecard=None,
         recompute_result_factory=None,
     )
@@ -410,15 +416,15 @@ def test_end_to_end_final_outcomes(
         assert determination.predecessor_scorecard_id == original.scorecard_id
         assert determination.recompute_scorecard_id is not None
         # Historical scorecard unchanged.
+        scorecard_row = session.get(
+            __import__(
+                "opencritique_registry.db_models", fromlist=["ScorecardRecordORM"]
+            ).ScorecardRecordORM,
+            original.scorecard_id,
+        )
+        assert scorecard_row is not None
         assert scorecard_hash(original) == scorecard_hash(
-            PublicScorecard.model_validate(
-                session.get(
-                    __import__(
-                        "opencritique_registry.db_models", fromlist=["ScorecardRecordORM"]
-                    ).ScorecardRecordORM,
-                    original.scorecard_id,
-                ).scorecard_json
-            )
+            PublicScorecard.model_validate(scorecard_row.scorecard_json)
         )
     if outcome == NovelDeterminationOutcome.REJECTED:
         assert "inspectable reasoning" in determination.rationale.lower() or determination.rationale

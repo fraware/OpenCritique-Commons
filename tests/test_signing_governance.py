@@ -380,7 +380,147 @@ def test_shipped_trust_store_has_no_secrets() -> None:
     assert path.is_file()
     store = TrustStore.model_validate_json(path.read_text(encoding="utf-8"))
     assert len(store.published_channels) >= 2
+    assert len(store.keys) >= 2
+    assert any(key.role == KeyRole.OFFLINE_ROOT for key in store.keys)
+    assert any(key.role == KeyRole.ONLINE_RELEASE for key in store.keys)
+    assert all("development" in key.channels for key in store.keys)
+    assert all("production" not in key.channels for key in store.keys)
     blob = path.read_text(encoding="utf-8")
     assert "PRIVATE KEY" not in blob
     write_trust_store(store, path)  # round-trip format stability
-    assert "production" in json.dumps(store.model_dump(mode="json"))
+    assert "development" in json.dumps(store.model_dump(mode="json"))
+
+
+def test_development_channel_rejected_in_production(tmp_path: Path) -> None:
+    priv, pub = tmp_path / "d.pem", tmp_path / "d.pub.pem"
+    generate_keypair(priv, pub)
+    now = datetime.now(UTC)
+    rec = build_trusted_key_record(
+        public_key_path=pub,
+        role=KeyRole.ONLINE_RELEASE,
+        status=KeyStatus.ACTIVE,
+        not_before=now - timedelta(days=1),
+        channels=["development"],
+        notes="dev-only",
+    )
+    rec = rec.model_copy(
+        update={"key_id": f"ed25519:DEV-RELEASE-{rec.key_id.removeprefix('ed25519:')}"}
+    )
+    store = TrustStore(store_id="dev-prod-boundary", keys=[rec])
+    envelope = sign_scorecard(
+        _scorecard(), priv, key_role=KeyRole.ONLINE_RELEASE, key_id_override=rec.key_id
+    )
+    prod = verify_envelope_detailed(
+        envelope, trust_store=store, policy_mode=TrustPolicyMode.PRODUCTION
+    )
+    assert not prod.ok
+    assert prod.reason == VerificationFailureReason.DEVELOPMENT_KEY_IN_PRODUCTION
+    dev = verify_envelope_detailed(
+        envelope, trust_store=store, policy_mode=TrustPolicyMode.DEVELOPMENT
+    )
+    assert dev.ok
+
+
+def test_dev_ceremony_rotation_revocation_historical(tmp_path: Path) -> None:
+    """Sign → rotate → revoke → historical verify against development keys."""
+    import importlib.util
+
+    script = Path(__file__).resolve().parents[1] / "scripts" / "signing_ceremony_dev.py"
+    spec = importlib.util.spec_from_file_location("signing_ceremony_dev", script)
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    store_path = tmp_path / "trust.json"
+    private_dir = tmp_path / "private"
+    store = mod.run_ceremony(store_path=store_path, private_dir=private_dir)
+    release = next(key for key in store.keys if key.role == KeyRole.ONLINE_RELEASE)
+    release_priv = private_dir / "dev-online-release.pem"
+    scorecard = _scorecard()
+    signed = sign_scorecard(
+        scorecard,
+        release_priv,
+        key_role=KeyRole.ONLINE_RELEASE,
+        key_id_override=release.key_id,
+    )
+    assert verify_envelope_detailed(
+        signed, trust_store=store, policy_mode=TrustPolicyMode.DEVELOPMENT
+    ).ok
+
+    # Rotate to a successor development release key.
+    new_priv, new_pub = private_dir / "dev-release-2.pem", private_dir / "dev-release-2.pub.pem"
+    generate_keypair(new_priv, new_pub)
+    now = datetime.now(UTC)
+    successor = build_trusted_key_record(
+        public_key_path=new_pub,
+        role=KeyRole.ONLINE_RELEASE,
+        status=KeyStatus.ACTIVE,
+        not_before=now - timedelta(minutes=1),
+        channels=["development"],
+        notes="rotated development release key",
+    )
+    successor = successor.model_copy(
+        update={
+            "key_id": f"ed25519:DEV-RELEASE-{successor.key_id.removeprefix('ed25519:')}"
+        }
+    )
+    retired = release.model_copy(
+        update={"status": KeyStatus.SUPERSEDED, "superseded_by": successor.key_id}
+    )
+    rotated = TrustStore(
+        store_id=store.store_id,
+        keys=[
+            next(key for key in store.keys if key.role == KeyRole.OFFLINE_ROOT),
+            retired,
+            successor,
+        ],
+        rotations=[
+            RotationStatement(
+                statement_id="dev-rot-1",
+                issued_at=now,
+                retiring_key_id=retired.key_id,
+                successor_key_id=successor.key_id,
+                effective_at=now,
+            )
+        ],
+        published_channels=list(store.published_channels),
+        notes=store.notes,
+    )
+    assert not verify_envelope_detailed(
+        signed, trust_store=rotated, policy_mode=TrustPolicyMode.DEVELOPMENT
+    ).ok
+    assert verify_envelope_detailed(
+        signed, trust_store=rotated, policy_mode=TrustPolicyMode.HISTORICAL
+    ).ok
+
+    # Revoke the successor and confirm production/development fail closed.
+    revoked = successor.model_copy(update={"status": KeyStatus.REVOKED})
+    revoked_store = TrustStore(
+        store_id=store.store_id,
+        keys=[
+            next(key for key in store.keys if key.role == KeyRole.OFFLINE_ROOT),
+            retired,
+            revoked,
+        ],
+        revocations=[
+            RevocationRecord(
+                revocation_id="dev-rev-1",
+                key_id=revoked.key_id,
+                revoked_at=now,
+                reason="development key retirement drill",
+            )
+        ],
+        rotations=list(rotated.rotations),
+        published_channels=list(store.published_channels),
+    )
+    fresh = sign_scorecard(
+        scorecard,
+        new_priv,
+        key_role=KeyRole.ONLINE_RELEASE,
+        key_id_override=revoked.key_id,
+    )
+    result = verify_envelope_detailed(
+        fresh, trust_store=revoked_store, policy_mode=TrustPolicyMode.DEVELOPMENT
+    )
+    assert not result.ok
+    assert result.reason == VerificationFailureReason.REVOKED_KEY

@@ -5,8 +5,19 @@ Issue #6 / PR9. Protocol id: `matcher-audit-pilot-v0.1`.
 ## Population
 
 All matcher decisions from a frozen evaluation result over the active benchmark
-case set. Until natural adjudicated cases exist, pilots run on synthetic
-conformance fixtures and **do not** authorize performance claims.
+case set. The current pilot denominator is the **maintainer-owned sample corpus**
+(`corpus/samples/` and derived adapter fixtures). Pilots on samples **do not**
+authorize scientific performance claims and are not a substitute for a natural
+adjudicated set (tracked on issue #6).
+
+## Claim boundary
+
+| Claim | Status |
+|---|---|
+| Sample matcher-audit protocol executable end-to-end | In scope |
+| Sample decision volume sufficient for tooling gates | In scope (report denominator explicitly) |
+| Natural / PeerQA matcher-audit ≥100 decisions | Blocked — issue #6 |
+| Performance / comparative reviewer claims | Forbidden |
 
 ## Strata
 
@@ -23,6 +34,7 @@ conformance fixtures and **do not** authorize performance claims.
 
 - Target: 100 match decisions, or every available decision when fewer exist
 - Random seed is versioned with the sample (`MatcherAuditSample.random_seed`)
+- Reports must state the actual denominator and that it is sample-only
 
 ## Blinding
 
@@ -57,3 +69,4 @@ disclose that the matcher audit gate did not pass.
 - Module: `opencritique_evaluation.matcher_audit`
 - API: `GET/POST /expert/matcher-audit/...` (blinded payloads)
 - Docs+API fallback when studio is unavailable
+- Pilot fixtures: sample evaluations derived from `corpus/samples/`

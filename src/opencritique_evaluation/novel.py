@@ -38,7 +38,7 @@ def build_novel_queue(
             material = (
                 f"{result.result_id}\x1f{case_result.case_id}\x1f"
                 f"{case_result.case_version}\x1f{local_id}"
-            ).encode("utf-8")
+            ).encode()
             candidate_id = f"ocnovel_{hashlib.sha256(material).hexdigest()[:24]}"
             candidates.append(
                 NovelConcernCandidate(
