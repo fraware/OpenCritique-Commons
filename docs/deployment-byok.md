@@ -7,7 +7,7 @@ registry database and repository.
 
 - do not persist provider secrets in OpenCritique tables
 - pass provider credentials through environment variables or a secrets manager
-- keep `performance_claims_authorized=false` unless a separate policy process says otherwise
+- keep `performance_claims_authorized=false` (the release gate is closed)
 - require the same startup validation path as local and Compose modes
 
 ## Minimal environment
@@ -48,9 +48,9 @@ files.
 
 ## Operational note
 
-Hosted deployment remains an out-of-repo operational responsibility, but this
-repository now ships a Compose reference stack so hosted mode is not described
-as a stub.
+Hosted deployment remains an out-of-repo operational responsibility (issue #18).
+This repository ships a Compose reference stack so operators can run a local
+equivalent; that stack is not a hosted production ops claim.
 
 ## Troubleshooting
 

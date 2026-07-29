@@ -1,7 +1,8 @@
 # Local deployment
 
-This repository ships a local reference stack for sample-conformance work.
-Scientific-performance claims remain disabled in every local mode.
+This repository ships a local reference stack for **sample-conformance** work.
+Scientific-performance claims remain disabled in every local mode
+(`performance_claims_authorized=false`).
 
 ## Requirements
 
@@ -33,8 +34,8 @@ alembic upgrade head
 opencritique-registry bootstrap-admin --database-url postgresql+psycopg://opencritique:opencritique@localhost:5432/opencritique
 ```
 
-The registry now validates startup on one shared path for local, BYOK, and
-Compose entrypoints:
+The registry validates startup on one shared path for local, BYOK, and Compose
+entrypoints:
 
 - `OPENCRITIQUE_DATABASE_URL` must be a valid SQLite or Postgres URL
 - `OPENCRITIQUE_ARTIFACT_ROOT` must resolve to a writable directory
