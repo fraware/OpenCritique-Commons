@@ -7,7 +7,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import AnyUrl, BaseModel
 
 
 def _normalize(value: Any) -> Any:
@@ -17,6 +17,8 @@ def _normalize(value: Any) -> Any:
         return value.value
     if isinstance(value, datetime):
         return value.isoformat()
+    if isinstance(value, AnyUrl):
+        return _normalize(str(value))
     if isinstance(value, str):
         return unicodedata.normalize("NFC", value)
     if isinstance(value, dict):
