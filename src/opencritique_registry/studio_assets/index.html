@@ -8,7 +8,11 @@
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main workflow</a>
-  <header>
+  <div id="claims-banner" class="claims-banner" role="status" aria-live="polite">
+    NOT AUTHORIZED — private live / sample gold ≠ production authenticity ≠ scientific
+    performance claims (<code>performance_claims_authorized=false</code>).
+  </div>
+  <header role="banner">
     <div>
       <p class="eyebrow">OpenCritique Commons</p>
       <h1>Adjudication Studio</h1>
@@ -17,44 +21,60 @@
     <div id="identity" class="identity" role="status" aria-live="polite">Not authenticated</div>
   </header>
 
-  <div id="status-announcer" class="sr-only" aria-live="polite"></div>
+  <div id="status-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
   <main id="main-content">
     <section class="panel auth-panel" aria-labelledby="auth-heading">
       <h2 id="auth-heading">Session</h2>
       <label for="token">Bearer token</label>
       <div class="row">
-        <input id="token" type="password" autocomplete="off" aria-describedby="token-hint" placeholder="Paste an ephemeral token">
-        <button id="connect">Connect</button>
-        <button id="disconnect" class="secondary">Clear</button>
+        <input id="token" type="password" autocomplete="off" aria-describedby="token-hint empty-state-hint" placeholder="Paste an ephemeral token" aria-required="true">
+        <button id="connect" type="button">Connect</button>
+        <button id="disconnect" class="secondary" type="button">Clear</button>
       </div>
       <p id="token-hint" class="hint">The token is stored in this browser tab only and is cleared when the tab closes.</p>
     </section>
 
-    <section class="panel" aria-labelledby="queue-heading">
+    <section class="panel" aria-labelledby="queue-heading" aria-describedby="empty-state-hint">
       <div class="section-heading">
         <div>
           <p class="eyebrow">Work queue</p>
           <h2 id="queue-heading">Assigned scientific work</h2>
         </div>
         <div class="row wrap">
-          <button id="claim-adjudication">Claim adjudication</button>
-          <button id="claim-reconstruction" class="secondary">Claim reconstruction</button>
-          <button id="refresh-tasks" class="secondary">Refresh my tasks</button>
+          <button id="claim-adjudication" type="button" aria-describedby="empty-state-hint">Claim adjudication</button>
+          <button id="claim-reconstruction" class="secondary" type="button">Claim reconstruction</button>
+          <button id="refresh-tasks" class="secondary" type="button">Refresh my tasks</button>
         </div>
       </div>
-      <div id="queue-message" class="message muted">Connect to begin.</div>
-      <div id="task-list" class="card" aria-live="polite">No claimed tasks loaded.</div>
+      <div id="empty-state" class="empty-state" role="status" aria-live="polite">
+        <h3 id="empty-state-title">No seeded tasks yet</h3>
+        <p id="empty-state-hint">
+          If the queue stays empty after connect, seed work from the repository root:
+          <code>opencritique-registry bootstrap-sample-workspace</code>
+          (sample REF cases) or
+          <code>opencritique-registry import-live-run --from runs/…</code>
+          (private live Coarse / OpenReviewer export). Then paste the adjudicator
+          token above and click Connect.
+        </p>
+      </div>
+      <div id="claimable-summary" class="claimable-summary muted" role="status" aria-live="polite">
+        Connect to load claimable adjudication slots.
+      </div>
+      <div id="claimable-list" class="card" aria-live="polite" aria-label="Claimable adjudication pool"></div>
+      <div id="queue-message" class="message muted" role="status">Connect to begin.</div>
+      <div id="task-list" class="card" aria-live="polite" aria-labelledby="queue-heading">No claimed tasks loaded.</div>
     </section>
 
-    <section id="task-panel" class="panel hidden" aria-live="polite" tabindex="-1">
+    <section id="task-panel" class="panel hidden" aria-live="polite" tabindex="-1" aria-labelledby="task-workflow-heading">
+      <h2 id="task-workflow-heading" class="sr-only">Active task workflow</h2>
       <div id="task-header"></div>
       <div class="document-actions">
-        <a id="source-link" target="_blank" rel="noopener">Open source manuscript</a>
-        <a id="render-link" target="_blank" rel="noopener" class="hidden">Open rendered manuscript</a>
+        <a id="source-link" target="_blank" rel="noopener noreferrer">Open source manuscript</a>
+        <a id="render-link" target="_blank" rel="noopener noreferrer" class="hidden">Open rendered manuscript</a>
       </div>
       <div id="task-content"></div>
-      <form id="adjudication-form" class="hidden">
+      <form id="adjudication-form" class="hidden" aria-label="Submit independent adjudication">
         <h3>Independent determination</h3>
         <div class="grid two">
           <label>Validity
@@ -102,7 +122,7 @@
         <button type="submit">Submit immutable adjudication</button>
       </form>
 
-      <form id="claim-form" class="hidden">
+      <form id="claim-form" class="hidden" aria-label="Submit claim reconstruction">
         <h3>Reconstruct the manuscript claim</h3>
         <label>Claim statement
           <textarea id="claim-statement" minlength="10" required></textarea>
