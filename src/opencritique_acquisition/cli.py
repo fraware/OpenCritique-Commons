@@ -4,6 +4,12 @@ from pathlib import Path
 
 import typer
 
+from .approved_profile import (
+    ApprovedProfileError,
+    import_approved_profile,
+    load_approved_profile,
+    reject_outside_approved_profile,
+)
 from .models import (
     AcquisitionLedger,
     cancel_source,
@@ -14,6 +20,7 @@ from .models import (
 )
 
 app = typer.Typer(no_args_is_help=True)
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 @app.command("validate")
@@ -86,3 +93,51 @@ def cancel_cmd(
     updated = cancel_source(ledger, source_id=source_id, reason=reason)
     save_ledger(ledger_path, updated)
     typer.echo(f"CANCELLED {source_id}")
+
+
+@app.command("validate-approved-profile")
+def validate_approved_profile_cmd(
+    profile_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    repo_root: Path = typer.Option(REPO_ROOT, file_okay=False),
+) -> None:
+    """Validate an approved-profile JSON without writing the ledger."""
+    try:
+        profile = load_approved_profile(profile_path)
+        reject_outside_approved_profile(profile, repo_root)
+    except ApprovedProfileError as exc:
+        typer.secho(f"{exc.code}: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    typer.echo(
+        f"PASS profile_kind={profile.profile_kind.value} source_id={profile.source_id} "
+        f"case_id={profile.case_id}"
+    )
+
+
+@app.command("import-approved-profile")
+def import_approved_profile_cmd(
+    profile_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    ledger_path: Path = typer.Option(
+        REPO_ROOT / "corpus" / "acquisition-ledger.json",
+        dir_okay=False,
+    ),
+    repo_root: Path = typer.Option(REPO_ROOT, file_okay=False),
+    dry_run: bool = typer.Option(True, help="Default dry-run; pass --no-dry-run to persist"),
+) -> None:
+    """Import one rights-cleared case via the approved profile (post-#7 path)."""
+    try:
+        profile = load_approved_profile(profile_path)
+        updated = import_approved_profile(
+            profile,
+            ledger_path=ledger_path,
+            repo_root=repo_root,
+            dry_run=dry_run,
+        )
+    except ApprovedProfileError as exc:
+        typer.secho(f"{exc.code}: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    action = "DRY-RUN" if dry_run else "IMPORTED"
+    typer.echo(
+        f"{action} {profile.source_id} ({profile.profile_kind.value}); "
+        f"ledger imported cases={updated.total_imported_cases}; "
+        f"claims_authorized={updated.performance_claims_authorized}"
+    )
