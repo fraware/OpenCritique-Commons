@@ -49,3 +49,26 @@ material is generated only under an out-of-repo `--private-dir`
 - Secret scan runs in `scripts/check.sh` / CI
 - Malicious document-graph fixtures are for security regression only
 - `performance_claims_authorized` remains false until claim gates are met
+
+## Operator secrets and `.env`
+
+Local operators may keep credentials in a gitignored `.env` (see `.gitignore`:
+`.env`, `.env.*`; `!.env.example` if present). Process environment wins over
+`.env` when both are set (`python-dotenv` with `override=False`).
+
+| Variable | Role |
+|---|---|
+| `OPENCRITIQUE_BYOK_API_KEY` | Preferred BYOK credential (registry BYOK mode + Coarse live runner) |
+| `OPENCRITIQUE_BYOK_PROVIDER_ID` | Provider id (`openai`, `openrouter`, …) |
+| `OPENAI_API_KEY` | Alias copied into `OPENCRITIQUE_BYOK_API_KEY` only when BYOK is unset |
+
+Rules:
+
+- Never commit `.env`, API keys, or paste key material into issues, PRs, review
+  JSON, MANIFESTs, or the database.
+- OpenAI/BYOK keys do **not** run OpenReviewer (HF Space import or
+  `[live-openreviewer]` / GPU).
+- If a key is exposed in chat, logs, or a commit, **rotate it** with the
+  provider and treat the old value as compromised.
+- Do not set `OPENCRITIQUE_PERFORMANCE_CLAIMS_AUTHORIZED=true`; the registry
+  fails closed if that flag is enabled.
