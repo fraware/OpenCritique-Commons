@@ -21,6 +21,21 @@ python -m pip install -e ".[dev]"
 bash scripts/check.sh
 ```
 
+### Database URL
+
+Registry services and Alembic read `OPENCRITIQUE_DATABASE_URL`.
+
+- Default (local): `sqlite:///./opencritique.db`
+- Postgres (Compose): start with `docker compose up -d postgres`, then:
+
+```bash
+export OPENCRITIQUE_DATABASE_URL=postgresql+psycopg://opencritique:opencritique@localhost:5432/opencritique
+alembic upgrade head
+```
+
+Do not use `Base.metadata.create_all` for initialization; prefer `opencritique registry init`
+(which runs `alembic upgrade head`) or Alembic directly.
+
 ## Commit convention
 
 Use concise, imperative subjects. Prefer a prefix when it clarifies intent:
