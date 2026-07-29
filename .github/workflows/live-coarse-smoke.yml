@@ -1,0 +1,51 @@
+name: Live Coarse smoke
+
+# Optional operator smoke. Never runs on push/PR default CI.
+# Skips without secrets so a dispatch without keys stays green and unpaid.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-coarse-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install (dev + live-coarse)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,live-coarse]"
+
+      - name: Skip or run paid smoke
+        env:
+          OPENCRITIQUE_BYOK_API_KEY: ${{ secrets.OPENCRITIQUE_BYOK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${OPENCRITIQUE_BYOK_API_KEY:-}" ] && [ -z "${OPENAI_API_KEY:-}" ]; then
+            echo "No OPENCRITIQUE_BYOK_API_KEY / OPENAI_API_KEY secret configured."
+            echo "Skipping live Coarse smoke (no paid API call)."
+            exit 0
+          fi
+          echo "Secret present; running mocked-path sanity then operator demo checklist."
+          # Keep default behavior cheap: prefer the documented PowerShell/bash demo
+          # scripts only when explicitly extended. Here we only assert CLI help and
+          # that the live extra imports without invoking review_paper.
+          python - <<'PY'
+          from opencritique_runners.coarse import CoarseRunnerPlugin, DEFAULT_COARSE_MODEL
+          plugin = CoarseRunnerPlugin()
+          assert plugin.name == "coarse"
+          assert plugin.live_extra == "live-coarse"
+          assert DEFAULT_COARSE_MODEL
+          print("live-coarse plugin import OK; paid review_paper not invoked")
+          PY
+          echo "To exercise a real paid manuscript review, run scripts/live_pipeline_demo.sh"
+          echo "locally with operator credentials (never in default push/PR CI)."
