@@ -21,7 +21,7 @@
   "IndependentEvaluationAttestation.schema.json": "d09b04961b3b1b25004fca8938ad12415cc24f629b6ebe7f2aa5f986dc27e1a9",
   "Manuscript.schema.json": "fc82c7bcc0d83dc2a776225de5cf707cbf99b517c3924d568200fd979880239e",
   "ManuscriptVersion.schema.json": "d8565ddd227bdbbbb8857e6ad8b476e30aae263a1a3a42974afba45b384cc6f2",
-  "MatcherAuditCompletionAttestation.schema.json": "884f5e419ced4bdf74eb3ca27a9d2d9fad611802ecac1a38d3650e58576baeab",
+  "MatcherAuditCompletionAttestation.schema.json": "74cf70c5329e4c8fae0999f545eabb655a1a9c4d65e03661f1933f212eb742ef",
   "MatcherSensitivityReport.schema.json": "6d671ee289e5d5402fd723bf8b1a19ed601b14be57d589899d9c4ee33931e2e3",
   "NaturalCorpusAttestation.schema.json": "3470b973fb3c783356b0e7e618f1f6622fa29cf306c110f9370280aa62403d54",
   "NovelConcernDetermination.schema.json": "f340e2bf33f7e4dd2fc271e33050b183f121dd40697e9a22e907da649212883f",
@@ -31,7 +31,7 @@
   "ReviewerExportAuthenticityAttestation.schema.json": "3f4921ac241a8fa0bb40d1722c456968f5b34e172677593d2c580c7a7d381daa",
   "RunManifest.schema.json": "869e3e0c131b750c6cdf7f1f7610d9b3dba36925b0943cfc39bdb3789799376e",
   "SignedClaimAuthorizationEnvelope.schema.json": "7484ba345d4c62eebd85fe2b1fb7b43a73d159cb0ec85023c497d21821d5dbab",
-  "SignedEvidenceEnvelope.schema.json": "58a1c8afe3f0f0d9cd5dd326a460a9eaee2f01a23ffd107e22f0c73b19177aa4",
+  "SignedEvidenceEnvelope.schema.json": "e93c614e522f55faec5261e68a7d719e141edfa25255355f4ef5d9dcf1f2cf36",
   "SignedScorecardEnvelope.schema.json": "83a63e316d0a16d1e4ad83c16c2f28276fcfeef42c0a074fac8688957a1bf974",
   "SystemManifest.schema.json": "5528d18ae759b6e3bdbaaace33589618cca8b1f2f10e70ace8603c5994c530b2",
   "inventory.json": "49264397d0e9c655e3c5204cc8755fa0abd696cbbb2c9ab397aaa9f3df6d90bc"
