@@ -1,0 +1,55 @@
+name: Lab pilot / method question
+description: Scientist or lab pilot question, method report, or rights clarification.
+title: "[pilot]: "
+labels: ["needs-triage", "track-pilots"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For researchers and labs running private evaluation on **rights-owned**
+        material. See [START_HERE.md](https://github.com/fraware/OpenCritique-Commons/blob/main/START_HERE.md)
+        Track B and [docs/private-evaluation-pilot.md](https://github.com/fraware/OpenCritique-Commons/blob/main/docs/private-evaluation-pilot.md).
+
+        This is method tooling, not a public reviewer leaderboard. Private
+        `runs/` do not unlock scientific performance claims.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of request
+      options:
+        - Question about pilot protocol
+        - Publish / do-not-publish clarification
+        - Method / negative-finding report draft review
+        - Rights / manuscript grant question
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Lab setting, tools used (sample vs live), package version. No uncleared manuscript text.
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question or ask
+    validations:
+      required: true
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Rights posture
+      options:
+        - label: Manuscripts discussed are lab-owned or covered by written grant; I will not paste uncleared third-party text into this issue.
+          required: true
+  - type: checkboxes
+    id: claim_boundary
+    attributes:
+      label: Claim boundary
+      options:
+        - label: This issue does not authorize precision/recall/comparative reviewer-quality claims.
+          required: true
+        - label: I will not publish private pilot metrics as authorized scientific results or equate runs/ with production authenticity.
+          required: true
