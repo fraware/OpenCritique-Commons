@@ -30,15 +30,9 @@
   "Resolution.schema.json": "9a1ad04b6ef77b5564e3ece8fc63a2e039b8778bb2250dafd67ffb97954e334d",
   "ReviewerExportAuthenticityAttestation.schema.json": "3f4921ac241a8fa0bb40d1722c456968f5b34e172677593d2c580c7a7d381daa",
   "RunManifest.schema.json": "869e3e0c131b750c6cdf7f1f7610d9b3dba36925b0943cfc39bdb3789799376e",
-<<<<<<< HEAD
   "SignedClaimAuthorizationEnvelope.schema.json": "7484ba345d4c62eebd85fe2b1fb7b43a73d159cb0ec85023c497d21821d5dbab",
-  "SignedEvidenceEnvelope.schema.json": "b23dae142bf763d895162c334c4e7dbfc963302caa47747818cf5bcc2873bf09",
-  "SignedScorecardEnvelope.schema.json": "83a63e316d0a16d1e4ad83c16c2f28276fcfeef42c0a074fac8688957a1bf974",
-=======
-  "SignedClaimAuthorizationEnvelope.schema.json": "a378ac6e00d1ac4281629c7b750e7ef49b4551db0a4998043e0fa58867b2fa50",
   "SignedEvidenceEnvelope.schema.json": "58a1c8afe3f0f0d9cd5dd326a460a9eaee2f01a23ffd107e22f0c73b19177aa4",
-  "SignedScorecardEnvelope.schema.json": "bceda2af71f38b374bba822f22f365df17c9df93a2f43cc270ea678ba1dbf802",
->>>>>>> origin/main
+  "SignedScorecardEnvelope.schema.json": "83a63e316d0a16d1e4ad83c16c2f28276fcfeef42c0a074fac8688957a1bf974",
   "SystemManifest.schema.json": "5528d18ae759b6e3bdbaaace33589618cca8b1f2f10e70ace8603c5994c530b2",
   "inventory.json": "49264397d0e9c655e3c5204cc8755fa0abd696cbbb2c9ab397aaa9f3df6d90bc"
 }
