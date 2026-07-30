@@ -25,7 +25,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0" /></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+" /></a>
   <a href="pyproject.toml"><img src="https://img.shields.io/badge/version-0.6.0a0-informational.svg" alt="Version 0.6.0a0" /></a>
-  <a href="docs/release-pypi.md"><img src="https://img.shields.io/badge/PyPI-not%20published%20yet-lightgrey.svg" alt="PyPI: not published yet" /></a>
+  <a href="https://pypi.org/project/opencritique-commons/"><img src="https://img.shields.io/pypi/v/opencritique-commons.svg" alt="PyPI" /></a>
 </p>
 
 <p align="center"><strong>Scientific performance claims: NOT AUTHORIZED</strong>
@@ -70,11 +70,19 @@ The repo also includes schemas, fixtures, synthetic benchmark cases, docs, and t
 
 **Version identity:** package/engineering release **`0.6.0a0`**; frozen schema inventory remains **`0.5.0a1`** (`SCHEMA_FREEZE_RELEASE`). See [docs/MILESTONES.md](docs/MILESTONES.md).
 
-**Install today:** clone and `pip install -e ".[dev]"` (git install is primary until a PyPI release is published; Trusted Publisher path: [docs/release-pypi.md](docs/release-pypi.md)).
+**Install:** `pip install opencritique-commons` pulls alpha **`0.6.0a0`** from [PyPI](https://pypi.org/project/opencritique-commons/). Scientific performance claims remain **unauthorized**. For contributors, clone and `pip install -e ".[dev]"` (release path: [docs/release-pypi.md](docs/release-pypi.md)).
 
 ## Quick start
 
 Python **3.12+** is required.
+
+**From PyPI** (library consumers):
+
+```bash
+python -m pip install opencritique-commons
+```
+
+**From git** (contributors / editable install):
 
 ```bash
 git clone https://github.com/fraware/OpenCritique-Commons.git
