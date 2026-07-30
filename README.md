@@ -17,7 +17,20 @@
 
 </div>
 
+
 <p align="center"><em>Infrastructure for scientific criticism you can inspect, challenge, and reproduce.</em></p>
+
+<p align="center">
+  <a href="https://github.com/fraware/OpenCritique-Commons/actions/workflows/ci.yml"><img src="https://github.com/fraware/OpenCritique-Commons/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0" /></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+" /></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/version-0.6.0a0-informational.svg" alt="Version 0.6.0a0" /></a>
+  <a href="docs/release-pypi.md"><img src="https://img.shields.io/badge/PyPI-not%20published%20yet-lightgrey.svg" alt="PyPI: not published yet" /></a>
+</p>
+
+<p align="center"><strong>Scientific performance claims: NOT AUTHORIZED</strong>
+(<code>performance_claims_authorized=false</code> until evidence gates in
+<a href="docs/MILESTONES.md">docs/MILESTONES.md</a> are met. Not a quality badge.)</p>
 
 ---
 
@@ -28,6 +41,17 @@ Automated tools can draft reviews in seconds. Science still needs criticism you 
 OpenCritique Commons is open, system-neutral infrastructure for that chain. It helps researchers, tool builders, and reviewers share a common form for scientific concerns, keep human judgment in the loop, and evaluate systems without mistaking fixtures or preferences for evidence.
 
 This is early work. It aims to be useful, honest, and welcoming to contributors.
+
+## Get started (two equal tracks)
+
+| | Track A — Tool builders | Track B — Scientists / labs |
+|---|---|---|
+| **Goal** | Map an upstream reviewer into shared schemas | Run inspectable private pilots without unlocking claims |
+| **Start** | [START_HERE.md](START_HERE.md#track-a--adapter-author-tool-builders) | [START_HERE.md](START_HERE.md#track-b--scientist--lab-pilot) |
+| **Depth** | [docs/adapter-authoring.md](docs/adapter-authoring.md) | [docs/private-evaluation-pilot.md](docs/private-evaluation-pilot.md) |
+
+Both tracks share the same install and claim boundary. Full walkthrough:
+[START_HERE.md](START_HERE.md).
 
 ## What you will find
 
@@ -45,6 +69,8 @@ This is early work. It aims to be useful, honest, and welcoming to contributors.
 The repo also includes schemas, fixtures, synthetic benchmark cases, docs, and tests — enough to develop against today.
 
 **Version identity:** package/engineering release **`0.6.0a0`**; frozen schema inventory remains **`0.5.0a1`** (`SCHEMA_FREEZE_RELEASE`). See [docs/MILESTONES.md](docs/MILESTONES.md).
+
+**Install today:** clone and `pip install -e ".[dev]"` (git install is primary until a PyPI release is published; Trusted Publisher path: [docs/release-pypi.md](docs/release-pypi.md)).
 
 ## Quick start
 
@@ -128,6 +154,7 @@ Outputs stamp `evidence_class=private_live` and
 `performance_claims_authorized=false`. The CLI refuses to write under
 `fixtures/*/production/`. Live runs do **not** move
 `python scripts/check_v09_gates.py` to GO.
+
 ## Golden path (sample vision)
 
 Complete this walkthrough in under 30 minutes to exercise the sample
@@ -136,6 +163,11 @@ conformance vision end-to-end. This path uses maintainer-owned fixtures only.
 **Non-claims:** sample fixtures ≠ production authenticity ≠ scientific
 performance. Scorecards stay `NOT AUTHORIZED`
 (`performance_claims_authorized=false`).
+
+**One-shot demo (same path, offline):**
+[`scripts/demo_adapter_path.sh`](scripts/demo_adapter_path.sh) or
+[`scripts/demo_adapter_path.ps1`](scripts/demo_adapter_path.ps1)
+(no paid APIs; prints `NOT AUTHORIZED`).
 
 ### 1. Install and check
 
@@ -199,35 +231,74 @@ readers at [docs/MILESTONES.md](docs/MILESTONES.md) and
 
 Pilot kit + negative-finding report outline:
 [docs/private-evaluation-pilot.md](docs/private-evaluation-pilot.md).
+Fillable method report:
+[docs/examples/method-pilot-report.md](docs/examples/method-pilot-report.md).
+Sample Studio steps:
+[docs/examples/studio-walkthrough.md](docs/examples/studio-walkthrough.md).
 Promotion checklist (runs/ → production only via ingest after rights + volume):
 [docs/adapter-authenticity.md](docs/adapter-authenticity.md#evidence-promotion-checklist).
+
+## Works with OpenCritique
+
+External tools can interoperate on **schemas and adapters** without implying
+endorsement of reviewer quality. Compatibility means interchange contracts —
+not calibrated scientific performance.
+
+- [docs/compatibility-checklist.md](docs/compatibility-checklist.md) — what “OpenCritique-compatible” requires for interchange
+- [docs/community-adapters.md](docs/community-adapters.md) — community adapter registry (in-tree and external)
+- [docs/examples/adapter-integration-note.md](docs/examples/adapter-integration-note.md) — document an external adapter without quality claims
+- [ADOPTERS.md](ADOPTERS.md) — organizations and tools using the commons (PR to add yourself)
 
 ## Operator entry points
 
 | Path | Doc |
 |---|---|
+| Newcomer dual tracks | [START_HERE.md](START_HERE.md) |
+| Claim-safe examples index | [docs/examples/README.md](docs/examples/README.md) |
+| Offline adapter-path demo | [scripts/demo_adapter_path.sh](scripts/demo_adapter_path.sh) / [.ps1](scripts/demo_adapter_path.ps1) |
 | Local Compose / Postgres / Studio | [docs/deployment-local.md](docs/deployment-local.md) |
 | Bring-your-own-keys (BYOK) | [docs/deployment-byok.md](docs/deployment-byok.md) |
 | OpenReviewer Space import (no GPU) | [docs/openreviewer-space-import.md](docs/openreviewer-space-import.md) |
 | Private evaluation pilot (scientists) | [docs/private-evaluation-pilot.md](docs/private-evaluation-pilot.md) |
+| Contributor roadmap themes | [docs/ROADMAP.md](docs/ROADMAP.md) |
+| Outreach one-pager | [docs/outreach-one-pager.md](docs/outreach-one-pager.md) |
 | Scorecard signing and trust store | [docs/signing-governance.md](docs/signing-governance.md) |
 | Security / key compromise | [SECURITY.md](SECURITY.md) |
 | Release checklist and claim gates | [docs/MILESTONES.md](docs/MILESTONES.md) |
 | v0.9-beta go / no-go | [docs/v0.9-beta-go-no-go.md](docs/v0.9-beta-go-no-go.md) |
+| Community norms | [docs/COMMUNITY.md](docs/COMMUNITY.md) |
 
 ## How to contribute
 
 Contributions are welcome — code, docs, tests, adapters, and carefully sourced cases.
 
-1. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
-2. Skim [GOVERNANCE.md](GOVERNANCE.md) and [SECURITY.md](SECURITY.md) if you are changing process, APIs, or trust boundaries.
-3. Open an issue or pull request with a clear scope and the checks you ran.
+1. Start at [START_HERE.md](START_HERE.md) (Track A or Track B).
+2. Read [CONTRIBUTING.md](CONTRIBUTING.md) and pick a tier in
+   [docs/CONTRIBUTING_TIERS.md](docs/CONTRIBUTING_TIERS.md).
+3. Follow the [Code of Conduct](CODE_OF_CONDUCT.md). Skim
+   [GOVERNANCE.md](GOVERNANCE.md) and [SECURITY.md](SECURITY.md) only when
+   changing process, APIs, or trust boundaries.
+4. Open an issue or pull request with a clear scope and the checks you ran.
+
+**Good first issues** (labeled
+[`good first issue`](https://github.com/fraware/OpenCritique-Commons/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)):
+
+- [#10](https://github.com/fraware/OpenCritique-Commons/issues/10) — newcomer walkthrough / START_HERE
+- [#11](https://github.com/fraware/OpenCritique-Commons/issues/11) — hashing edge cases
+- [#12](https://github.com/fraware/OpenCritique-Commons/issues/12) — starter engineering task
+
+Also browse
+[`help wanted`](https://github.com/fraware/OpenCritique-Commons/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22),
+[`track-adapters`](https://github.com/fraware/OpenCritique-Commons/issues?q=is%3Aissue+is%3Aopen+label%3Atrack-adapters),
+and
+[`track-pilots`](https://github.com/fraware/OpenCritique-Commons/issues?q=is%3Aissue+is%3Aopen+label%3Atrack-pilots).
 
 Good first areas:
 
-- **Adapters** — map another reviewer system into the shared schemas
+- **Adapters** — map another reviewer system into the shared schemas (Track A)
 - **Docs** — clarify concepts for newcomers
 - **Tests and verifiers** — harden the contracts the rest of the project relies on
+- **Pilots** — method reports and claim-free examples (Track B)
 - **Cases** — add or refine examples with care for rights and provenance
 
 Not sure where to start? Open an issue and say what you enjoy working on. We would rather help you find a fit than lose a contributor to setup friction.
@@ -244,6 +315,10 @@ Not sure where to start? Open an issue and say what you enjoy working on. We wou
 
 This repository is **early infrastructure**. Packages, schemas, and fixtures exist so people can build and test together.
 
+**Claims remain unauthorized.** We do not claim that any AI reviewer is accurate,
+calibrated, or better than another. Synthetic fixtures exercise software
+behavior. They do not establish scientific reliability.
+
 Terminology used throughout the docs:
 
 | Term | Meaning |
@@ -252,7 +327,7 @@ Terminology used throughout the docs:
 | **Production authenticity** | Rights-cleared upstream exports (issues #3 / #5) — not yet in tree |
 | **Scientific performance claims** | Precision/recall, rankings, leaderboards — **unauthorized** (`performance_claims_authorized=false`) |
 
-We are **not** claiming that any AI reviewer is accurate, calibrated, or better than another. Synthetic fixtures exercise software behavior. They do not establish scientific reliability. Production signing **public** keys are published under `trust/`; private keys stay offline. Natural manuscript import remains blocked pending affirmative rights clearance ([docs/rights-clearance-status.md](docs/rights-clearance-status.md)).
+Production signing **public** keys are published under `trust/`; private keys stay offline. Natural manuscript import remains blocked pending affirmative rights clearance ([docs/rights-clearance-status.md](docs/rights-clearance-status.md)).
 
 ## License and citation
 
@@ -262,11 +337,25 @@ We are **not** claiming that any AI reviewer is accurate, calibrated, or better 
 
 ## Further reading
 
+- [START_HERE.md](START_HERE.md) — dual-track newcomer walkthrough
 - [CONTRIBUTING.md](CONTRIBUTING.md) — setup, commits, and pull requests
+- [docs/CONTRIBUTING_TIERS.md](docs/CONTRIBUTING_TIERS.md) — what to read by change class
+- [docs/COMMUNITY.md](docs/COMMUNITY.md) — discussion norms and office hours
+- [docs/MAINTAINERS.md](docs/MAINTAINERS.md) — triage SLA and claim-boundary review
+- [ADOPTERS.md](ADOPTERS.md) — adopters table (PR welcome)
+- [docs/ROADMAP.md](docs/ROADMAP.md) — contributor-facing themes mapped to milestones
+- [docs/outreach-one-pager.md](docs/outreach-one-pager.md) — what OpenCritique is / is not
+- [docs/examples/README.md](docs/examples/README.md) — claim-safe demos and templates index
+- [docs/examples/method-pilot-report.md](docs/examples/method-pilot-report.md) — lab method / negative-finding template
+- [docs/examples/studio-walkthrough.md](docs/examples/studio-walkthrough.md) — sample Studio adjudication steps
+- [docs/examples/adapter-integration-note.md](docs/examples/adapter-integration-note.md) — external adapter write-up without quality claims
+- [scripts/demo_adapter_path.sh](scripts/demo_adapter_path.sh) / [demo_adapter_path.ps1](scripts/demo_adapter_path.ps1) — offline Track A golden-path demo
 - [docs/MILESTONES.md](docs/MILESTONES.md) — release checklist and claim gates
 - [docs/private-evaluation-pilot.md](docs/private-evaluation-pilot.md) — private lab pilots; publish / do-not-publish boundary
 - [docs/adapter-authenticity.md](docs/adapter-authenticity.md) — sample vs production fixtures; evidence promotion checklist
 - [docs/adapter-authoring.md](docs/adapter-authoring.md) — third-adapter tutorial + skeleton
+- [docs/compatibility-checklist.md](docs/compatibility-checklist.md) — external interchange checklist
+- [docs/community-adapters.md](docs/community-adapters.md) — community adapter registry
 - [docs/runner-plugins.md](docs/runner-plugins.md) — live runner plugin contract (`LiveRunnerPlugin`)
 - [docs/deployment-byok.md](docs/deployment-byok.md) — BYOK credential gate + Coarse live runner
 - [docs/openreviewer-space-import.md](docs/openreviewer-space-import.md) — OpenReviewer Space → `--from-export`
