@@ -21,7 +21,7 @@ they are intentionally **not** valid signed envelopes.
 | Reviewer export (OpenReviewer) | `reviewer-export-openreviewer.envelope.json` | scientific #3 |
 | Expert staffing | `expert-staffing.envelope.json` | scientific #5 |
 | Matcher-audit completion | `matcher-audit-completion.envelope.json` | scientific #6 |
-| Holdout custody | `holdout-custody.envelope.json` | scientific #7 |
+| Holdout custody | `holdout-custody.envelope.json` | scientific #7 (≥40 attested holdout cases + manifest/log-head binding) |
 | Independent evaluation | `independent-evaluation.envelope.json` | scientific #8 |
 
 Signing role: trust-store `evidence_authority` (or `offline_root`). Test keys are

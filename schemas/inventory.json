@@ -114,10 +114,24 @@
       "schema_version": "0.1"
     },
     {
+      "description": "Append-only holdout custody access log",
+      "model": "HoldoutAccessLog",
+      "persistent": true,
+      "schema_id": "opencritique.HoldoutAccessLog",
+      "schema_version": "0.1"
+    },
+    {
       "description": "Signed holdout-custody evidence attestation payload",
       "model": "HoldoutCustodyAttestation",
       "persistent": true,
       "schema_id": "opencritique.HoldoutCustodyAttestation",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Frozen holdout set manifest (case digests + custody metadata)",
+      "model": "HoldoutSetManifest",
+      "persistent": true,
+      "schema_id": "opencritique.HoldoutSetManifest",
       "schema_version": "0.1"
     },
     {

@@ -1,0 +1,169 @@
+{
+  "$defs": {
+    "HoldoutCaseRecord": {
+      "additionalProperties": false,
+      "description": "One natural case frozen into a holdout set (id + content digest).",
+      "properties": {
+        "case_id": {
+          "minLength": 1,
+          "title": "Case Id",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "content_hash"
+      ],
+      "title": "HoldoutCaseRecord",
+      "type": "object"
+    },
+    "HoldoutContaminationDeclaration": {
+      "additionalProperties": false,
+      "description": "Contamination declaration fields for a holdout set.",
+      "properties": {
+        "affected_case_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Case Ids",
+          "type": "array"
+        },
+        "contaminated": {
+          "default": false,
+          "title": "Contaminated",
+          "type": "boolean"
+        },
+        "declared_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared At"
+        },
+        "declared_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declared By"
+        },
+        "details": {
+          "default": "",
+          "title": "Details",
+          "type": "string"
+        }
+      },
+      "title": "HoldoutContaminationDeclaration",
+      "type": "object"
+    },
+    "HoldoutRefreshRetirementPolicy": {
+      "additionalProperties": false,
+      "description": "Refresh / retirement policy bound into the holdout manifest.",
+      "properties": {
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "refresh_cadence": {
+          "minLength": 1,
+          "title": "Refresh Cadence",
+          "type": "string"
+        },
+        "retirement_rule": {
+          "minLength": 1,
+          "title": "Retirement Rule",
+          "type": "string"
+        }
+      },
+      "required": [
+        "refresh_cadence",
+        "retirement_rule"
+      ],
+      "title": "HoldoutRefreshRetirementPolicy",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Frozen holdout set: case digests, custodian, opaque locator, policies.\n\n``private_locator_ref`` must be an opaque encrypted/private locator\n(``urn:`` / ``vault:`` / ``enc:`` / ``opaque:``). Plaintext manuscript or\nfilesystem paths are rejected so they never enter the public tree.",
+  "properties": {
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/HoldoutCaseRecord"
+      },
+      "title": "Cases",
+      "type": "array"
+    },
+    "contamination": {
+      "$ref": "#/$defs/HoldoutContaminationDeclaration"
+    },
+    "custodian_id": {
+      "minLength": 1,
+      "title": "Custodian Id",
+      "type": "string"
+    },
+    "developer_exclusion_list": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Developer Exclusion List",
+      "type": "array"
+    },
+    "freeze_time": {
+      "format": "date-time",
+      "title": "Freeze Time",
+      "type": "string"
+    },
+    "holdout_id": {
+      "minLength": 1,
+      "title": "Holdout Id",
+      "type": "string"
+    },
+    "manifest_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Manifest Version",
+      "type": "string"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    },
+    "private_locator_ref": {
+      "description": "Opaque encrypted/private locator reference. Never a plaintext manuscript or filesystem path in the public tree.",
+      "minLength": 1,
+      "pattern": "^(urn:|vault:|enc:|opaque:)[^\\s]+$",
+      "title": "Private Locator Ref",
+      "type": "string"
+    },
+    "refresh_retirement_policy": {
+      "$ref": "#/$defs/HoldoutRefreshRetirementPolicy"
+    }
+  },
+  "required": [
+    "holdout_id",
+    "freeze_time",
+    "custodian_id",
+    "private_locator_ref",
+    "refresh_retirement_policy"
+  ],
+  "title": "HoldoutSetManifest",
+  "type": "object"
+}

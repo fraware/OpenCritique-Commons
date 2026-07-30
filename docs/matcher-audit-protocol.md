@@ -74,3 +74,20 @@ disclose that the matcher audit gate did not pass.
 
 Private rights-owned pilots (method tooling, not natural DoD):
 [private-evaluation-pilot.md](private-evaluation-pilot.md).
+
+## Holdout custody definition of done (scientific gate #7)
+
+Protocol documentation and ledger ``IMPORTED`` counts are **not** sufficient.
+
+Scientific holdout custody requires:
+
+| Artifact | Requirement |
+|---|---|
+| `HoldoutSetManifest` | Frozen case IDs + content hashes; freeze time; custodian; developer-exclusion list; opaque private locator (`urn:` / `vault:` / `enc:` / `opaque:` — no plaintext manuscript paths); refresh/retirement policy; contamination declaration fields |
+| Append-only access log | Actor, action, timestamp, purpose per entry; contiguous sequence from 0 |
+| `HoldoutCustodyAttestation` | Signed `SignedEvidenceEnvelope` over `holdout_manifest_hash` + `access_log_head_hash` (mirrored in `subject_hashes`), freeze binding, custodian, opaque locator |
+| Attested natural case count | ≥40 cases **inside the attested holdout set** |
+
+Evidence path: `governance/evidence/attestations/holdout-custody.envelope.json`.
+Machine check: `scripts/check_v09_scientific_gates.py` gate `holdout_custody`.
+Until a verified envelope exists, the gate stays **NO-GO** with `missing_attestation`.

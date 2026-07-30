@@ -21,7 +21,8 @@ revocation — never a false green from Boolean JSON alone.
 
 | Artifact | Path | Bound by |
 |---|---|---|
-| Acquisition ledger (natural imports) | `corpus/acquisition-ledger.json` | `natural_corpus` / `holdout_custody` |
+| Acquisition ledger (natural imports) | `corpus/acquisition-ledger.json` | `natural_corpus` (informational for holdout; not the gate #7 denominator) |
+| Holdout set manifest + access log | private custody store (opaque locator only in-repo) | `holdout_custody` (attested set ≥40 cases + freeze/log-head binding) |
 | Production Coarse MANIFEST | `fixtures/coarse/production/MANIFEST.json` | `reviewer_export_authenticity` (coarse) |
 | Production OpenReviewer MANIFEST | `fixtures/openreviewer/production/MANIFEST.json` | `reviewer_export_authenticity` (openreviewer) |
 | Production signing trust store | `trust/scorecard-trust-store.json` | scientific #4 (public keys) + attestation verify |
