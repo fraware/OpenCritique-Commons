@@ -72,15 +72,17 @@ real A–F evidence lands — never fabricate exports or flip claims.
 |---|---|---|
 | Infrastructure / schema / adapter conformance | Yes (descriptive) | Fixtures + tests; must not be framed as reviewer quality |
 | Synthetic matching / conversion demos | Yes (descriptive only) | Explicit non-performance disclosure |
-| Precision / recall / severity-weighted metrics as scientific results | **No** | Expert-natural or live-private benchmarks, adjudicated, independent evaluation, minimum public claim cases |
-| Comparative reviewer ranking / leaderboard claims | **No** | Same as above + matcher-audit gate passed |
+| Private live method reports (`claim_scope=private_method_report`) | Method-report only | `LIVE_PRIVATE` / private live provenance; **never** authorizes `public_*` scientific claims |
+| Precision / recall / severity-weighted metrics as scientific results (`public_domain_bounded`) | **No** | `EXPERT_NATURAL` + rights-cleared cases + protected holdout + independent evaluation + matcher-audit complete + frozen scoring policy + signed authorization manifest + explicit `domain_scope` / `use_scope` |
+| Comparative reviewer ranking / leaderboard claims (`public_comparative`) | **No** | Same public prerequisites + comparative authorization |
 | “Production Coarse compatibility” as quality endorsement | **No** | Compatibility ≠ correctness; genuine exports still pending |
 
 Enforcement hooks already present:
 
-- `BenchmarkManifest.performance_claim_authorized()`
+- `BenchmarkManifest.claim_authorization()` / structured `ClaimAuthorization.claim_scope`
+- Derived transitional `performance_claim_authorized` (true only for `public_domain_bounded` / `public_comparative`)
 - `AcquisitionLedger.performance_claims_authorized` (false)
-- Scorecard disclosure text when unauthorized
+- Scorecard scientific headline only for public scopes; private method reports stay non-performance language
 - Rights memorandum + case-level rights records
 
 ## Runtime release checklist

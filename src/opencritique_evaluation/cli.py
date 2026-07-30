@@ -45,7 +45,8 @@ def run_evaluation(
     typer.echo(str(output))
     typer.echo(
         f"claim authorization: "
-        f"{'AUTHORIZED' if result.performance_claim_authorized else 'NOT AUTHORIZED'}"
+        f"{'AUTHORIZED' if result.performance_claim_authorized else 'NOT AUTHORIZED'} "
+        f"(claim_scope={result.claim_authorization.claim_scope.value})"
     )
 
 
