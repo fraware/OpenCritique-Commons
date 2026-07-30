@@ -1,13 +1,14 @@
-"""Signed scientific evidence attestation payloads (PR 42).
+"""Signed scientific evidence attestation payloads (PR 42 / PR 43).
 
 These records are the canonical subjects of ``SignedEvidenceEnvelope``.
 Presence of Boolean JSON or ledger counts alone does **not** satisfy scientific
 gates; gates must verify an envelope signed by ``evidence_authority`` (or
 ``offline_root``) against the trust store.
 
-Matcher-audit volume accounting and full holdout custody models land in later
-PRs; their attestation schemas are frozen here so gates can fail closed on
-``missing_attestation`` until real evidence is issued.
+Holdout custody (PR 43) attests a ``HoldoutSetManifest`` digest plus access-log
+head hash; matcher-audit volume accounting lands in a follow-on PR. Schemas are
+frozen so gates can fail closed on ``missing_attestation`` until real evidence
+is issued.
 """
 
 from __future__ import annotations
@@ -134,16 +135,70 @@ class MatcherAuditCompletionAttestation(EvidenceAttestationBase):
 
 
 class HoldoutCustodyAttestation(EvidenceAttestationBase):
-    """Minimal holdout custody attestation (full custody model in PR 43)."""
+    """Holdout custody attestation signed over manifest + access-log head.
+
+    When ``verification_status=attested``, the payload must bind
+    ``holdout_manifest_hash`` and ``access_log_head_hash`` (also mirrored in
+    ``subject_hashes``), freeze time, custodian, opaque locator, and declare no
+    contamination. Scientific gate #7 additionally requires
+    ``natural_case_count`` >= 40 inside this attested holdout set - ledger
+    ``IMPORTED`` counts alone do not satisfy the gate.
+    """
 
     attestation_kind: Literal[EvidenceAttestationKind.HOLDOUT_CUSTODY] = (
         EvidenceAttestationKind.HOLDOUT_CUSTODY
     )
     holdout_id: str | None = None
     holdout_manifest_hash: str | None = Field(default=None, pattern=_HEX64)
+    access_log_head_hash: str | None = Field(default=None, pattern=_HEX64)
     natural_case_count: int = Field(default=0, ge=0)
     freeze_time: datetime | None = None
     custodian_id: str | None = None
+    developer_exclusion_list: list[str] = Field(default_factory=list)
+    private_locator_ref: str | None = None
+    contamination_declared: bool = False
+    contamination_details: str = ""
+    refresh_policy: str = ""
+    retirement_policy: str = ""
+
+    @model_validator(mode="after")
+    def attested_requires_custody_binding(self) -> HoldoutCustodyAttestation:
+        if self.verification_status != AttestationRecordStatus.ATTESTED:
+            return self
+        required = {
+            "holdout_id": self.holdout_id,
+            "holdout_manifest_hash": self.holdout_manifest_hash,
+            "access_log_head_hash": self.access_log_head_hash,
+            "freeze_time": self.freeze_time,
+            "custodian_id": self.custodian_id,
+            "private_locator_ref": self.private_locator_ref,
+        }
+        missing = [name for name, value in required.items() if value in (None, "")]
+        if missing:
+            raise ValueError(
+                "attested holdout custody requires: " + ", ".join(missing)
+            )
+        if self.subject_hashes.get("holdout_manifest") != self.holdout_manifest_hash:
+            raise ValueError(
+                "subject_hashes['holdout_manifest'] must equal holdout_manifest_hash"
+            )
+        if self.subject_hashes.get("access_log_head") != self.access_log_head_hash:
+            raise ValueError(
+                "subject_hashes['access_log_head'] must equal access_log_head_hash"
+            )
+        if self.contamination_declared:
+            raise ValueError(
+                "attested holdout custody must not declare contamination; "
+                "retire or re-issue after remediation"
+            )
+        if not (self.refresh_policy or "").strip() or not (
+            self.retirement_policy or ""
+        ).strip():
+            raise ValueError(
+                "attested holdout custody requires refresh_policy and "
+                "retirement_policy"
+            )
+        return self
 
 
 class IndependentEvaluationAttestation(EvidenceAttestationBase):

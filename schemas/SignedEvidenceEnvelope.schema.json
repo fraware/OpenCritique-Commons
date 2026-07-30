@@ -125,8 +125,21 @@
     },
     "HoldoutCustodyAttestation": {
       "additionalProperties": false,
-      "description": "Minimal holdout custody attestation (full custody model in PR 43).",
+      "description": "Holdout custody attestation signed over manifest + access-log head.\n\nWhen ``verification_status=attested``, the payload must bind\n``holdout_manifest_hash`` and ``access_log_head_hash`` (also mirrored in\n``subject_hashes``), freeze time, custodian, opaque locator, and declare no\ncontamination. Scientific gate #7 additionally requires\n``natural_case_count`` >= 40 inside this attested holdout set - ledger\n``IMPORTED`` counts alone do not satisfy the gate.",
       "properties": {
+        "access_log_head_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Access Log Head Hash"
+        },
         "attestation_id": {
           "minLength": 1,
           "title": "Attestation Id",
@@ -155,6 +168,16 @@
           "default": null,
           "title": "Blocked Reason"
         },
+        "contamination_declared": {
+          "default": false,
+          "title": "Contamination Declared",
+          "type": "boolean"
+        },
+        "contamination_details": {
+          "default": "",
+          "title": "Contamination Details",
+          "type": "string"
+        },
         "custodian_id": {
           "anyOf": [
             {
@@ -166,6 +189,13 @@
           ],
           "default": null,
           "title": "Custodian Id"
+        },
+        "developer_exclusion_list": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Developer Exclusion List",
+          "type": "array"
         },
         "freeze_time": {
           "anyOf": [
@@ -237,6 +267,28 @@
           ],
           "default": null,
           "title": "Predecessor Id"
+        },
+        "private_locator_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Private Locator Ref"
+        },
+        "refresh_policy": {
+          "default": "",
+          "title": "Refresh Policy",
+          "type": "string"
+        },
+        "retirement_policy": {
+          "default": "",
+          "title": "Retirement Policy",
+          "type": "string"
         },
         "subject_hashes": {
           "additionalProperties": {

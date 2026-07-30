@@ -1,0 +1,82 @@
+{
+  "$defs": {
+    "HoldoutAccessAction": {
+      "enum": [
+        "create",
+        "read",
+        "export",
+        "rotate",
+        "retire",
+        "declare_contamination",
+        "other"
+      ],
+      "title": "HoldoutAccessAction",
+      "type": "string"
+    },
+    "HoldoutAccessLogEntry": {
+      "additionalProperties": false,
+      "description": "Append-only access record for a holdout set.",
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/HoldoutAccessAction"
+        },
+        "actor": {
+          "minLength": 1,
+          "title": "Actor",
+          "type": "string"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "actor",
+        "action",
+        "timestamp",
+        "purpose"
+      ],
+      "title": "HoldoutAccessLogEntry",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Append-only custody access log (head hash is attested).",
+  "properties": {
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/HoldoutAccessLogEntry"
+      },
+      "title": "Entries",
+      "type": "array"
+    },
+    "holdout_id": {
+      "minLength": 1,
+      "title": "Holdout Id",
+      "type": "string"
+    },
+    "log_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Log Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "holdout_id"
+  ],
+  "title": "HoldoutAccessLog",
+  "type": "object"
+}

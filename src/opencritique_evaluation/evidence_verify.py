@@ -530,11 +530,70 @@ def _check_subject_bindings(
             bindings["natural_case_count"] = str(attestation.natural_case_count)
             if attestation.natural_case_count != int(expected_count):
                 errors.append("natural_case_count")
+        min_cases = check.get("require_minimum_natural_cases")
+        if min_cases is not None:
+            bindings["natural_case_count"] = str(attestation.natural_case_count)
+            bindings["natural_holdout_minimum"] = str(int(min_cases))
+            if attestation.natural_case_count < int(min_cases):
+                errors.append("natural_case_count_below_minimum")
         expected_holdout = check.get("holdout_id")
         if expected_holdout is not None:
             bindings["holdout_id"] = attestation.holdout_id or ""
             if attestation.holdout_id != expected_holdout:
                 errors.append("holdout_id")
+        expected_manifest = check.get("holdout_manifest_hash")
+        if expected_manifest is not None:
+            bindings["holdout_manifest_hash"] = attestation.holdout_manifest_hash or ""
+            if attestation.holdout_manifest_hash != expected_manifest:
+                errors.append("holdout_manifest_hash")
+        expected_log_head = check.get("access_log_head_hash")
+        if expected_log_head is not None:
+            bindings["access_log_head_hash"] = attestation.access_log_head_hash or ""
+            if attestation.access_log_head_hash != expected_log_head:
+                errors.append("access_log_head_hash")
+        expected_freeze = check.get("freeze_time")
+        if expected_freeze is not None:
+            freeze_iso = (
+                attestation.freeze_time.isoformat()
+                if attestation.freeze_time is not None
+                else ""
+            )
+            bindings["freeze_time"] = freeze_iso
+            expected_iso = (
+                expected_freeze.isoformat()
+                if hasattr(expected_freeze, "isoformat")
+                else str(expected_freeze)
+            )
+            if freeze_iso != expected_iso:
+                errors.append("freeze_time")
+        if check.get("require_custody_fields"):
+            for field_name in (
+                "holdout_id",
+                "holdout_manifest_hash",
+                "access_log_head_hash",
+                "freeze_time",
+                "custodian_id",
+                "private_locator_ref",
+            ):
+                value = getattr(attestation, field_name)
+                bindings[field_name] = (
+                    value.isoformat()
+                    if hasattr(value, "isoformat")
+                    else ("" if value is None else str(value))
+                )
+                if value in (None, ""):
+                    errors.append(field_name)
+            if attestation.contamination_declared:
+                bindings["contamination_declared"] = "true"
+                errors.append("contamination_declared")
+            manifest_subject = attestation.subject_hashes.get("holdout_manifest")
+            log_subject = attestation.subject_hashes.get("access_log_head")
+            bindings["subject_holdout_manifest"] = manifest_subject or ""
+            bindings["subject_access_log_head"] = log_subject or ""
+            if manifest_subject != attestation.holdout_manifest_hash:
+                errors.append("holdout_manifest_subject_binding")
+            if log_subject != attestation.access_log_head_hash:
+                errors.append("access_log_head_subject_binding")
 
     elif isinstance(attestation, IndependentEvaluationAttestation):
         expected_ids = set(check.get("benchmark_ids") or [])

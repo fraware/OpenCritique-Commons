@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Shared primitives for v0.9 engineering and scientific gate evaluators.
 
-Scientific blocking gates (PR 42) require cryptographically verified
+Scientific blocking gates (PR 42 / PR 43) require cryptographically verified
 ``SignedEvidenceEnvelope`` artifacts under ``governance/evidence/attestations/``.
 Boolean JSON, roster status flags, ledger counts, and MANIFEST presence alone
-do **not** flip a scientific gate to PASS.
+do **not** flip a scientific gate to PASS. Holdout gate #7 requires an attested
+holdout set of >=40 natural cases (not ledger ``IMPORTED`` count alone).
 """
 
 from __future__ import annotations
@@ -504,26 +505,38 @@ def gate_holdout_custody_documented(
         "holdout_custody_documented",
         protocol.is_file(),
         blocking,
-        "engineering docs present; natural holdout missing",
+        "engineering docs present; attested natural holdout custody missing",
     )
 
 
 def gate_holdout_custody_scientific(
     gate_id: int, *, blocking: bool = True
 ) -> GateResult:
-    """Scientific: verified holdout custody attestation (fail closed)."""
+    """Scientific: verified holdout custody over attested set (≥40 cases).
+
+    Pass requires a cryptographically verified ``HoldoutCustodyAttestation``
+    bound to a holdout manifest hash + access-log head hash, freeze time, and
+    ``natural_case_count`` ≥ ``NATURAL_HOLDOUT_MINIMUM`` **inside the attested
+    holdout set**. Ledger ``IMPORTED`` counts and protocol markdown alone do
+    not unlock this gate.
+    """
     protocol = ROOT / "docs" / "matcher-audit-protocol.md"
     protocol_ok = protocol.is_file()
-    count, ledger_detail, _case_ids = count_natural_rights_cleared_cases()
+    ledger_count, ledger_detail, _case_ids = count_natural_rights_cleared_cases()
     path = ATTESTATION_ENVELOPE_PATHS[EvidenceAttestationKind.HOLDOUT_CUSTODY]
     report = _verify_attestation_file(
         path,
         kind=EvidenceAttestationKind.HOLDOUT_CUSTODY,
-        subject_binding_check={"natural_case_count": count} if count > 0 else None,
+        subject_binding_check={
+            "require_minimum_natural_cases": NATURAL_HOLDOUT_MINIMUM,
+            "require_custody_fields": True,
+        },
     )
     extra = (
-        f"{ledger_detail}; protocol={relative(protocol)} present={protocol_ok}; "
-        f"natural_holdout_minimum={NATURAL_HOLDOUT_MINIMUM}"
+        f"{ledger_detail} (informational only; not the gate denominator); "
+        f"protocol={relative(protocol)} present={protocol_ok}; "
+        f"attested_holdout_minimum={NATURAL_HOLDOUT_MINIMUM}; "
+        f"ledger_natural_imports={ledger_count}"
     )
     return _gate_from_attestation(
         gate_id,

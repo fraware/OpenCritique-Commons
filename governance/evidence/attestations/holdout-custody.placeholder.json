@@ -7,11 +7,18 @@
   "not_after": "2027-01-01T00:00:00+00:00",
   "predecessor_id": null,
   "verification_status": "blocked",
-  "blocked_reason": "No holdout custody attestation has been issued; ledger IMPORTED count plus protocol markdown alone do not unlock scientific gate #7 (full custody model lands in a follow-on PR)",
-  "notes": "Minimal placeholder schema. Required envelope: holdout-custody.envelope.json.",
+  "blocked_reason": "No holdout custody attestation has been issued; ledger IMPORTED count plus protocol markdown alone do not unlock scientific gate #7. Required: HoldoutSetManifest (≥40 natural cases), append-only access log, freeze binding, and SignedEvidenceEnvelope over manifest hash + access-log head hash",
+  "notes": "Full custody model placeholder. Required envelope: holdout-custody.envelope.json. Do not unlock on protocol file presence.",
   "holdout_id": null,
   "holdout_manifest_hash": null,
+  "access_log_head_hash": null,
   "natural_case_count": 0,
   "freeze_time": null,
-  "custodian_id": null
+  "custodian_id": null,
+  "developer_exclusion_list": [],
+  "private_locator_ref": null,
+  "contamination_declared": false,
+  "contamination_details": "",
+  "refresh_policy": "",
+  "retirement_policy": ""
 }
