@@ -8,7 +8,6 @@ from .models import (
     EvaluationSubmission,
     NovelConcernCandidate,
     NovelConcernQueue,
-    ReferenceCompleteness,
 )
 
 
@@ -22,8 +21,13 @@ def _hash_model(model) -> str:
 def build_novel_queue(
     result: EvaluationResult, submission: EvaluationSubmission
 ) -> NovelConcernQueue:
-    if result.benchmark.reference_completeness == ReferenceCompleteness.COMPLETE_SEEDED:
-        raise ValueError("complete seeded benchmarks do not produce novel-concern queues")
+    from .metric_auth import COMPLETE_FOR_PRECISION
+
+    if result.benchmark.reference_completeness in COMPLETE_FOR_PRECISION:
+        raise ValueError(
+            "complete reference sets (seeded or adjudicated-output-complete) "
+            "do not produce novel-concern queues"
+        )
     if result.submission_id != submission.submission_id:
         raise ValueError("result and submission identities do not match")
     by_case = {(item.case_id, item.case_version): item for item in submission.cases}

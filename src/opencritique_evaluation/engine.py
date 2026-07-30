@@ -9,6 +9,7 @@ from pathlib import Path
 from opencritique_schema.models import Anchor, CaseBundle, Concern, Severity
 
 from .matching import greedy_match, resolve_anchor
+from .metric_auth import COMPLETE_FOR_PRECISION, INCOMPLETE_REFERENCE
 from .models import (
     AnchorResolution,
     AnchorResolutionStatus,
@@ -32,12 +33,7 @@ from .reference_policy import (
 
 MATCHER_VERSION = "opencritique-matcher-v0.2"
 
-_INCOMPLETE_REFERENCE = frozenset(
-    {
-        ReferenceCompleteness.PARTIAL_NATURAL,
-        ReferenceCompleteness.UNKNOWN,
-    }
-)
+_INCOMPLETE_REFERENCE = INCOMPLETE_REFERENCE
 
 _SEVERITY_WEIGHT: dict[Severity, float] = {
     Severity.CRITICAL: 4.0,
@@ -363,7 +359,7 @@ def evaluate(
         for submitted in case_submission.concerns:
             # Precision-family and Brier only score against complete reference sets;
             # on partial/unknown, unmatched submitted are adjudication candidates.
-            if benchmark.reference_completeness != ReferenceCompleteness.COMPLETE_SEEDED:
+            if benchmark.reference_completeness not in COMPLETE_FOR_PRECISION:
                 continue
             weight = _SEVERITY_WEIGHT[submitted.severity]
             outcome = 1.0 if submitted.local_id in matched_submitted else 0.0

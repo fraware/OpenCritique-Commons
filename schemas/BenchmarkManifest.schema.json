@@ -37,7 +37,9 @@
     "ReferenceCompleteness": {
       "enum": [
         "complete_seeded",
+        "adjudicated_output_complete",
         "partial_natural",
+        "discovery_open",
         "unknown"
       ],
       "title": "ReferenceCompleteness",

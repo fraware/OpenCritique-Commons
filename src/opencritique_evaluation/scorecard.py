@@ -9,12 +9,20 @@ from pathlib import Path
 from opencritique_schema.canonical import canonical_json_bytes
 
 from .claim_auth_verify import verify_claim_authorization
+from .metric_auth import (
+    INCOMPLETE_REFERENCE,
+    any_scientific_metric_authorized,
+    metric_is_authorized,
+    recall_metric_id,
+    resolve_authorized_metrics,
+    withhold_metric_value,
+)
 from .models import (
     ClaimAuthorization,
+    ClaimMetricId,
     ClaimScope,
     EvaluationResult,
     PublicScorecard,
-    ReferenceCompleteness,
 )
 from .trust import TrustPolicyMode, TrustStore
 
@@ -25,12 +33,7 @@ _PUBLIC_SCOPES = frozenset(
     }
 )
 
-_INCOMPLETE_REFERENCE = frozenset(
-    {
-        ReferenceCompleteness.PARTIAL_NATURAL,
-        ReferenceCompleteness.UNKNOWN,
-    }
-)
+_UNAUTHORIZED_REASON = "withheld: metric not authorized by claim-authorization envelope"
 
 
 def _coerce_unauthorized(result: EvaluationResult) -> EvaluationResult:
@@ -55,8 +58,53 @@ def _coerce_unauthorized(result: EvaluationResult) -> EvaluationResult:
                 use_scope=auth.use_scope,
                 authorization_verified=False,
                 verification_report_digest=auth.verification_report_digest,
+                authorized_metrics=[],
             ),
             "performance_claim_authorized": False,
+        }
+    )
+
+
+def _apply_metric_authorization(
+    result: EvaluationResult,
+) -> EvaluationResult:
+    """Withhold metric rows that are not authorized (or fail completeness gates)."""
+    auth = result.claim_authorization
+    effective = resolve_authorized_metrics(
+        list(auth.authorized_metrics),
+        reference_completeness=result.benchmark.reference_completeness,
+    )
+    metrics = result.metrics
+    completeness = result.benchmark.reference_completeness
+    recall_id = recall_metric_id(completeness)
+
+    updates: dict[str, object] = {}
+    field_to_metric: list[tuple[str, ClaimMetricId]] = [
+        ("anchor_resolution_rate", ClaimMetricId.ANCHOR_INTEGRITY),
+        ("precision", ClaimMetricId.CRITICAL_PRECISION),
+        ("severity_weighted_precision", ClaimMetricId.MAJOR_PRECISION),
+        ("recall", recall_id),
+        ("severity_weighted_recall", recall_id),
+        ("false_critical_per_manuscript", ClaimMetricId.FALSE_CRITICAL_RATE),
+        ("reference_match_brier_score", ClaimMetricId.CALIBRATION),
+    ]
+    for field_name, metric_id in field_to_metric:
+        current = getattr(metrics, field_name)
+        if metric_is_authorized(effective, metric_id):
+            continue
+        updates[field_name] = withhold_metric_value(
+            current, reason=_UNAUTHORIZED_REASON
+        )
+
+    new_metrics = (
+        metrics.model_copy(update=updates) if updates else metrics
+    )
+    new_auth = auth.model_copy(update={"authorized_metrics": effective})
+    return result.model_copy(
+        update={
+            "metrics": new_metrics,
+            "claim_authorization": new_auth,
+            "performance_claim_authorized": new_auth.performance_claim_authorized,
         }
     )
 
@@ -74,9 +122,10 @@ def build_scorecard(
     """Build a public scorecard.
 
     Scientific performance headlines require a successfully verified claim-
-    authorization envelope. Unsigned, missing, or failed verification yields a
-    non-performance record. Integrity of a later scorecard signature is distinct
-    from claim authorization and is enforced separately by ``signing.verify_*``.
+    authorization envelope **and** at least one authorized scientific metric.
+    Unsigned, missing, or failed verification yields a non-performance record.
+    Per-metric rows are withheld when status is not ``authorized`` or when
+    completeness requirements are unmet.
     """
     scope = result.claim_authorization.claim_scope
     authorized_public = False
@@ -96,11 +145,16 @@ def build_scorecard(
         )
         if report.ok:
             authorized_public = True
+            result = _apply_metric_authorization(result)
         else:
             result = _coerce_unauthorized(result)
             scope = ClaimScope.NONE
 
-    if authorized_public and scope in _PUBLIC_SCOPES:
+    scientific_metrics_ok = any_scientific_metric_authorized(
+        result.claim_authorization.authorized_metrics
+    )
+
+    if authorized_public and scope in _PUBLIC_SCOPES and scientific_metrics_ok:
         headline = (
             f"{result.system.display_name} — independently evaluated scientific scorecard"
         )
@@ -154,11 +208,31 @@ def _metric(name: str, metric) -> str:
     )
 
 
+def _auth_rows(result: EvaluationResult) -> str:
+    rows: list[str] = []
+    for item in result.claim_authorization.authorized_metrics:
+        lim = "; ".join(item.limitations) if item.limitations else ""
+        rows.append(
+            "<tr>"
+            f"<td>{html.escape(item.metric_id.value)}</td>"
+            f"<td>{html.escape(item.status.value)}</td>"
+            f"<td>{html.escape(item.completeness_requirement.value)}</td>"
+            f"<td>{html.escape(lim)}</td>"
+            "</tr>"
+        )
+    if not rows:
+        return (
+            "<tr><td colspan='4'>No per-metric authorization entries "
+            "(non-performance or unverified).</td></tr>"
+        )
+    return "".join(rows)
+
+
 def write_html(scorecard: PublicScorecard, path: Path) -> None:
     result = scorecard.result
     metrics = result.metrics
     completeness = result.benchmark.reference_completeness
-    incomplete = completeness in _INCOMPLETE_REFERENCE
+    incomplete = completeness in INCOMPLETE_REFERENCE
     recall_label = "Reference recall" if incomplete else "Recall"
     sw_recall_label = (
         "Severity-weighted reference recall" if incomplete else "Severity-weighted recall"
@@ -178,7 +252,7 @@ def write_html(scorecard: PublicScorecard, path: Path) -> None:
     )
     scope = result.claim_authorization.claim_scope.value
     if result.performance_claim_authorized:
-        authorization = f"AUTHORIZED ({scope})"
+        authorization = f"AUTHORIZED ({scope}; scientific metrics authorized)"
     else:
         authorization = f"NOT AUTHORIZED ({scope})"
     limitations = "".join(
@@ -235,6 +309,10 @@ Result: <code>{html.escape(result.result_id)}</code></p>
 <h2>Coverage</h2>
 <p>{metrics.cases_completed}/{metrics.cases_total} cases completed;
 {metrics.cases_abstained} abstained; {metrics.cases_failed} failed.</p>
+<h2>Metric authorization</h2>
+<table><thead><tr><th>Metric</th><th>Status</th><th>Completeness req.</th>
+<th>Limitations</th></tr></thead>
+<tbody>{_auth_rows(result)}</tbody></table>
 <h2>Metrics</h2>
 <table><thead><tr><th>Metric</th><th>Value</th><th>Qualification</th></tr></thead>
 <tbody>{rows}</tbody></table>

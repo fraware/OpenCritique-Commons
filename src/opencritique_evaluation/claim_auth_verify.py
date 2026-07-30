@@ -22,7 +22,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 
 from opencritique_schema.canonical import canonical_json_bytes, content_hash
 
+from .metric_auth import resolve_authorized_metrics
 from .models import (
+    AuthorizedMetric,
     BenchmarkManifest,
     ClaimAuthorization,
     ClaimAuthorizationDecision,
@@ -151,7 +153,7 @@ def build_claim_authorization_decision(
     authority_id: str,
     issued_at: datetime,
     not_after: datetime,
-    authorized_metrics: list[str] | None = None,
+    authorized_metrics: list[AuthorizedMetric] | None = None,
     predecessor_id: str | None = None,
     domain_scope: str | None = None,
     use_scope: str | None = None,
@@ -454,6 +456,10 @@ def derived_claim_authorization(
     from .models import BenchmarkEvidenceClass
 
     expert_natural = benchmark.evidence_class == BenchmarkEvidenceClass.EXPERT_NATURAL
+    effective_metrics = resolve_authorized_metrics(
+        list(envelope.decision.authorized_metrics),
+        reference_completeness=benchmark.reference_completeness,
+    )
     base_kwargs = {
         "expert_natural_evidence": expert_natural,
         "rights_cleared_cases": benchmark.rights_cleared_cases,
@@ -475,6 +481,7 @@ def derived_claim_authorization(
         return ClaimAuthorization(
             claim_scope=ClaimScope.NONE,
             authorization_verified=False,
+            authorized_metrics=[],
             **base_kwargs,
         )
 
@@ -485,10 +492,12 @@ def derived_claim_authorization(
         return ClaimAuthorization(
             claim_scope=ClaimScope.NONE,
             authorization_verified=False,
+            authorized_metrics=[],
             **base_kwargs,
         )
     return ClaimAuthorization(
         claim_scope=scope,
         authorization_verified=True,
+        authorized_metrics=effective_metrics,
         **base_kwargs,
     )

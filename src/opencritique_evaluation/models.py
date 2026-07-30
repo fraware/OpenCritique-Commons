@@ -33,7 +33,9 @@ class BenchmarkEvidenceClass(str, Enum):
 
 class ReferenceCompleteness(str, Enum):
     COMPLETE_SEEDED = "complete_seeded"
+    ADJUDICATED_OUTPUT_COMPLETE = "adjudicated_output_complete"
     PARTIAL_NATURAL = "partial_natural"
+    DISCOVERY_OPEN = "discovery_open"
     UNKNOWN = "unknown"
 
 
@@ -46,6 +48,36 @@ class ClaimScope(str, Enum):
     PUBLIC_COMPARATIVE = "public_comparative"
 
 
+class ClaimMetricId(str, Enum):
+    """Claimable scientific / operational metric identifiers."""
+
+    ANCHOR_INTEGRITY = "anchor_integrity"
+    SEEDED_DEFECT_RECALL = "seeded_defect_recall"
+    REFERENCE_RECALL = "reference_recall"
+    CRITICAL_PRECISION = "critical_precision"
+    MAJOR_PRECISION = "major_precision"
+    CALIBRATION = "calibration"
+    FALSE_CRITICAL_RATE = "false_critical_rate"
+    COST = "cost"
+    LATENCY = "latency"
+
+
+class MetricAuthStatus(str, Enum):
+    AUTHORIZED = "authorized"
+    WITHHELD = "withheld"
+    NOT_APPLICABLE = "not_applicable"
+
+
+class CompletenessRequirement(str, Enum):
+    """Minimum reference-completeness class required to publish a metric."""
+
+    ANY = "any"
+    COMPLETE_SEEDED = "complete_seeded"
+    ADJUDICATED_OUTPUT_COMPLETE = "adjudicated_output_complete"
+    PARTIAL_NATURAL = "partial_natural"
+    DISCOVERY_OPEN = "discovery_open"
+
+
 _PUBLIC_CLAIM_SCOPES = frozenset(
     {
         ClaimScope.PUBLIC_DOMAIN_BOUNDED,
@@ -53,12 +85,41 @@ _PUBLIC_CLAIM_SCOPES = frozenset(
     }
 )
 
+_PRECISION_CALIBRATION_METRIC_IDS = frozenset(
+    {
+        ClaimMetricId.CRITICAL_PRECISION,
+        ClaimMetricId.MAJOR_PRECISION,
+        ClaimMetricId.CALIBRATION,
+        ClaimMetricId.FALSE_CRITICAL_RATE,
+    }
+)
+
+_INCOMPLETE_COMPLETENESS_REQUIREMENTS = frozenset(
+    {
+        CompletenessRequirement.PARTIAL_NATURAL,
+        CompletenessRequirement.DISCOVERY_OPEN,
+    }
+)
+
+
+class AuthorizedMetric(StrictModel):
+    """Per-metric authorization entry inside a claim-authorization decision."""
+
+    metric_id: ClaimMetricId
+    status: MetricAuthStatus
+    supporting_evidence_ids: list[str] = Field(default_factory=list)
+    denominator_policy: str = ""
+    completeness_requirement: CompletenessRequirement
+    domain_scope: str | None = None
+    system_version: str | None = None
+    limitations: list[str] = Field(default_factory=list)
+
 
 class ClaimAuthorizationDecision(StrictModel):
     """Immutable claim-authorization decision payload (signed inside an envelope)."""
 
     claim_scope: ClaimScope
-    authorized_metrics: list[str] = Field(default_factory=list)
+    authorized_metrics: list[AuthorizedMetric] = Field(default_factory=list)
     benchmark_id: str
     benchmark_version: str
     case_set_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -79,6 +140,25 @@ class ClaimAuthorizationDecision(StrictModel):
             raise ValueError("not_after must be after issued_at")
         return self
 
+    @model_validator(mode="after")
+    def reject_partial_precision_authorization(self) -> ClaimAuthorizationDecision:
+        """Hard invariant: incomplete completeness cannot authorize precision/calibration."""
+        for item in self.authorized_metrics:
+            if item.status != MetricAuthStatus.AUTHORIZED:
+                continue
+            if item.metric_id not in _PRECISION_CALIBRATION_METRIC_IDS:
+                continue
+            if item.completeness_requirement in _INCOMPLETE_COMPLETENESS_REQUIREMENTS:
+                raise ValueError(
+                    "precision/calibration metrics cannot be authorized with "
+                    f"completeness_requirement={item.completeness_requirement.value}"
+                )
+            if item.completeness_requirement == CompletenessRequirement.ANY:
+                raise ValueError(
+                    "precision/calibration metrics cannot use completeness_requirement=any"
+                )
+        return self
+
 
 class SignedClaimAuthorizationEnvelope(StrictModel):
     """Ed25519-signed claim authorization decision."""
@@ -97,6 +177,8 @@ class ClaimAuthorization(StrictModel):
 
     Public scopes are a derived view of a successfully verified
     ``SignedClaimAuthorizationEnvelope``. Digest strings alone do not authorize.
+    Headlines and the transitional ``performance_claim_authorized`` flag derive
+    from whether any scientific metric family is effectively authorized.
     """
 
     claim_scope: ClaimScope
@@ -116,6 +198,7 @@ class ClaimAuthorization(StrictModel):
     verification_report_digest: str | None = Field(
         default=None, pattern=r"^[0-9a-f]{64}$"
     )
+    authorized_metrics: list[AuthorizedMetric] = Field(default_factory=list)
 
     @model_validator(mode="before")
     @classmethod
@@ -129,10 +212,12 @@ class ClaimAuthorization(StrictModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def performance_claim_authorized(self) -> bool:
-        """Transitional: true only for verified public scientific scopes."""
-        return (
-            self.claim_scope in _PUBLIC_CLAIM_SCOPES and self.authorization_verified
-        )
+        """Transitional: any authorized scientific metric under a verified public scope."""
+        if self.claim_scope not in _PUBLIC_CLAIM_SCOPES or not self.authorization_verified:
+            return False
+        from .metric_auth import any_scientific_metric_authorized
+
+        return any_scientific_metric_authorized(self.authorized_metrics)
 
     @classmethod
     def none(cls) -> ClaimAuthorization:
@@ -665,10 +750,26 @@ class EvaluationResult(StrictModel):
                     use_scope=auth.use_scope,
                     authorization_verified=False,
                     verification_report_digest=auth.verification_report_digest,
+                    authorized_metrics=[],
                 ),
             )
             object.__setattr__(self, "performance_claim_authorized", False)
             return self
+        # Re-resolve metric permissions against live completeness (fail closed).
+        from .metric_auth import resolve_authorized_metrics
+
+        effective_metrics = resolve_authorized_metrics(
+            list(self.claim_authorization.authorized_metrics),
+            reference_completeness=self.benchmark.reference_completeness,
+        )
+        if effective_metrics != list(self.claim_authorization.authorized_metrics):
+            object.__setattr__(
+                self,
+                "claim_authorization",
+                self.claim_authorization.model_copy(
+                    update={"authorized_metrics": effective_metrics}
+                ),
+            )
         expected = self.claim_authorization.performance_claim_authorized
         if self.performance_claim_authorized != expected:
             object.__setattr__(self, "performance_claim_authorized", expected)
