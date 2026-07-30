@@ -5,6 +5,7 @@ import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Literal, cast
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import serialization
@@ -99,6 +100,18 @@ def sign_scorecard(
         format=serialization.PublicFormat.Raw,
     )
     key_id = key_id_override or key_id_from_raw_public(raw_public)
+    scorecard_key_role: Literal["offline_root", "online_release", "test"] | None
+    if key_role is None:
+        scorecard_key_role = None
+    elif key_role in (KeyRole.OFFLINE_ROOT, KeyRole.ONLINE_RELEASE, KeyRole.TEST):
+        scorecard_key_role = cast(
+            Literal["offline_root", "online_release", "test"],
+            key_role.value,
+        )
+    else:
+        raise ValueError(
+            f"key_role {key_role.value!r} is not valid for scorecard signing"
+        )
     return SignedScorecardEnvelope(
         scorecard=scorecard,
         signature=ScorecardSignature(
@@ -107,7 +120,7 @@ def sign_scorecard(
             payload_sha256=hashlib.sha256(payload).hexdigest(),
             signature_base64=base64.b64encode(signature).decode("ascii"),
             signed_at=datetime.now(UTC),
-            key_role=key_role.value if key_role is not None else None,
+            key_role=scorecard_key_role,
             not_before=not_before,
             not_after=not_after,
         ),
