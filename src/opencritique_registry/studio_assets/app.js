@@ -71,6 +71,12 @@
     identity.textContent = `${state.me.display_name || state.me.actor_id} (${state.me.role})`;
   }
 
+  function setEmptyStateVisible(visible) {
+    const empty = $("empty-state");
+    if (!empty) return;
+    empty.classList.toggle("hidden", !visible);
+  }
+
   function renderTaskList(tasks) {
     const el = $("task-list");
     if (!tasks || !tasks.length) {
@@ -86,6 +92,35 @@
               <div class="muted">${escapeHtml(task.case_id || task.intake_id || "task")} · ${escapeHtml(task.status)}</div>
             </div>
             <span class="badge">${escapeHtml(task.slot || "task")}</span>
+          </div>`
+      )
+      .join("");
+  }
+
+  function renderClaimableList(items) {
+    const summary = $("claimable-summary");
+    const list = $("claimable-list");
+    if (!summary || !list) return;
+    if (!items || !items.length) {
+      summary.textContent =
+        "Claimable adjudication slots: 0. Seed with bootstrap-sample-workspace or import-live-run.";
+      list.innerHTML = "<p class='muted'>No claimable adjudication slots in the pool.</p>";
+      setEmptyStateVisible(true);
+      return;
+    }
+    setEmptyStateVisible(false);
+    summary.textContent = `Claimable adjudication slots: ${items.length}`;
+    list.innerHTML = items
+      .map(
+        (item) => `
+          <div class="task-row">
+            <div>
+              <strong>${escapeHtml(item.concern_title || item.concern_id)}</strong>
+              <div class="muted">${escapeHtml(item.case_id)}@${escapeHtml(item.case_version)} · ${escapeHtml(item.concern_id)}${
+                item.evidence_class ? ` · ${escapeHtml(item.evidence_class)}` : ""
+              }</div>
+            </div>
+            <span class="badge">${escapeHtml(item.slot || "primary")}</span>
           </div>`
       )
       .join("");
@@ -228,11 +263,14 @@
     try {
       state.me = await api("/v1/me");
       renderIdentity();
-      setMessage($("queue-message"), "Connected. Claim a task to begin.", "success");
+      setMessage($("queue-message"), "Connected. Review claimable slots or claim a task.", "success");
+      await loadClaimable();
       await loadMyTasks();
     } catch (err) {
       state.me = null;
       renderIdentity();
+      setEmptyStateVisible(true);
+      renderClaimableList([]);
       setMessage($("queue-message"), err.message, "error");
     }
   }
@@ -246,16 +284,36 @@
     $("token").value = "";
     $("task-panel").classList.add("hidden");
     renderTaskList([]);
+    renderClaimableList([]);
+    setEmptyStateVisible(true);
     renderIdentity();
     setMessage($("queue-message"), "Session cleared.", "muted");
+  }
+
+  async function loadClaimable() {
+    try {
+      const items = await api("/v1/tasks/claimable?limit=50");
+      renderClaimableList(items);
+    } catch (err) {
+      renderClaimableList([]);
+      setMessage($("queue-message"), err.message, "error");
+    }
   }
 
   async function loadMyTasks() {
     try {
       const tasks = await api("/v1/my-tasks");
       renderTaskList(tasks);
+      if (!tasks || !tasks.length) {
+        setMessage(
+          $("queue-message"),
+          "No claimed tasks yet. Claim adjudication, or seed with bootstrap-sample-workspace / import-live-run if the pool is empty.",
+          "muted"
+        );
+      }
     } catch (err) {
       renderTaskList([]);
+      setEmptyStateVisible(true);
       setMessage($("queue-message"), err.message, "error");
     }
   }
@@ -267,11 +325,18 @@
       state.task = payload;
       state.mode = "adjudication";
       renderAdjudicationTask(payload);
+      setEmptyStateVisible(false);
       setMessage($("queue-message"), `Claimed adjudication task ${task.task_id}.`, "success");
       setMessage($("submit-message"), "");
+      await loadClaimable();
       await loadMyTasks();
     } catch (err) {
-      setMessage($("queue-message"), err.message, "error");
+      setEmptyStateVisible(true);
+      setMessage(
+        $("queue-message"),
+        `${err.message} If nothing is claimable, run opencritique-registry bootstrap-sample-workspace or import-live-run.`,
+        "error"
+      );
     }
   }
 
@@ -436,7 +501,10 @@
     $("disconnect").addEventListener("click", disconnect);
     $("claim-adjudication").addEventListener("click", claimAdjudication);
     $("claim-reconstruction").addEventListener("click", claimReconstruction);
-    $("refresh-tasks").addEventListener("click", loadMyTasks);
+    $("refresh-tasks").addEventListener("click", async () => {
+      await loadClaimable();
+      await loadMyTasks();
+    });
     $("adjudication-form").addEventListener("submit", submitAdjudication);
     $("claim-form").addEventListener("submit", submitClaim);
     $("load-audit-protocol").addEventListener("click", loadAuditProtocol);

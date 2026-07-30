@@ -1015,6 +1015,15 @@ class ExpertProgramService:
         return [_credit_view(row) for row in rows]
 
     def create_compensation(self, data: CompensationInput, actor_id: str) -> CompensationView:
+        from .expert_policy import ExpertPolicyError, assert_paid_pilot_rates_configured
+
+        try:
+            assert_paid_pilot_rates_configured()
+        except ExpertPolicyError as exc:
+            raise HTTPException(
+                status_code=409,
+                detail=str(exc),
+            ) from exc
         assigned_actor: str | None = None
         completed = False
         if data.task_type == "adjudication":

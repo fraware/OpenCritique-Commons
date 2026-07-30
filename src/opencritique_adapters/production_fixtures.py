@@ -306,6 +306,16 @@ def production_section_markdown(section: ProductionSection) -> str:
         lines.append(f"- Upstream pin: `{section.upstream_commit_or_config}`")
     if section.blocked_reason:
         lines.append(f"- Blocked reason: {section.blocked_reason}")
+    min_count = ADAPTER_READY_MINIMA.get(section.adapter, 10)
+    if section.status != ProductionIntakeStatus.READY:
+        lines.extend(
+            [
+                "",
+                f"NOT READY: refuse production conversion-fidelity / readiness language "
+                f"until `status=ready` with ≥{min_count} hashed exports "
+                f"(currently {section.export_count}).",
+            ]
+        )
     lines.extend(["", section.notes, ""])
     return "\n".join(lines)
 

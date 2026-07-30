@@ -16,7 +16,7 @@ Thank you for helping keep scientific-critique infrastructure inspectable.
 
 ## Packages
 
-Editable install exposes seven packages under `src/`:
+Editable install exposes eight packages under `src/`:
 
 | Package | Role |
 |---|---|
@@ -27,9 +27,21 @@ Editable install exposes seven packages under `src/`:
 | `opencritique_acquisition` | Rights-aware acquisition ledger |
 | `opencritique_ingestion` | Markdown/LaTeX/PDF → document graph |
 | `opencritique_verification` | Deterministic table/citation/Python checks |
+| `opencritique_runners` | Optional live Coarse / OpenReviewer runners (`opencritique runners`) |
 
 Package/engineering version is **`0.6.0a0`**. Schema freeze identity remains
 **`0.5.0a1`** (golden hashes).
+
+### Extending adapters and runners
+
+- Third-adapter tutorial + skeleton:
+  [docs/adapter-authoring.md](docs/adapter-authoring.md) and
+  [`templates/adapter-skeleton/`](templates/adapter-skeleton/).
+- Live runner plugin contract:
+  [docs/runner-plugins.md](docs/runner-plugins.md)
+  (`LiveRunnerPlugin` in `opencritique_runners.protocol`).
+- Keep `[live-coarse]` / `[live-openreviewer]` extras optional; default install
+  must not pull paid-API or GPU stacks.
 
 ## Development setup
 
@@ -42,11 +54,54 @@ python -m pip install -e ".[dev]"
 bash scripts/check.sh
 ```
 
+### Windows and packaging notes
+
+- **Shell for `scripts/check.sh`:** use Git Bash or WSL. Native PowerShell does
+  not run the bash script; on PowerShell run the same gates piecewise:
+  `ruff check src tests scripts`, `pyright`, and `pytest`.
+- **Live Coarse demos:** prefer
+  [`scripts/live_pipeline_demo.ps1`](scripts/live_pipeline_demo.ps1) on
+  PowerShell, or [`scripts/live_pipeline_demo.sh`](scripts/live_pipeline_demo.sh)
+  under Git Bash/WSL. See [docs/deployment-byok.md](docs/deployment-byok.md).
+- **ASCII-safe CLI:** runner help/banners stay ASCII (no smart quotes) so Windows
+  consoles do not garble output.
+- **Default CI:** mocked runner tests only — never paid upstream calls on
+  push/PR. Optional manual
+  [`.github/workflows/live-coarse-smoke.yml`](.github/workflows/live-coarse-smoke.yml)
+  (`workflow_dispatch`) skips when BYOK/OpenAI secrets are absent.
+- **Wheel/sdist:** `python -m build` must keep studio assets, OpenAPI, migrations,
+  deployment docs, and trust store on the packaging job path (see CI
+  `packaging` job).
+
 Operator entry points:
 
-- Local stack: [docs/deployment-local.md](docs/deployment-local.md)
-- BYOK / bring-your-own-keys: [docs/deployment-byok.md](docs/deployment-byok.md)
+- Local stack (sample conformance): [docs/deployment-local.md](docs/deployment-local.md)
+- BYOK / live Coarse: [docs/deployment-byok.md](docs/deployment-byok.md)
+  (registry credential gate **and** Coarse live runner via `[live-coarse]`;
+  still **not** OpenReviewer; still **not** quality claims)
 - Signing / trust store: [docs/signing-governance.md](docs/signing-governance.md)
+
+### Secrets and `.env`
+
+Never commit `.env` or API keys (`.env` / `.env.*` are gitignored). For live
+Coarse, set `OPENCRITIQUE_BYOK_API_KEY` (or `OPENAI_API_KEY` as alias when BYOK
+is unset) and optionally `OPENCRITIQUE_BYOK_PROVIDER_ID`. If a key is exposed,
+rotate it with the provider. Do not print keys in logs, review JSON, or docs.
+
+### Golden path (sample vision)
+
+Follow the [README golden path](README.md#golden-path-sample-vision) for the
+documented newcomer sequence (still valid; offline fixtures only):
+
+1. `pip install -e ".[dev]"` and `scripts/check.sh`
+2. Coarse synthetic convert → `opencritique evaluation run` → scorecard
+   (`NOT AUTHORIZED`)
+3. `opencritique-registry bootstrap-sample-workspace` → serve → `/studio` →
+   claim/submit on REF-01
+
+Keep explicit non-claims: sample ≠ production authenticity ≠ scientific
+performance. Private live outputs under `runs/` are **not** production fixtures
+and do not move v0.9 gates to GO.
 
 ### Database URL
 

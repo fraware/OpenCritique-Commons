@@ -5,6 +5,11 @@
   "performance_claims_authorized": false,
   "source_class": "maintainer_owned_sample_corpus",
   "notes": "Seed calibration definitions from sample cases only. Move to natural cases only after issue #7 clearance.",
+  "natural_seed_slots": {
+    "status": "blocked",
+    "blocked_reason": "No rights-cleared natural case IDs; sample seeds only until issue #7",
+    "tasks": []
+  },
   "tasks": [
     {
       "seed_id": "cal-seed-econ-01",

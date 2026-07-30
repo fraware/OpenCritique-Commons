@@ -57,6 +57,7 @@ from .schemas import (
     BlindedTaskPayload,
     CaseRegistration,
     CaseView,
+    ClaimableTaskView,
     DataUse,
     DeterminationView,
     GrantBasis,
@@ -395,6 +396,50 @@ class RegistryService:
             .order_by(AdjudicationTaskORM.created_at, AdjudicationTaskORM.slot)
         ).all()
         return [_task_view(row) for row in rows]
+
+    def list_claimable_tasks(self, *, limit: int = 50) -> list[ClaimableTaskView]:
+        """Return pending adjudication slots with concern titles for Studio UX."""
+        rows = self.session.scalars(
+            select(AdjudicationTaskORM)
+            .where(AdjudicationTaskORM.status == TaskStatus.PENDING.value)
+            .order_by(AdjudicationTaskORM.created_at, AdjudicationTaskORM.slot)
+            .limit(max(1, min(limit, 200)))
+        ).all()
+        views: list[ClaimableTaskView] = []
+        for row in rows:
+            try:
+                require_use_grant(
+                    self.session,
+                    case_id=row.case_id,
+                    case_version=row.case_version,
+                    use=DataUse.EXPERT_ADJUDICATION,
+                )
+            except HTTPException:
+                continue
+            case_row = _case_row(self.session, row.case_id, row.case_version)
+            bundle = _bundle(case_row)
+            concern = next(
+                (item for item in bundle.concerns if item.concern_id == row.concern_id),
+                None,
+            )
+            evidence_class = None
+            for note in bundle.known_ambiguities:
+                if note.startswith("evidence_class="):
+                    evidence_class = note.split("=", 1)[1].strip()
+                    break
+            views.append(
+                ClaimableTaskView(
+                    task_id=row.task_id,
+                    case_id=row.case_id,
+                    case_version=row.case_version,
+                    concern_id=row.concern_id,
+                    concern_title=concern.title if concern else row.concern_id,
+                    slot=TaskSlot(row.slot),
+                    status=TaskStatus(row.status),
+                    evidence_class=evidence_class,
+                )
+            )
+        return views
 
     def seed_tasks(
         self,

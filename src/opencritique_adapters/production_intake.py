@@ -157,7 +157,13 @@ def stage_validated_package(
     """Copy a validated ready package into the destination fixture tree.
 
     Refuses non-ready packages. Never invents review payloads.
+    Refuses auto-promotion from private ``runs/`` (or other live) trees —
+    operators must stage an explicit rights-cleared package outside those paths.
     """
+    # Local import keeps adapters usable if runners are mid-merge with Coarse L1.
+    from opencritique_runners.paths import assert_package_not_private_runs
+
+    assert_package_not_private_runs(package_dir)
     manifest = validate_production_package(
         package_dir,
         expected_adapter=expected_adapter,

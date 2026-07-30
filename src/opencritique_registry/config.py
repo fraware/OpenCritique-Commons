@@ -92,9 +92,13 @@ class RegistrySettings:
                 raise ValueError(
                     "BYOK mode requires OPENCRITIQUE_BYOK_PROVIDER_ID to be set"
                 )
-            if not (os.getenv("OPENCRITIQUE_BYOK_API_KEY", "")).strip():
+            # Accept OPENAI_API_KEY as alias when BYOK key is unset (operator convenience).
+            from opencritique_runners.env import resolve_byok_api_key
+
+            if not resolve_byok_api_key():
                 raise ValueError(
-                    "BYOK mode requires OPENCRITIQUE_BYOK_API_KEY to be set"
+                    "BYOK mode requires OPENCRITIQUE_BYOK_API_KEY to be set "
+                    "(or OPENAI_API_KEY as alias)"
                 )
         if self.performance_claims_authorized:
             raise ValueError(

@@ -16,6 +16,9 @@ from opencritique_registry.assignment_guards import (
 from opencritique_registry.expert_policy import (
     ExpertPolicyError,
     assert_calibration_seeds_resolvable,
+    assert_natural_calibration_seeds_cleared,
+    assert_paid_pilot_rates_configured,
+    compensation_rates_unset,
     is_qualification_expired,
     load_attribution_policy,
     load_calibration_seeds_policy,
@@ -49,6 +52,10 @@ def test_compensation_and_attribution_policies() -> None:
     assert compensation.payment_secrets_prohibited is True
     assert compensation.performance_claims_authorized is False
     assert all(slot.amount_minor is None for slot in compensation.schedule)
+    assert compensation_rates_unset(compensation)
+    with pytest.raises(ExpertPolicyError) as paid:
+        assert_paid_pilot_rates_configured(compensation)
+    assert paid.value.code == "paid_pilot_rates_unset"
     attribution = load_attribution_policy()
     assert attribution.opt_in_required is True
     assert attribution.conflict_disclosure_required is True
@@ -60,6 +67,11 @@ def test_calibration_seeds_resolvable() -> None:
     assert policy.source_class == "maintainer_owned_sample_corpus"
     seeds = assert_calibration_seeds_resolvable(policy, repo_root=ROOT)
     assert len(seeds) >= 3
+    assert policy.natural_seed_slots.status == "blocked"
+    assert policy.natural_seed_slots.tasks == []
+    with pytest.raises(ExpertPolicyError) as natural:
+        assert_natural_calibration_seeds_cleared(policy, repo_root=ROOT)
+    assert natural.value.code == "natural_seeds_blocked"
 
 
 def test_conflict_disclosure_required() -> None:
@@ -107,3 +119,12 @@ def test_expert_ops_doc_lists_runtime_loaders() -> None:
     text = (ROOT / "docs" / "expert-program-ops.md").read_text(encoding="utf-8")
     assert "load_qualification_policy" in text
     assert "assignment_guards" in text
+    assert "assert_paid_pilot_rates_configured" in text
+    assert "assert_natural_calibration_seeds_cleared" in text
+    assert "withdrawal" in text.lower()
+    signing = (ROOT / "docs" / "signing-governance.md").read_text(encoding="utf-8")
+    assert "Production rotation drill checklist" in signing
+    authenticity = (ROOT / "docs" / "adapter-authenticity.md").read_text(encoding="utf-8")
+    assert "workstreams" in authenticity.lower() or "Workstream" in authenticity
+    for label in ("**A**", "**B**", "**C**", "**D**", "**E**", "**F**"):
+        assert label in authenticity

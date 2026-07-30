@@ -2,9 +2,9 @@
 
 Honest tracking for the public engineering surface. Annotated tag `v0.5.0a1`
 pins the schema-freeze recovery. Annotated engineering tag **`v0.6.0a0`** /
-**`v0.6-alpha`** marks the seven-package runtime on `main` (signing API harden +
-claim-free engineering surface). Scientific performance claims remain
-**unauthorized**.
+**`v0.6-alpha`** marks the eight-package runtime on `main` (signing API harden +
+claim-free engineering surface, including optional live runners). Scientific
+performance claims remain **unauthorized**.
 
 Scientific performance claims stay **disabled** until the claim-authorization
 matrix (§12) and v1.0 gate (§14) are satisfied with natural adjudicated evidence.
@@ -28,8 +28,43 @@ hard definitions of done.
 | 1 | `v0.6-alpha` | Durable kernel: schema freeze, OpenAPI freeze, Alembic-only init, novel determinations, Coarse sample-conformance report, CLI | **Engineering met** — genuine Coarse production exports remain blocked (issue #3) |
 | 2 | `v0.7-alpha` | Second adapter, signing governance, matcher-audit protocol, document graph alpha | **Engineering met with external blockers** — sample OpenReviewer adapter, matcher-audit, and ingestion/verifiers present; authentic OpenReviewer outputs remain blocked (issue #5). **Production public signing keys are published** in `trust/scorecard-trust-store.json` (issue #4); private keys stay offline |
 | 3 | `v0.8-alpha` | Rights path, sample cases, expert/studio maturity; **no performance claims** | **Mostly met for sample conformance** — owned sample corpus, import paths, appeals records, studio baseline, and deployment runbooks present; natural external rights path remains blocked (issue #7 negative finding archived) |
-| 4 | `v0.9-beta` | 40 natural cases, 2 profiles, independent adjudication, holdout, pilot scorecards | **Not met** — see [v0.9-beta-go-no-go.md](v0.9-beta-go-no-go.md) |
+| 4 | `v0.9-beta` | 40 natural cases, 2 profiles, independent adjudication, holdout, pilot scorecards | **Not met / NO-GO** — `scripts/check_v09_gates.py` must exit **0** before GO; evidence-driven (production MANIFESTs, natural session manifests, staffing roster). See [v0.9-beta-go-no-go.md](v0.9-beta-go-no-go.md) and [adapter-authenticity.md](adapter-authenticity.md) workstreams A–F |
 | 5 | `v1.0` | Full §14 gate | **Not met** |
+
+**v0.9-beta GO rule:** cut the authenticity checklist only when
+`python scripts/check_v09_gates.py` exits 0. Gates discover evidence artifacts;
+they never invent natural counts or production readiness. **§12 claims stay
+locked** until the matrix below is satisfied — a green gate script alone does
+not authorize precision/recall or leaderboard language.
+
+### Live upstream runners (engineering depth only)
+
+Optional Coarse / OpenReviewer live runners under `opencritique runners` deepen
+the **operator engineering** surface (private exports under `runs/`, import
+mode, optional GPU HF path). They are **not** a v0.9 authenticity milestone and
+do **not** change gate DoD:
+
+- Live runs stamp `evidence_class=private_live` and keep
+  `performance_claims_authorized=false`.
+- Promoting into `fixtures/*/production/` still requires rights clearance +
+  volume (≥10 Coarse / ≥5 OpenReviewer) via the intake playbook — never
+  auto-promote from `runs/`.
+- BYOK/OpenAI credentials power the Coarse live runner (`[live-coarse]`); they
+  do **not** run OpenReviewer and do **not** unlock §12 claims.
+- Install: `pip install -e ".[live-coarse]"` / `".[live-openreviewer]"`; CLI:
+  `opencritique runners coarse|openreviewer|pipeline coarse`.
+
+See [adapter-authenticity.md](adapter-authenticity.md) (private vs production
+decision tree; evidence promotion checklist) and the README live-upstream track.
+
+### For scientists (method tooling, not a leaderboard)
+
+Engineering surface supports **private, rights-owned pilots** and descriptive
+method reports. It does **not** authorize public performance claims or reviewer
+rankings. Labs: [private-evaluation-pilot.md](private-evaluation-pilot.md)
+(publish / do-not-publish boundary + negative-finding outline). README
+“For scientists” summarizes citation of limitations. Gates stay **NO-GO** until
+real A–F evidence lands — never fabricate exports or flip claims.
 
 ## §12 Claim-authorization matrix
 
@@ -88,9 +123,15 @@ Until these close, release notes and README must not assert scientific reviewer 
 
 ## Deferred product depth (issues only)
 
-Follow-on work tracked as fully specified issues — not empty code stubs:
+Follow-on work tracked as fully specified issues — not empty code stubs.
+Phase D of the persona maximality roadmap ships **spec docs only** (no claim
+unlock, no fabricated authenticity):
 
-1. Deeper document intelligence — issue #16
-2. Additional verifiers (R / Lean / SMT) — issue #17
-3. Hosted production ops beyond Compose — issue #18
-4. Expert qualification/calibration at scale — issue #19
+1. Deeper document intelligence — issue #16 —
+   [deferred-document-intelligence.md](deferred-document-intelligence.md)
+2. Additional verifiers (R / Lean / SMT) — issue #17 —
+   [deferred-verifiers.md](deferred-verifiers.md)
+3. Hosted production ops beyond Compose — issue #18 —
+   [deferred-hosted-ops.md](deferred-hosted-ops.md)
+4. Expert qualification/calibration at scale — issue #19 —
+   [deferred-expert-scale.md](deferred-expert-scale.md)

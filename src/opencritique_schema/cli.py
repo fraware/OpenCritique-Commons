@@ -9,6 +9,7 @@ from opencritique_acquisition.cli import app as acquisition_app
 from opencritique_adapters.cli import app as adapters_app
 from opencritique_evaluation.cli import app as evaluation_app
 from opencritique_registry.cli import app as registry_app
+from opencritique_runners.cli import app as runners_app
 
 from .models import CaseBundle
 from .registry import export_json_schemas, list_schemas, load_extended_registry
@@ -22,6 +23,7 @@ app.add_typer(registry_app, name="registry")
 app.add_typer(evaluation_app, name="evaluation")
 app.add_typer(adapters_app, name="adapters")
 app.add_typer(acquisition_app, name="acquisition")
+app.add_typer(runners_app, name="runners")
 
 
 def load_case(path: Path) -> CaseBundle:

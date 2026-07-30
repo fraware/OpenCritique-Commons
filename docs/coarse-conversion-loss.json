@@ -847,7 +847,7 @@
   ],
   "disclosure": "Maintainer-owned sample fixtures exercise adapter compatibility only. They do not authorize precision, recall, or comparative performance claims.",
   "fixture_kind": "maintainer_owned_sample_corpus",
-  "generated_at": "2026-07-29T12:38:19.163132Z",
+  "generated_at": "2026-07-29T17:53:05.133213Z",
   "omitted_field_summary": [
     "detailed_comments[].status",
     "overall_feedback",
@@ -861,8 +861,10 @@
     "export_count": 0,
     "fixture_root": "C:/Users/mateo/OpenCritique-Commons/fixtures/coarse/production",
     "notes": "Production conversion fidelity only when status=ready; never reviewer-quality claims.",
+    "rights_record_count": 0,
     "source": "production",
-    "status": "blocked"
+    "status": "blocked",
+    "upstream_commit_or_config": null
   },
   "report_version": "0.1",
   "upstream_commit_pin": "opencritique-sample-adapter-contract-v1",

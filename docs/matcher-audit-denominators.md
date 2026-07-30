@@ -16,11 +16,15 @@ false.
 | OpenReviewer sample fixtures (`fixtures/openreviewer/reviews/`) | sample / conformance | 5 review fixtures | **No** — not natural |
 | Natural / PeerQA adjudicated decisions | natural | **0** (rights clearance negative finding; see [rights-clearance-status.md](rights-clearance-status.md)) | **Open** |
 
-Recompute programmatically (never invents natural volume):
+Recompute programmatically (never invents natural volume). Natural counts are
+**discovered** from session manifests under `corpus/matcher-audit/sessions/`
+(0 when the directory is empty):
 
 ```bash
-python -c "from opencritique_evaluation.matcher_audit import measure_current_denominators; print(measure_current_denominators())"
+python -c "from opencritique_evaluation.matcher_audit import measure_current_denominators, discover_natural_decision_count; print(discover_natural_decision_count()); print(measure_current_denominators())"
 ```
+
+`scripts/check_v09_gates.py` gate #6 uses the same discovery path.
 
 ## Session manifests
 
@@ -31,7 +35,9 @@ Stratified draws persist as `MatcherAuditSessionManifest` objects with:
 - `configuration_hash` over the matcher config
 - `natural_dod_met` (false for sample sessions; requires natural volume)
 
-Sample sessions cannot mark `natural_dod_met=true`.
+Drop natural session JSON under `corpus/matcher-audit/sessions/` for gate
+discovery. Sample sessions cannot mark `natural_dod_met=true` and do not count
+toward the natural DoD.
 
 ## Sampling notes
 

@@ -43,6 +43,7 @@ def test_settings_reject_file_artifact_root(tmp_path: Path) -> None:
 
 def test_byok_requires_provider_and_api_key(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv("OPENCRITIQUE_BYOK_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     settings = RegistrySettings(
         database_url=f"sqlite:///{(tmp_path / 'runtime.db').as_posix()}",
         artifact_root=tmp_path / "artifacts",

@@ -1,0 +1,18 @@
+{
+  "system_version": "example-sample-adapter-test-0.1",
+  "example_commit": "opencritique-sample-adapter-contract-v1",
+  "contract_version": "example-review-contract-v1",
+  "model_identifiers": ["sample-fixture/none"],
+  "configuration": {
+    "fixture_kind": "maintainer_owned_sample_corpus",
+    "sample_adapter_contract_id": "opencritique-sample-adapter-contract-v1",
+    "upstream_contract_version": "example-review-contract-v1"
+  },
+  "cases": [
+    {
+      "case_id": "occase_synth_econ_01",
+      "case_version": "1.0.0",
+      "review_path": "../reviews/econ-01.json"
+    }
+  ]
+}

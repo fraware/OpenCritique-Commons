@@ -26,6 +26,28 @@ def test_studio_html_has_landmarks_and_labels() -> None:
     assert "Matcher audit" in html
     assert "Skip to main workflow" in html
     assert "Load appeals" in html
+    assert "bootstrap-sample-workspace" in html
+    assert "import-live-run" in html
+    assert 'id="empty-state"' in html
+    assert 'id="claims-banner"' in html
+    assert "NOT AUTHORIZED" in html
+    assert 'id="claimable-summary"' in html
+    assert 'id="claimable-list"' in html
+    assert 'role="banner"' in html
+    assert 'aria-label="Submit independent adjudication"' in html
+
+
+def test_studio_assets_mention_import_live_run_and_claimable() -> None:
+    js = (ROOT / "src" / "opencritique_registry" / "studio_assets" / "app.js").read_text(
+        encoding="utf-8"
+    )
+    assert "/v1/tasks/claimable" in js
+    assert "import-live-run" in js
+    assert "renderClaimableList" in js
+    css = (ROOT / "src" / "opencritique_registry" / "studio_assets" / "styles.css").read_text(
+        encoding="utf-8"
+    )
+    assert ".claims-banner" in css
 
 
 def test_studio_and_matcher_audit_routes_load() -> None:
@@ -147,3 +169,45 @@ def test_studio_sample_adjudication_workflow(tmp_path: Path) -> None:
     )
     assert mine.status_code == 200, mine.text
     assert mine.json()
+
+
+def test_studio_claimable_endpoint_after_bootstrap(tmp_path: Path) -> None:
+    db = tmp_path / "claimable.db"
+    artifacts = tmp_path / "artifacts"
+    runner = CliRunner()
+    boot = runner.invoke(
+        cli_app,
+        [
+            "bootstrap-sample-workspace",
+            "--cases-path",
+            str(ROOT / "cases" / "reference"),
+            "--project-root",
+            str(ROOT),
+            "--database-url",
+            f"sqlite:///{db.as_posix()}",
+            "--artifact-root",
+            str(artifacts),
+        ],
+    )
+    assert boot.exit_code == 0, boot.stdout + boot.stderr
+    lines = [line.strip() for line in boot.stdout.splitlines() if line.strip()]
+    adjudicator_idx = lines.index("Adjudicator token (shown once):")
+    adjudicator_token = lines[adjudicator_idx + 1]
+    client = TestClient(
+        create_app(
+            settings=RegistrySettings(
+                database_url=f"sqlite:///{db.as_posix()}",
+                artifact_root=artifacts,
+            ),
+            initialize=False,
+        )
+    )
+    claimable = client.get(
+        "/v1/tasks/claimable",
+        headers={"Authorization": f"Bearer {adjudicator_token}"},
+    )
+    assert claimable.status_code == 200, claimable.text
+    rows = claimable.json()
+    assert len(rows) >= 1
+    assert rows[0]["concern_title"]
+    assert rows[0]["case_id"].startswith("occase_sample_rc_")
