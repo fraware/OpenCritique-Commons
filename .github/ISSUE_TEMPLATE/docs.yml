@@ -1,0 +1,50 @@
+name: Docs improvement
+description: Doc gaps, unclear onboarding, or newcomer friction.
+title: "[docs]: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for README, START_HERE, tutorials, or example clarity.
+        Prefer linking the page and quoting the confusing passage.
+  - type: textarea
+    id: location
+    attributes:
+      label: Where
+      description: File path or URL (e.g. START_HERE.md, docs/adapter-authoring.md).
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: What is unclear or missing
+      description: What did you try to do, and where did docs fail you?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Suggested fix (optional)
+      description: Wording, diagram, or command sequence that would help.
+    validations:
+      required: false
+  - type: dropdown
+    id: track
+    attributes:
+      label: Primarily helps which track?
+      options:
+        - Both / general
+        - Track A — adapters / tool builders
+        - Track B — scientist / lab pilots
+    validations:
+      required: false
+  - type: checkboxes
+    id: claim_boundary
+    attributes:
+      label: Claim boundary
+      options:
+        - label: This issue does not authorize precision/recall/comparative reviewer-quality claims.
+          required: true
+        - label: Proposed wording will not equate sample fixtures or private runs/ with production authenticity or unlocked scientific claims.
+          required: true

@@ -1,0 +1,67 @@
+# Canonical GitHub label taxonomy for OpenCritique Commons.
+# Apply via the GitHub UI or a label-sync Action. Templates reference needs-triage.
+#
+# Usage:
+#   - Pair good first issue with track-adapters or track-pilots.
+#   - Clear needs-triage once a maintainer has accepted or redirected the issue.
+#   - Add workstream-A..J after triage for engineering streams.
+
+- name: good first issue
+  color: "7057ff"
+  description: Bounded starter task for new contributors
+
+- name: help wanted
+  color: "008672"
+  description: Maintainer would welcome external help
+
+- name: needs-triage
+  color: "fbca04"
+  description: Awaiting maintainer acknowledgment / scoping
+
+- name: track-adapters
+  color: "1d76db"
+  description: Contributor Track A — adapter / tool-builder work
+
+- name: track-pilots
+  color: "0e8a16"
+  description: Contributor Track B — scientist / lab pilot work
+
+- name: workstream-A
+  color: "c5def5"
+  description: Repository truth / packaging / CI
+
+- name: workstream-B
+  color: "c5def5"
+  description: Schema / canonicalization
+
+- name: workstream-C
+  color: "c5def5"
+  description: Document graph / anchors
+
+- name: workstream-D
+  color: "c5def5"
+  description: Novel determinations / adjudication policy
+
+- name: workstream-E
+  color: "c5def5"
+  description: Evaluation / matching / scorecards
+
+- name: workstream-F
+  color: "c5def5"
+  description: Adapters / Coarse / conversion loss
+
+- name: workstream-G
+  color: "c5def5"
+  description: Signing / trust / security
+
+- name: workstream-H
+  color: "c5def5"
+  description: Rights / acquisition / cases
+
+- name: workstream-I
+  color: "c5def5"
+  description: Studio / expert program
+
+- name: workstream-J
+  color: "c5def5"
+  description: Deployment / ops
