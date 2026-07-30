@@ -1,0 +1,102 @@
+name: Publish to PyPI
+
+# Trusted Publisher (OIDC) upload for opencritique-commons.
+# First publish may stay dry-run until the PyPI project and environments exist.
+# See docs/release-pypi.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build artifacts only; skip PyPI upload
+        type: boolean
+        default: true
+      target:
+        description: Publish target when dry_run is false
+        type: choice
+        options:
+          - pypi
+          - testpypi
+        default: pypi
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade pip build
+
+      - name: Assert tag matches pyproject version (tag pushes only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          EXPECTED="v$(python - <<'PY'
+          import tomllib
+          from pathlib import Path
+          data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+          print(data["project"]["version"], end="")
+          PY
+          )"
+          if [ "$TAG" != "$EXPECTED" ]; then
+            echo "Tag $TAG does not match pyproject version tag $EXPECTED" >&2
+            exit 1
+          fi
+          echo "Tag/version OK: $TAG"
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Release manifest and SBOM
+        run: |
+          python -m pip install -e '.[dev]'
+          python scripts/build_release_manifest.py dist
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish:
+    needs: build
+    if: >-
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.dry_run == false)
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi' && 'testpypi' || 'pypi' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to PyPI
+        if: >-
+          github.event_name == 'push' ||
+          (github.event_name == 'workflow_dispatch' && inputs.target == 'pypi')
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Publish to TestPyPI
+        if: >-
+          github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
