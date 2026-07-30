@@ -1,4 +1,4 @@
-"""v0.9-beta machine-checkable go/no-go gates."""
+"""v0.9-beta machine-checkable go/no-go gates (engineering vs scientific)."""
 
 from __future__ import annotations
 
@@ -9,42 +9,67 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _load_gates():
+def _load_script(name: str):
     import sys
 
-    name = "check_v09_gates"
-    spec = importlib.util.spec_from_file_location(
-        name,
-        ROOT / "scripts" / "check_v09_gates.py",
-    )
+    path = ROOT / "scripts" / name
+    module_name = path.stem
+    # Ensure sibling imports (v09_gate_lib) resolve when loading by path.
+    scripts_dir = str(ROOT / "scripts")
+    if scripts_dir not in sys.path:
+        sys.path.insert(0, scripts_dir)
+    spec = importlib.util.spec_from_file_location(module_name, path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
+    sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
 
 
-def test_v09_gates_are_no_go() -> None:
-    module = _load_gates()
-    results = module.evaluate_gates()
-    by_id = {item.gate_id: item for item in results}
-    assert by_id[2].passed is False
-    assert by_id[3].passed is False
-    assert by_id[6].passed is False
-    assert by_id[7].passed is False
-    assert "evidence" in by_id[6].detail or "sessions" in by_id[6].detail
-    assert "natural-adjudication-staffing.json" in by_id[7].detail
-    assert by_id[9].passed is True  # claims remain locked
+def test_scientific_gates_are_no_go() -> None:
+    module = _load_script("check_v09_scientific_gates.py")
+    results = module.evaluate_scientific_gates()
+    by_name = {item.name: item for item in results}
+    assert by_name["natural_rights_cleared_cases"].passed is False
+    assert by_name["natural_rights_cleared_cases"].blocking is True
+    assert by_name["coarse_production_fixtures"].passed is False
+    assert by_name["openreviewer_production_fixtures"].passed is False
+    assert by_name["production_signing_public_keys"].passed is True
+    assert by_name["production_signing_public_keys"].blocking is True
+    assert by_name["qualified_expert_staffing"].passed is False
+    assert by_name["matcher_audit_natural_volume"].passed is False
+    assert by_name["holdout_custody"].passed is False
+    assert by_name["holdout_custody"].blocking is True
+    assert by_name["independent_evaluation"].passed is False
+    assert by_name["independent_evaluation"].blocking is True
+    assert by_name["performance_claims_locked"].passed is True
+    assert "evidence" in by_name["matcher_audit_natural_volume"].detail or (
+        "sessions" in by_name["matcher_audit_natural_volume"].detail
+    )
+    assert "natural-adjudication-staffing.json" in by_name["qualified_expert_staffing"].detail
     assert module.main() == 1
 
 
-def test_v09_gates_point_at_evidence_paths() -> None:
-    module = _load_gates()
-    results = module.evaluate_gates()
-    by_id = {item.gate_id: item for item in results}
-    assert "MANIFEST.json" in by_id[2].detail
-    assert "MANIFEST.json" in by_id[3].detail
-    assert "matcher-audit/sessions" in by_id[6].detail
+def test_engineering_gates_are_scaffolding_ok() -> None:
+    module = _load_script("check_v09_engineering_gates.py")
+    results = module.evaluate_engineering_gates()
+    assert all(not item.blocking for item in results)
+    by_name = {item.name: item for item in results}
+    assert by_name["external_rights_path_or_negative_finding"].passed is True
+    assert by_name["production_signing_public_keys"].passed is True
+    assert by_name["expert_ops_policy_objects"].passed is True
+    assert by_name["holdout_custody_documented"].passed is True
+    assert by_name["v09_checklist_document"].passed is True
+    assert module.main() == 0
+
+
+def test_scientific_gates_point_at_evidence_paths() -> None:
+    module = _load_script("check_v09_scientific_gates.py")
+    results = module.evaluate_scientific_gates()
+    by_name = {item.name: item for item in results}
+    assert "MANIFEST.json" in by_name["coarse_production_fixtures"].detail
+    assert "MANIFEST.json" in by_name["openreviewer_production_fixtures"].detail
+    assert "matcher-audit/sessions" in by_name["matcher_audit_natural_volume"].detail
     staffing = ROOT / "governance" / "evidence" / "natural-adjudication-staffing.json"
     roster = json.loads(staffing.read_text(encoding="utf-8"))
     assert roster["status"] == "blocked"
@@ -52,12 +77,18 @@ def test_v09_gates_point_at_evidence_paths() -> None:
     assert roster["domains"] == []
 
 
-def test_v09_doc_references_machine_check() -> None:
+def test_compat_orchestrator_follows_scientific_exit() -> None:
+    module = _load_script("check_v09_gates.py")
+    assert module.main() == 1
+
+
+def test_v09_doc_references_split_machine_checks() -> None:
     text = (ROOT / "docs" / "v0.9-beta-go-no-go.md").read_text(encoding="utf-8")
-    assert "check_v09_gates.py" in text
+    assert "check_v09_scientific_gates.py" in text
+    assert "check_v09_engineering_gates.py" in text
     assert "performance_claims_authorized" in text
     assert "exits 0" in text or "exit 0" in text
     milestones = (ROOT / "docs" / "MILESTONES.md").read_text(encoding="utf-8")
-    assert "check_v09_gates.py" in milestones
+    assert "check_v09_scientific_gates.py" in milestones
     assert "GO rule" in milestones
     assert "claims stay" in milestones and "locked" in milestones

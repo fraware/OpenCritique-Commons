@@ -52,3 +52,12 @@ Live runners deepen the **operator engineering** surface only. They do not:
 
 See [adapter-authenticity.md](adapter-authenticity.md) and
 [MILESTONES.md](MILESTONES.md).
+
+For **sample** convert -> eval -> scorecard without paid APIs, use
+[`scripts/demo_adapter_path.sh`](../scripts/demo_adapter_path.sh) /
+[`.ps1`](../scripts/demo_adapter_path.ps1) (adapters path, not a live runner).
+Document external adapters with
+[examples/adapter-integration-note.md](examples/adapter-integration-note.md);
+registry / checklist:
+[community-adapters.md](community-adapters.md),
+[compatibility-checklist.md](compatibility-checklist.md).

@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, fix/restore-canonical-source, fix/close-stubs-wave0-1]
+    branches: [main]
   pull_request:
 
 permissions:
@@ -164,3 +164,25 @@ jobs:
         run: pytest -q tests/test_migrations.py tests/test_novel_determinations.py tests/test_matcher_audit.py tests/test_import_reference.py tests/test_rights_path.py
       - name: Reference runtime smoke
         run: python scripts/reference_runtime_smoke.py --artifact-root ./.runtime-smoke-artifacts
+
+  optional-openreviewer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install with live-openreviewer
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev,live-openreviewer]'
+      - name: Pyright runners
+        run: pyright src/opencritique_runners
+      - name: Smoke import HF stack
+        run: |
+          python - <<'PY'
+          from opencritique_runners.hf_local import _require_hf_stack
+          torch_mod, factories = _require_hf_stack()
+          assert torch_mod is not None
+          assert factories[0] is not None and factories[1] is not None
+          print("optional-openreviewer smoke import OK")
+          PY
