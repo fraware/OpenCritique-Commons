@@ -414,7 +414,7 @@
     },
     "MatcherAuditCompletionAttestation": {
       "additionalProperties": false,
-      "description": "Attests completed matcher-audit accounting (volume rules in PR 44).",
+      "description": "Attests completed matcher-audit accounting (dual-judgment + tie-break).\n\n``completed_decision_count`` is the number of unique candidates with\ncompleted adjudication - not session ``sampled_count``. Scientific gate #6\nrequires a verified envelope with this count >= 100.",
       "properties": {
         "attestation_id": {
           "minLength": 1,

@@ -27,7 +27,7 @@ revocation — never a false green from Boolean JSON alone.
 | Production OpenReviewer MANIFEST | `fixtures/openreviewer/production/MANIFEST.json` | `reviewer_export_authenticity` (openreviewer) |
 | Production signing trust store | `trust/scorecard-trust-store.json` | scientific #4 (public keys) + attestation verify |
 | Two-domain staffing roster | `governance/evidence/natural-adjudication-staffing.json` | `expert_staffing` |
-| Natural matcher-audit sessions | `corpus/matcher-audit/sessions/*.json` | `matcher_audit_completion` (volume rules later) |
+| Natural matcher-audit sessions | `corpus/matcher-audit/sessions/*.json` + `*.agreement.json` | `matcher_audit_completion` (completed dual-judgment count) |
 | Expert-natural independent benchmarks | `benchmarks/*/manifest.json` | `independent_evaluation` |
 
 ## Staffing roster
@@ -42,7 +42,9 @@ readiness alone does **not** pass scientific gate #5 without a verified
 ## Matcher-audit sessions
 
 Drop natural `MatcherAuditSessionManifest` JSON files under
-`corpus/matcher-audit/sessions/`. Sample sessions do **not** count toward the
-≥100 natural decision DoD. See [../docs/matcher-audit-denominators.md](../docs/matcher-audit-denominators.md).
-Session `sampled_count` alone does **not** pass scientific gate #6 without a
-verified `matcher-audit-completion.envelope.json`.
+`corpus/matcher-audit/sessions/` with companion `*.agreement.json` reports.
+Sample sessions do **not** count toward the ≥100 natural decision DoD. See
+[../docs/matcher-audit-denominators.md](../docs/matcher-audit-denominators.md).
+Session `sampled_count` alone does **not** pass scientific gate #6 — completed
+dual-primary (+ tie-break) adjudication and a verified
+`matcher-audit-completion.envelope.json` are required.

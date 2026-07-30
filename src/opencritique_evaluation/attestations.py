@@ -5,10 +5,10 @@ Presence of Boolean JSON or ledger counts alone does **not** satisfy scientific
 gates; gates must verify an envelope signed by ``evidence_authority`` (or
 ``offline_root``) against the trust store.
 
-Holdout custody (PR 43) attests a ``HoldoutSetManifest`` digest plus access-log
-head hash; matcher-audit volume accounting lands in a follow-on PR. Schemas are
-frozen so gates can fail closed on ``missing_attestation`` until real evidence
-is issued.
+Holdout custody attests a `HoldoutSetManifest` digest plus access-log head
+hash. Matcher-audit volume is enforced as completed dual-judgment counts (not
+`sampled_count`). Schemas are frozen so gates can fail closed on
+`missing_attestation` until real evidence is issued.
 """
 
 from __future__ import annotations
@@ -122,7 +122,12 @@ class ExpertStaffingAttestation(EvidenceAttestationBase):
 
 
 class MatcherAuditCompletionAttestation(EvidenceAttestationBase):
-    """Attests completed matcher-audit accounting (volume rules in PR 44)."""
+    """Attests completed matcher-audit accounting (dual-judgment + tie-break).
+
+    ``completed_decision_count`` is the number of unique candidates with
+    completed adjudication - not session ``sampled_count``. Scientific gate #6
+    requires a verified envelope with this count >= 100.
+    """
 
     attestation_kind: Literal[
         EvidenceAttestationKind.MATCHER_AUDIT_COMPLETION

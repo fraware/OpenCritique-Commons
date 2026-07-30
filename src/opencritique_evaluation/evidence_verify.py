@@ -515,7 +515,8 @@ def _check_subject_bindings(
         expected_sessions = set(check.get("session_ids") or [])
         attested_sessions = set(attestation.session_ids)
         bindings["session_ids"] = ",".join(sorted(attested_sessions))
-        if expected_sessions and attested_sessions != expected_sessions:
+        # Always compare when the key is present (including empty session lists).
+        if "session_ids" in check and attested_sessions != expected_sessions:
             errors.append("session_ids")
         expected_count = check.get("completed_decision_count")
         if expected_count is not None:
@@ -524,6 +525,11 @@ def _check_subject_bindings(
             )
             if attestation.completed_decision_count != int(expected_count):
                 errors.append("completed_decision_count")
+        expected_hash = check.get("judgment_set_hash")
+        if expected_hash is not None:
+            bindings["judgment_set_hash"] = attestation.judgment_set_hash or ""
+            if attestation.judgment_set_hash != expected_hash:
+                errors.append("judgment_set_hash")
 
     elif isinstance(attestation, HoldoutCustodyAttestation):
         expected_count = check.get("natural_case_count")

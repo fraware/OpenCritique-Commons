@@ -115,18 +115,23 @@ class MatcherAuditSample(StrictModel):
         return self
 
 
+NATURAL_DOD_TARGET = 100
+
+
 class DenominatorAccount(StrictModel):
     """Honest sample vs natural decision accounting (issue #6)."""
 
     account_version: str = "0.1"
     sample_decisions_available: int = Field(ge=0)
     natural_decisions_available: int = Field(ge=0)
-    natural_dod_target: int = 100
+    natural_dod_target: int = NATURAL_DOD_TARGET
     natural_dod_met: bool = False
     performance_claims_authorized: bool = False
     notes: str = (
-        "Natural DoD requires ≥100 audited natural decisions (or every available "
-        "natural decision when fewer exist). Sample decisions never satisfy natural DoD."
+        "Natural DoD requires ≥100 completed adjudicated natural decisions "
+        "(unique candidates with dual primary judgments and tie-break when "
+        "required), plus a signed MatcherAuditCompletionAttestation. "
+        "sampled_count alone never satisfies natural DoD."
     )
 
     @model_validator(mode="after")
@@ -233,22 +238,131 @@ def natural_session_manifest_dir(repo_root: Path | None = None) -> Path:
     return root / NATURAL_SESSION_MANIFEST_DIR
 
 
-def discover_natural_decision_count(
-    repo_root: Path | None = None,
-) -> tuple[int, str]:
-    """Read natural matcher-audit session manifests; never invent volume.
+def agreement_report_path_for_manifest(manifest_path: Path) -> Path:
+    """Companion agreement report next to a session manifest.
 
-    Returns ``(natural_decision_count, evidence_detail)``. Missing or empty
-    session directories yield count ``0`` with a detail string pointing at the
-    expected evidence path.
+    ``sessions/foo.json`` → ``sessions/foo.agreement.json``.
+    """
+    return manifest_path.with_name(f"{manifest_path.stem}.agreement.json")
+
+
+def is_candidate_adjudication_complete(judgments: list[AuditJudgment]) -> bool:
+    """Return True when dual-primary (+ tie-break if needed) adjudication is done.
+
+    Requires two judgments from distinct auditors. When those primary decisions
+    disagree, a third judgment from a different auditor is required.
+    """
+    if len(judgments) < 2:
+        return False
+    ordered = sorted(judgments, key=lambda item: (item.decided_at, item.auditor_id))
+    primaries: list[AuditJudgment] = []
+    seen_auditors: set[str] = set()
+    for item in ordered:
+        if item.auditor_id in seen_auditors:
+            continue
+        primaries.append(item)
+        seen_auditors.add(item.auditor_id)
+        if len(primaries) == 2:
+            break
+    if len(primaries) < 2:
+        return False
+    if primaries[0].decision == primaries[1].decision:
+        return True
+    primary_ids = {primaries[0].auditor_id, primaries[1].auditor_id}
+    return any(item.auditor_id not in primary_ids for item in ordered)
+
+
+def compute_judgment_set_hash(judgments: list[AuditJudgment]) -> str:
+    """Canonical SHA-256 over the judgment set (stable across sessions)."""
+    rows = [
+        {
+            "auditor_id": item.auditor_id,
+            "candidate_id": item.candidate_id,
+            "decision": item.decision.value,
+            "decided_at": item.decided_at.isoformat(),
+            "disagreement_category": item.disagreement_category.value,
+            "notes": item.notes,
+        }
+        for item in sorted(
+            judgments,
+            key=lambda j: (j.candidate_id, j.auditor_id, j.decided_at.isoformat()),
+        )
+    ]
+    payload = json.dumps(rows, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+class CompletedMatcherAuditDiscovery(StrictModel):
+    """Completed natural matcher-audit accounting (not sampled_count)."""
+
+    completed_decision_count: int = Field(ge=0)
+    session_ids: list[str] = Field(default_factory=list)
+    judgment_set_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    natural_session_count: int = Field(ge=0, default=0)
+    detail: str = ""
+
+
+def load_agreement_report(path: Path) -> AuditAgreementReport:
+    return AuditAgreementReport.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+def persist_agreement_report(report: AuditAgreementReport, path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(report.model_dump(mode="json"), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def _is_session_manifest_path(path: Path) -> bool:
+    name = path.name.lower()
+    if not name.endswith(".json"):
+        return False
+    if name.endswith(".agreement.json") or name.endswith(".judgments.json"):
+        return False
+    if name in {"readme.json"}:
+        return False
+    return True
+
+
+def discover_completed_matcher_audit(
+    repo_root: Path | None = None,
+) -> CompletedMatcherAuditDiscovery:
+    """Count completed adjudicated natural decisions across session evidence.
+
+    A candidate counts only when:
+
+    - its session is ``evidence_class=natural`` with claims locked
+    - a completed ``AuditAgreementReport`` companion is present
+    - the report is natural-class and claims-aligned (``natural_dod_met`` may
+      still be false below the DoD threshold)
+    - the candidate has two primary judgments from distinct auditors, plus a
+      tie-break judgment when those primaries disagree
+
+    ``sampled_count`` on the session manifest is **never** used as the count.
+    Unique ``candidate_id`` values are counted once across sessions.
     """
     sessions_dir = natural_session_manifest_dir(repo_root)
     relative = NATURAL_SESSION_MANIFEST_DIR.as_posix()
+    empty_hash = compute_judgment_set_hash([])
     if not sessions_dir.is_dir():
-        return 0, f"evidence missing: {relative}/ (no natural session manifests)"
-    total = 0
+        return CompletedMatcherAuditDiscovery(
+            completed_decision_count=0,
+            session_ids=[],
+            judgment_set_hash=empty_hash,
+            natural_session_count=0,
+            detail=f"evidence missing: {relative}/ (no natural session manifests)",
+        )
+
+    completed_candidates: set[str] = set()
+    contributing_sessions: list[str] = []
+    all_completed_judgments: list[AuditJudgment] = []
     natural_files = 0
+
     for path in sorted(sessions_dir.glob("*.json")):
+        if not _is_session_manifest_path(path):
+            continue
         try:
             manifest = load_session_manifest(path)
         except (OSError, ValueError, TypeError):
@@ -258,13 +372,73 @@ def discover_natural_decision_count(
         if manifest.performance_claims_authorized:
             continue
         natural_files += 1
-        total += manifest.sampled_count
+
+        report_path = agreement_report_path_for_manifest(path)
+        if not report_path.is_file():
+            continue
+        try:
+            report = load_agreement_report(report_path)
+        except (OSError, ValueError, TypeError):
+            continue
+        if report.evidence_class != AuditEvidenceClass.NATURAL:
+            continue
+        if report.sample_id_hash != manifest.sample_id_hash:
+            continue
+
+        by_candidate: dict[str, list[AuditJudgment]] = {}
+        for judgment in report.judgments:
+            by_candidate.setdefault(judgment.candidate_id, []).append(judgment)
+
+        session_completed = False
+        for candidate_id, items in by_candidate.items():
+            if not is_candidate_adjudication_complete(items):
+                continue
+            if candidate_id in completed_candidates:
+                continue
+            completed_candidates.add(candidate_id)
+            all_completed_judgments.extend(items)
+            session_completed = True
+        if session_completed:
+            contributing_sessions.append(manifest.session_id)
+
+    count = len(completed_candidates)
     if natural_files == 0:
-        return 0, f"evidence absent: {relative}/ has no natural session manifests"
-    return (
-        total,
-        f"natural_sessions={natural_files} sampled_decisions={total} from {relative}/",
+        detail = f"evidence absent: {relative}/ has no natural session manifests"
+    else:
+        detail = (
+            f"natural_sessions={natural_files} "
+            f"completed_decisions={count} "
+            f"contributing_sessions={len(contributing_sessions)} "
+            f"from {relative}/ "
+            f"(sampled_count ignored; dual-judgment completion required)"
+        )
+    return CompletedMatcherAuditDiscovery(
+        completed_decision_count=count,
+        session_ids=sorted(set(contributing_sessions)),
+        judgment_set_hash=compute_judgment_set_hash(all_completed_judgments),
+        natural_session_count=natural_files,
+        detail=detail,
     )
+
+
+def discover_natural_decision_count(
+    repo_root: Path | None = None,
+) -> tuple[int, str]:
+    """Discover completed natural adjudicated decisions; never invent volume.
+
+    Returns ``(completed_decision_count, evidence_detail)``. Counts unique
+    candidates with completed dual-primary (+ tie-break) adjudication — **not**
+    ``sampled_count`` sums. Missing or empty session directories yield ``0``.
+    """
+    discovery = discover_completed_matcher_audit(repo_root)
+    return discovery.completed_decision_count, discovery.detail
+
+
+def natural_matcher_audit_dod_met(completed_decision_count: int) -> bool:
+    """Scientific gate #6 volume threshold (attestation still required separately)."""
+    if completed_decision_count < 0:
+        raise ValueError("completed_decision_count must be >= 0")
+    return completed_decision_count >= NATURAL_DOD_TARGET
 
 
 def measure_current_denominators(
@@ -275,8 +449,9 @@ def measure_current_denominators(
 ) -> DenominatorAccount:
     """Report honest current denominators without fabricating natural decisions.
 
-    When ``natural_decision_count`` is omitted, discover it from natural session
-    manifests under ``corpus/matcher-audit/sessions/`` (0 if absent).
+    When ``natural_decision_count`` is omitted, discover **completed** adjudicated
+    natural decisions under ``corpus/matcher-audit/sessions/`` (0 if absent).
+    ``sampled_count`` on manifests is not a substitute for completion.
     """
     root = repo_root or Path(__file__).resolve().parents[2]
     if natural_decision_count is None:
@@ -295,7 +470,7 @@ def measure_current_denominators(
     return DenominatorAccount(
         sample_decisions_available=sample_count,
         natural_decisions_available=natural_decision_count,
-        natural_dod_met=natural_decision_count >= 100,
+        natural_dod_met=natural_matcher_audit_dod_met(natural_decision_count),
         performance_claims_authorized=False,
     )
 
@@ -516,8 +691,8 @@ def build_session_manifest(
     sid = session_id or f"ocmas_{sample_hash[:20]}"
     natural_met = (
         sample.evidence_class == AuditEvidenceClass.NATURAL
-        and sample.population_denominator >= 100
-        and len(sample.candidates) >= min(100, max(sample.population_denominator, 1))
+        and sample.population_denominator >= NATURAL_DOD_TARGET
+        and len(sample.candidates) >= min(NATURAL_DOD_TARGET, max(sample.population_denominator, 1))
     )
     return MatcherAuditSessionManifest(
         session_id=sid,
@@ -622,7 +797,7 @@ def analyze_audit_judgments(
 
     natural_met = (
         sample.evidence_class == AuditEvidenceClass.NATURAL
-        and sample.population_denominator >= 100
+        and sample.population_denominator >= NATURAL_DOD_TARGET
     )
     return AuditAgreementReport(
         sample_id_hash=sample_hash,

@@ -67,8 +67,8 @@ Blocking scientific gates (`scripts/check_v09_scientific_gates.py`) verify
 | `natural_corpus` | Rights-cleared natural case IDs / ledger bindings |
 | `reviewer_export_authenticity` | Production MANIFEST artifact content hashes |
 | `expert_staffing` | Independent adjudicator IDs per domain |
-| `matcher_audit_completion` | Completed audit session / judgment-set binding (volume rules follow-on) |
-| `holdout_custody` | `HoldoutSetManifest` hash + access-log head hash; attested natural case count ≥40 inside the holdout set (not ledger count alone) |
+| matcher_audit_completion | Completed dual-judgment audit sessions / judgment-set hash / count >=100 |
+| holdout_custody | HoldoutSetManifest hash + access-log head hash; attested natural case count >=40 inside the holdout set (not ledger count alone) |
 | `independent_evaluation` | Expert-natural benchmark IDs with independent evaluation |
 
 Verification (`verify_evidence_envelope`) mirrors claim-authorization checks and
