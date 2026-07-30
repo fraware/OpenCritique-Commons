@@ -365,8 +365,13 @@
     },
     "ClaimAuthorization": {
       "additionalProperties": false,
-      "description": "Structured claim authorization; prefer ``claim_scope`` over the bool.",
+      "description": "Structured claim authorization; prefer ``claim_scope`` over the bool.\n\nPublic scopes are a derived view of a successfully verified\n``SignedClaimAuthorizationEnvelope``. Digest strings alone do not authorize.",
       "properties": {
+        "authorization_verified": {
+          "default": false,
+          "title": "Authorization Verified",
+          "type": "boolean"
+        },
         "claim_scope": {
           "$ref": "#/$defs/ClaimScope"
         },
@@ -448,12 +453,127 @@
           ],
           "default": null,
           "title": "Use Scope"
+        },
+        "verification_report_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verification Report Digest"
         }
       },
       "required": [
         "claim_scope"
       ],
       "title": "ClaimAuthorization",
+      "type": "object"
+    },
+    "ClaimAuthorizationDecision": {
+      "additionalProperties": false,
+      "description": "Immutable claim-authorization decision payload (signed inside an envelope).",
+      "properties": {
+        "authority_id": {
+          "minLength": 1,
+          "title": "Authority Id",
+          "type": "string"
+        },
+        "authorized_metrics": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Authorized Metrics",
+          "type": "array"
+        },
+        "benchmark_id": {
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "benchmark_manifest_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Benchmark Manifest Hash",
+          "type": "string"
+        },
+        "benchmark_version": {
+          "title": "Benchmark Version",
+          "type": "string"
+        },
+        "case_set_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Case Set Hash",
+          "type": "string"
+        },
+        "claim_scope": {
+          "$ref": "#/$defs/ClaimScope"
+        },
+        "domain_scope": {
+          "minLength": 1,
+          "title": "Domain Scope",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "matcher_config_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Matcher Config Hash",
+          "type": "string"
+        },
+        "matcher_version": {
+          "title": "Matcher Version",
+          "type": "string"
+        },
+        "not_after": {
+          "format": "date-time",
+          "title": "Not After",
+          "type": "string"
+        },
+        "predecessor_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Predecessor Id"
+        },
+        "scoring_policy_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Scoring Policy Hash",
+          "type": "string"
+        },
+        "use_scope": {
+          "minLength": 1,
+          "title": "Use Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_scope",
+        "benchmark_id",
+        "benchmark_version",
+        "case_set_hash",
+        "benchmark_manifest_hash",
+        "scoring_policy_hash",
+        "matcher_version",
+        "matcher_config_hash",
+        "domain_scope",
+        "use_scope",
+        "issued_at",
+        "not_after",
+        "authority_id"
+      ],
+      "title": "ClaimAuthorizationDecision",
       "type": "object"
     },
     "ClaimScope": {
@@ -716,6 +836,56 @@
       "title": "ReferenceCompleteness",
       "type": "string"
     },
+    "SignedClaimAuthorizationEnvelope": {
+      "additionalProperties": false,
+      "description": "Ed25519-signed claim authorization decision.",
+      "properties": {
+        "algorithm": {
+          "const": "Ed25519",
+          "default": "Ed25519",
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/$defs/ClaimAuthorizationDecision"
+        },
+        "envelope_version": {
+          "default": "0.1",
+          "title": "Envelope Version",
+          "type": "string"
+        },
+        "key_id": {
+          "minLength": 1,
+          "title": "Key Id",
+          "type": "string"
+        },
+        "payload_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Payload Sha256",
+          "type": "string"
+        },
+        "signature": {
+          "description": "Ed25519 signature (base64)",
+          "minLength": 1,
+          "title": "Signature",
+          "type": "string"
+        },
+        "signed_at": {
+          "format": "date-time",
+          "title": "Signed At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decision",
+        "payload_sha256",
+        "signature",
+        "key_id",
+        "signed_at"
+      ],
+      "title": "SignedClaimAuthorizationEnvelope",
+      "type": "object"
+    },
     "SystemManifest": {
       "additionalProperties": false,
       "properties": {
@@ -879,6 +1049,17 @@
     },
     "claim_authorization": {
       "$ref": "#/$defs/ClaimAuthorization"
+    },
+    "claim_authorization_envelope": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SignedClaimAuthorizationEnvelope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "claim_boundary": {
       "title": "Claim Boundary",

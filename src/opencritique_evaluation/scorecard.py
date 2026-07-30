@@ -3,11 +3,20 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+from datetime import datetime
 from pathlib import Path
 
 from opencritique_schema.canonical import canonical_json_bytes
 
-from .models import ClaimScope, EvaluationResult, PublicScorecard, ReferenceCompleteness
+from .claim_auth_verify import verify_claim_authorization
+from .models import (
+    ClaimAuthorization,
+    ClaimScope,
+    EvaluationResult,
+    PublicScorecard,
+    ReferenceCompleteness,
+)
+from .trust import TrustPolicyMode, TrustStore
 
 _PUBLIC_SCOPES = frozenset(
     {
@@ -24,14 +33,74 @@ _INCOMPLETE_REFERENCE = frozenset(
 )
 
 
+def _coerce_unauthorized(result: EvaluationResult) -> EvaluationResult:
+    auth = result.claim_authorization
+    return result.model_copy(
+        update={
+            "claim_authorization": ClaimAuthorization(
+                claim_scope=ClaimScope.NONE,
+                expert_natural_evidence=auth.expert_natural_evidence,
+                rights_cleared_cases=auth.rights_cleared_cases,
+                protected_holdout=auth.protected_holdout,
+                independent_evaluation=auth.independent_evaluation,
+                matcher_audit_complete=auth.matcher_audit_complete,
+                frozen_scoring_policy=auth.frozen_scoring_policy,
+                signed_authorization_manifest_digest=(
+                    auth.signed_authorization_manifest_digest
+                ),
+                signed_authorization_manifest_path=(
+                    auth.signed_authorization_manifest_path
+                ),
+                domain_scope=auth.domain_scope,
+                use_scope=auth.use_scope,
+                authorization_verified=False,
+                verification_report_digest=auth.verification_report_digest,
+            ),
+            "performance_claim_authorized": False,
+        }
+    )
+
+
 def build_scorecard(
     result: EvaluationResult,
     *,
     predecessor_scorecard_id: str | None = None,
     predecessor_scorecard_hash: str | None = None,
+    trust_store: TrustStore | None = None,
+    trust_store_path: Path | None = None,
+    policy_mode: TrustPolicyMode | None = None,
+    at: datetime | None = None,
 ) -> PublicScorecard:
+    """Build a public scorecard.
+
+    Scientific performance headlines require a successfully verified claim-
+    authorization envelope. Unsigned, missing, or failed verification yields a
+    non-performance record. Integrity of a later scorecard signature is distinct
+    from claim authorization and is enforced separately by ``signing.verify_*``.
+    """
     scope = result.claim_authorization.claim_scope
+    authorized_public = False
+
     if scope in _PUBLIC_SCOPES:
+        report = verify_claim_authorization(
+            result.claim_authorization_envelope,
+            benchmark=result.benchmark,
+            matcher_version=result.matcher_version,
+            matcher_config=result.matcher_config,
+            scoring_policy_version=result.scoring_policy_version,
+            trust_store=trust_store,
+            trust_store_path=trust_store_path,
+            policy_mode=policy_mode or TrustPolicyMode.PRODUCTION,
+            at=at,
+            expected_digest=result.benchmark.signed_authorization_manifest_digest,
+        )
+        if report.ok:
+            authorized_public = True
+        else:
+            result = _coerce_unauthorized(result)
+            scope = ClaimScope.NONE
+
+    if authorized_public and scope in _PUBLIC_SCOPES:
         headline = (
             f"{result.system.display_name} — independently evaluated scientific scorecard"
         )

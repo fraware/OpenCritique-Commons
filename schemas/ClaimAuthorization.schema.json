@@ -13,8 +13,13 @@
     }
   },
   "additionalProperties": false,
-  "description": "Structured claim authorization; prefer ``claim_scope`` over the bool.",
+  "description": "Structured claim authorization; prefer ``claim_scope`` over the bool.\n\nPublic scopes are a derived view of a successfully verified\n``SignedClaimAuthorizationEnvelope``. Digest strings alone do not authorize.",
   "properties": {
+    "authorization_verified": {
+      "default": false,
+      "title": "Authorization Verified",
+      "type": "boolean"
+    },
     "claim_scope": {
       "$ref": "#/$defs/ClaimScope"
     },
@@ -96,6 +101,19 @@
       ],
       "default": null,
       "title": "Use Scope"
+    },
+    "verification_report_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Verification Report Digest"
     }
   },
   "required": [

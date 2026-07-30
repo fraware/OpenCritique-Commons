@@ -207,8 +207,8 @@ def _claim_boundary(
         "conformance evaluation only. Authorizing precision, recall, or comparative "
         "reviewer-quality statements requires EXPERT_NATURAL evidence, rights-cleared "
         "cases, protected holdout, independent evaluation, matcher-audit completion, "
-        "frozen scoring policy, a signed authorization manifest, and explicit "
-        "domain_scope and use_scope."
+        "frozen scoring policy, a cryptographically verified claim-authorization "
+        "envelope (not a self-attested digest), and explicit domain_scope and use_scope."
     )
 
 
