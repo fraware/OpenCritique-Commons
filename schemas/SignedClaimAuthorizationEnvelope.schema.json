@@ -1,5 +1,70 @@
 {
   "$defs": {
+    "AuthorizedMetric": {
+      "additionalProperties": false,
+      "description": "Per-metric authorization entry inside a claim-authorization decision.",
+      "properties": {
+        "completeness_requirement": {
+          "$ref": "#/$defs/CompletenessRequirement"
+        },
+        "denominator_policy": {
+          "default": "",
+          "title": "Denominator Policy",
+          "type": "string"
+        },
+        "domain_scope": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Domain Scope"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "metric_id": {
+          "$ref": "#/$defs/ClaimMetricId"
+        },
+        "status": {
+          "$ref": "#/$defs/MetricAuthStatus"
+        },
+        "supporting_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supporting Evidence Ids",
+          "type": "array"
+        },
+        "system_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "System Version"
+        }
+      },
+      "required": [
+        "metric_id",
+        "status",
+        "completeness_requirement"
+      ],
+      "title": "AuthorizedMetric",
+      "type": "object"
+    },
     "ClaimAuthorizationDecision": {
       "additionalProperties": false,
       "description": "Immutable claim-authorization decision payload (signed inside an envelope).",
@@ -11,7 +76,7 @@
         },
         "authorized_metrics": {
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/AuthorizedMetric"
           },
           "title": "Authorized Metrics",
           "type": "array"
@@ -102,6 +167,22 @@
       "title": "ClaimAuthorizationDecision",
       "type": "object"
     },
+    "ClaimMetricId": {
+      "description": "Claimable scientific / operational metric identifiers.",
+      "enum": [
+        "anchor_integrity",
+        "seeded_defect_recall",
+        "reference_recall",
+        "critical_precision",
+        "major_precision",
+        "calibration",
+        "false_critical_rate",
+        "cost",
+        "latency"
+      ],
+      "title": "ClaimMetricId",
+      "type": "string"
+    },
     "ClaimScope": {
       "description": "Signed authorization scope for scientific performance language.",
       "enum": [
@@ -111,6 +192,27 @@
         "public_comparative"
       ],
       "title": "ClaimScope",
+      "type": "string"
+    },
+    "CompletenessRequirement": {
+      "description": "Minimum reference-completeness class required to publish a metric.",
+      "enum": [
+        "any",
+        "complete_seeded",
+        "adjudicated_output_complete",
+        "partial_natural",
+        "discovery_open"
+      ],
+      "title": "CompletenessRequirement",
+      "type": "string"
+    },
+    "MetricAuthStatus": {
+      "enum": [
+        "authorized",
+        "withheld",
+        "not_applicable"
+      ],
+      "title": "MetricAuthStatus",
       "type": "string"
     }
   },

@@ -57,6 +57,24 @@ authorization. `BenchmarkManifest.claim_authorization()`, `EvaluationResult`, an
 `build_scorecard` fail closed without a verified envelope. Scorecard signing still
 proves artifact integrity only; it does not bypass claim authorization.
 
+### Per-metric authorization
+
+`ClaimAuthorizationDecision.authorized_metrics` is the authoritative list of
+claimable metrics. Each entry carries `metric_id`, `status`
+(`authorized` / `withheld` / `not_applicable`), `supporting_evidence_ids`,
+`denominator_policy`, `completeness_requirement`, optional `domain_scope` /
+`system_version`, and `limitations`.
+
+Scientific scorecard headlines require at least one **scientific** metric with
+effective status `authorized` (cost/latency alone do not unlock headlines). The
+transitional `performance_claim_authorized` flag is derived the same way.
+
+Hard invariant: when live `reference_completeness` is `partial_natural`,
+`discovery_open`, or `unknown`, precision/calibration families
+(`critical_precision`, `major_precision`, `calibration`, `false_critical_rate`)
+cannot remain authorized — even if the signed decision declares them so.
+Scorecard rows for unauthorized metrics are withheld.
+
 ## Scientific evidence attestations
 
 Blocking scientific gates (`scripts/check_v09_scientific_gates.py`) verify

@@ -12,15 +12,22 @@ from opencritique_evaluation.claim_auth_verify import (
     sign_claim_authorization_decision,
     verify_claim_authorization,
 )
+from opencritique_evaluation.metric_auth import (
+    default_authorized_metrics_for_completeness,
+)
 from opencritique_evaluation.models import (
+    AuthorizedMetric,
     BenchmarkCaseRef,
     BenchmarkEvidenceClass,
     BenchmarkManifest,
     ClaimAuthorization,
+    ClaimMetricId,
     ClaimScope,
+    CompletenessRequirement,
     EvaluationMetrics,
     EvaluationResult,
     MatcherConfig,
+    MetricAuthStatus,
     MetricValue,
     ReferenceCompleteness,
     SystemManifest,
@@ -145,6 +152,7 @@ def _issue_envelope(
     not_after: datetime | None = None,
     case_set_hash: str | None = None,
     revoke: bool = False,
+    authorized_metrics: list[AuthorizedMetric] | None = None,
 ) -> tuple:
     priv = tmp_path / "claim_auth.pem"
     pub = tmp_path / "claim_auth.pub.pem"
@@ -185,6 +193,14 @@ def _issue_envelope(
     if case_set_hash is not None:
         decision_manifest = manifest.model_copy(update={"case_set_hash": case_set_hash})
 
+    metrics = authorized_metrics
+    if metrics is None:
+        metrics = default_authorized_metrics_for_completeness(
+            manifest.reference_completeness,
+            domain_scope=manifest.domain_scope,
+            system_version="0.0.1",
+        )
+
     decision = build_claim_authorization_decision(
         claim_scope=claim_scope,
         benchmark=decision_manifest,
@@ -193,6 +209,7 @@ def _issue_envelope(
         authority_id=rec.key_id,
         issued_at=issued,
         not_after=expires,
+        authorized_metrics=metrics,
     )
     # Decision must bind to the *live* benchmark hashes; when forging a wrong
     # case_set_hash we keep the decision's case_set_hash as the forged value.
@@ -485,3 +502,161 @@ def test_scorecard_signing_path_cannot_headline_without_verified_auth(
         policy_mode=TrustPolicyMode.DEVELOPMENT,
     )
     assert "independently evaluated scientific scorecard" in ok_card.headline
+
+
+def test_empty_authorized_metrics_blocks_headline_and_flag(tmp_path: Path) -> None:
+    live, envelope, store, _, _ = _issue_envelope(
+        tmp_path,
+        _manifest(),
+        authorized_metrics=[],
+    )
+    auth = live.claim_authorization(
+        envelope=envelope,
+        trust_store=store,
+        policy_mode=TrustPolicyMode.DEVELOPMENT,
+    )
+    assert auth.claim_scope == ClaimScope.PUBLIC_DOMAIN_BOUNDED
+    assert auth.authorization_verified is True
+    assert auth.performance_claim_authorized is False
+    scorecard = build_scorecard(
+        _result_for(live, auth=auth, envelope=envelope),
+        trust_store=store,
+        policy_mode=TrustPolicyMode.DEVELOPMENT,
+    )
+    assert "scientific scorecard" not in scorecard.headline
+    assert "non-performance" in scorecard.headline
+
+
+def test_partial_natural_cannot_authorize_precision_or_calibration(
+    tmp_path: Path,
+) -> None:
+    """Hard invariant: public_* + partial_natural never authorizes precision/calibration."""
+    manifest = _manifest(
+        reference_completeness=ReferenceCompleteness.PARTIAL_NATURAL
+    )
+    # Forge an envelope that *declares* precision authorized with a complete
+    # requirement — runtime resolution against live completeness must withhold.
+    forged = [
+        AuthorizedMetric(
+            metric_id=ClaimMetricId.REFERENCE_RECALL,
+            status=MetricAuthStatus.AUTHORIZED,
+            completeness_requirement=CompletenessRequirement.PARTIAL_NATURAL,
+        ),
+        AuthorizedMetric(
+            metric_id=ClaimMetricId.CRITICAL_PRECISION,
+            status=MetricAuthStatus.AUTHORIZED,
+            completeness_requirement=CompletenessRequirement.COMPLETE_SEEDED,
+        ),
+        AuthorizedMetric(
+            metric_id=ClaimMetricId.CALIBRATION,
+            status=MetricAuthStatus.AUTHORIZED,
+            completeness_requirement=CompletenessRequirement.ADJUDICATED_OUTPUT_COMPLETE,
+        ),
+    ]
+    live, envelope, store, _, _ = _issue_envelope(
+        tmp_path,
+        manifest,
+        authorized_metrics=forged,
+    )
+    auth = live.claim_authorization(
+        envelope=envelope,
+        trust_store=store,
+        policy_mode=TrustPolicyMode.DEVELOPMENT,
+    )
+    by_id = {item.metric_id: item for item in auth.authorized_metrics}
+    assert by_id[ClaimMetricId.REFERENCE_RECALL].status == MetricAuthStatus.AUTHORIZED
+    assert by_id[ClaimMetricId.CRITICAL_PRECISION].status == MetricAuthStatus.WITHHELD
+    assert by_id[ClaimMetricId.CALIBRATION].status == MetricAuthStatus.WITHHELD
+    assert auth.performance_claim_authorized is True  # recall still scientific
+
+    scorecard = build_scorecard(
+        _result_for(live, auth=auth, envelope=envelope),
+        trust_store=store,
+        policy_mode=TrustPolicyMode.DEVELOPMENT,
+    )
+    assert "scientific scorecard" in scorecard.headline
+    assert scorecard.result.metrics.precision.value is None
+    assert "not authorized" in (scorecard.result.metrics.precision.withheld_reason or "")
+    assert scorecard.result.metrics.reference_match_brier_score.value is None
+
+
+def test_decision_rejects_precision_with_partial_completeness_requirement() -> None:
+    import pytest
+    from pydantic import ValidationError
+
+    from opencritique_evaluation.models import ClaimAuthorizationDecision
+
+    with pytest.raises(ValidationError):
+        ClaimAuthorizationDecision(
+            claim_scope=ClaimScope.PUBLIC_DOMAIN_BOUNDED,
+            authorized_metrics=[
+                AuthorizedMetric(
+                    metric_id=ClaimMetricId.CRITICAL_PRECISION,
+                    status=MetricAuthStatus.AUTHORIZED,
+                    completeness_requirement=CompletenessRequirement.PARTIAL_NATURAL,
+                )
+            ],
+            benchmark_id="ocbench_x",
+            benchmark_version="0.1.0",
+            case_set_hash="b" * 64,
+            benchmark_manifest_hash="c" * 64,
+            scoring_policy_hash="d" * 64,
+            matcher_version=DEFAULT_MATCHER_VERSION,
+            matcher_config_hash="e" * 64,
+            domain_scope="physics",
+            use_scope="test",
+            issued_at=datetime.now(UTC),
+            not_after=datetime.now(UTC) + timedelta(days=1),
+            authority_id="auth",
+        )
+
+
+def test_discovery_open_treated_as_incomplete_for_precision(tmp_path: Path) -> None:
+    manifest = _manifest(
+        reference_completeness=ReferenceCompleteness.DISCOVERY_OPEN
+    )
+    live, envelope, store, _, _ = _issue_envelope(
+        tmp_path,
+        manifest,
+        authorized_metrics=[
+            AuthorizedMetric(
+                metric_id=ClaimMetricId.REFERENCE_RECALL,
+                status=MetricAuthStatus.AUTHORIZED,
+                completeness_requirement=CompletenessRequirement.DISCOVERY_OPEN,
+            ),
+            AuthorizedMetric(
+                metric_id=ClaimMetricId.MAJOR_PRECISION,
+                status=MetricAuthStatus.AUTHORIZED,
+                completeness_requirement=CompletenessRequirement.ADJUDICATED_OUTPUT_COMPLETE,
+            ),
+        ],
+    )
+    auth = live.claim_authorization(
+        envelope=envelope,
+        trust_store=store,
+        policy_mode=TrustPolicyMode.DEVELOPMENT,
+    )
+    by_id = {item.metric_id: item for item in auth.authorized_metrics}
+    assert by_id[ClaimMetricId.MAJOR_PRECISION].status == MetricAuthStatus.WITHHELD
+    assert by_id[ClaimMetricId.REFERENCE_RECALL].status == MetricAuthStatus.AUTHORIZED
+
+
+def test_adjudicated_output_complete_can_authorize_precision(tmp_path: Path) -> None:
+    manifest = _manifest(
+        reference_completeness=ReferenceCompleteness.ADJUDICATED_OUTPUT_COMPLETE
+    )
+    live, envelope, store, _, _ = _issue_envelope(tmp_path, manifest)
+    auth = live.claim_authorization(
+        envelope=envelope,
+        trust_store=store,
+        policy_mode=TrustPolicyMode.DEVELOPMENT,
+    )
+    by_id = {item.metric_id: item for item in auth.authorized_metrics}
+    assert by_id[ClaimMetricId.CRITICAL_PRECISION].status == MetricAuthStatus.AUTHORIZED
+    assert auth.performance_claim_authorized is True
+    scorecard = build_scorecard(
+        _result_for(live, auth=auth, envelope=envelope),
+        trust_store=store,
+        policy_mode=TrustPolicyMode.DEVELOPMENT,
+    )
+    assert "scientific scorecard" in scorecard.headline

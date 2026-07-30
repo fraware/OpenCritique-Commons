@@ -87,10 +87,12 @@ Outreach packet: [outreach-one-pager.md](outreach-one-pager.md).
 Enforcement hooks already present:
 
 - `ClaimAuthorizationDecision` / `SignedClaimAuthorizationEnvelope` + `verify_claim_authorization`
+- Per-metric `authorized_metrics` (`AuthorizedMetric`: metric_id, status, completeness_requirement, …); envelope entries are authoritative
+- Completeness invariant: `partial_natural` / `discovery_open` / `unknown` cannot authorize precision/calibration families
 - `BenchmarkManifest.claim_authorization()` derives public scopes only from successful envelope verification
-- Derived transitional `performance_claim_authorized` (true only for verified `public_domain_bounded` / `public_comparative`)
+- Derived transitional `performance_claim_authorized` (true only when a verified public scope has **any** authorized scientific metric)
 - `EvaluationResult` coerces crafted public scopes without an attached verified envelope to `none`
-- `build_scorecard` scientific headline only after successful `verify_claim_authorization` (default: no envelope ⇒ non-performance)
+- `build_scorecard` scientific headline only after successful `verify_claim_authorization` **and** at least one authorized scientific metric (default: no envelope ⇒ non-performance); per-metric rows withheld when unauthorized
 - `SignedEvidenceEnvelope` attestation kinds + `verify_evidence_envelope` (scientific gates fail closed on `missing_attestation` until real evidence is issued)
 - `AcquisitionLedger.performance_claims_authorized` (false)
 - Rights memorandum + case-level rights records
