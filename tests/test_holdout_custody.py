@@ -12,6 +12,7 @@ from opencritique_evaluation.attestations import (
     AttestationRecordStatus,
     EvidenceAttestationKind,
     HoldoutCustodyAttestation,
+    SignedEvidenceEnvelope,
 )
 from opencritique_evaluation.evidence_verify import (
     sign_evidence_attestation,
@@ -133,7 +134,7 @@ def _attestation_from(
 
 def _issue(
     tmp_path: Path, attestation: HoldoutCustodyAttestation
-) -> tuple[object, Path]:
+) -> tuple[SignedEvidenceEnvelope, Path]:
     priv = tmp_path / "evidence.pem"
     pub = tmp_path / "evidence.pub.pem"
     generate_keypair(priv, pub)
