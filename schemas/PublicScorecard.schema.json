@@ -520,9 +520,6 @@
         "anchor_resolution_rate": {
           "$ref": "#/$defs/MetricValue"
         },
-        "brier_score": {
-          "$ref": "#/$defs/MetricValue"
-        },
         "cases_abstained": {
           "title": "Cases Abstained",
           "type": "integer"
@@ -564,6 +561,9 @@
         "recall": {
           "$ref": "#/$defs/MetricValue"
         },
+        "reference_match_brier_score": {
+          "$ref": "#/$defs/MetricValue"
+        },
         "severity_weighted_precision": {
           "$ref": "#/$defs/MetricValue"
         },
@@ -595,7 +595,7 @@
         "severity_weighted_precision",
         "severity_weighted_recall",
         "false_critical_per_manuscript",
-        "brier_score",
+        "reference_match_brier_score",
         "novel_candidates_pending_adjudication"
       ],
       "title": "EvaluationMetrics",

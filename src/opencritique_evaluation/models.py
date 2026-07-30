@@ -360,7 +360,7 @@ class EvaluationMetrics(StrictModel):
     severity_weighted_precision: MetricValue
     severity_weighted_recall: MetricValue
     false_critical_per_manuscript: MetricValue
-    brier_score: MetricValue
+    reference_match_brier_score: MetricValue
     novel_candidates_pending_adjudication: int
 
 

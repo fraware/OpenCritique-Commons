@@ -10,7 +10,7 @@
   "CoarseReview.schema.json": "152242249dad8f966425d32c7820e47077f00f751ad0e39a6c2a371301cbee9b",
   "Concern.schema.json": "218baed8d94513fe566078b817d66e28da97b489e534f41be60531be2b5ca453",
   "Counterposition.schema.json": "bc3192020a0b73b1b6c91b7d2c55a20cfa1db76e4d6a31d14bbcef5f1926bd55",
-  "EvaluationResult.schema.json": "a4531d3c32c3e43aa76cc59a55dffa56f00a7dbe0a14451839475e4238179c19",
+  "EvaluationResult.schema.json": "a42c741525a7867e4858eb47a07d49536f67eecfc9021a9f057e09c595b5cbe3",
   "EvaluationSubmission.schema.json": "ce38ccd496775fc4da4f45831cb31bffe572be9f0f20093da6a34edabaea9654",
   "EvidenceItem.schema.json": "5f9fdbe0f15c9579afc837910abede91e46639dfc1221c547270e0f9b0aee1c4",
   "Manuscript.schema.json": "fc82c7bcc0d83dc2a776225de5cf707cbf99b517c3924d568200fd979880239e",
@@ -18,10 +18,10 @@
   "MatcherSensitivityReport.schema.json": "6d671ee289e5d5402fd723bf8b1a19ed601b14be57d589899d9c4ee33931e2e3",
   "NovelConcernDetermination.schema.json": "f340e2bf33f7e4dd2fc271e33050b183f121dd40697e9a22e907da649212883f",
   "NovelConcernQueue.schema.json": "f48920740602f2d4c33387fa8943bd1410b81d915e25190f41cb5e0f58f63061",
-  "PublicScorecard.schema.json": "b210b26186e4a6cdc285a1bc899ac81076108edbd9bcf26520f4bca0f3b8082f",
+  "PublicScorecard.schema.json": "d341d7caabfad8d5f2d50470a7984c2931a0547c2d2151658bdf30c95dde72b6",
   "Resolution.schema.json": "9a1ad04b6ef77b5564e3ece8fc63a2e039b8778bb2250dafd67ffb97954e334d",
   "RunManifest.schema.json": "869e3e0c131b750c6cdf7f1f7610d9b3dba36925b0943cfc39bdb3789799376e",
-  "SignedScorecardEnvelope.schema.json": "fbdb9499ec183e1d8e9a249a5256c2c1aa58ec9f710737817369c3e61487dfb5",
+  "SignedScorecardEnvelope.schema.json": "fcd2daf8e517b893d12aac7fb0627ebb40c596e803aabf4223901cf9270ac2a3",
   "SystemManifest.schema.json": "5528d18ae759b6e3bdbaaace33589618cca8b1f2f10e70ace8603c5994c530b2",
   "inventory.json": "cd755fc35c49cf97c62ea6095cea11bd6a9d450ba233bc6261644ec97c708f0a"
 }
