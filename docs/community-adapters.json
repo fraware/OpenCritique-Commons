@@ -1,0 +1,32 @@
+{
+  "registry_version": "0.1",
+  "schema_freeze_release": "0.5.0a1",
+  "performance_claims_authorized": false,
+  "notes": "Listing documents interchange adapters only. Compatibility is not endorsement of reviewer quality. claims remains false for every entry until §12 / v0.9 gates land with real evidence.",
+  "adapters": [
+    {
+      "slug": "coarse",
+      "name": "Coarse",
+      "maintainer": "OpenCritique Commons (in-tree)",
+      "repo_url": "https://github.com/Davidvandijcke/coarse",
+      "status": "in-tree",
+      "evidence_class": "sample",
+      "claims": false,
+      "docs": "docs/adapter-authoring.md",
+      "sample_contract_id": "opencritique-sample-adapter-contract-v1",
+      "upstream_contract_version": "coarse-review-contract-v1"
+    },
+    {
+      "slug": "openreviewer",
+      "name": "OpenReviewer",
+      "maintainer": "OpenCritique Commons (in-tree)",
+      "repo_url": "https://github.com/maxidl/openreviewer",
+      "status": "in-tree",
+      "evidence_class": "sample",
+      "claims": false,
+      "docs": "docs/adapter-authoring.md",
+      "sample_contract_id": "opencritique-sample-adapter-contract-v1",
+      "upstream_contract_version": "openreviewer-markdown-template-v1"
+    }
+  ]
+}

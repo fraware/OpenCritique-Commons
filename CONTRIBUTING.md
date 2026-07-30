@@ -2,17 +2,25 @@
 
 Thank you for helping keep scientific-critique infrastructure inspectable.
 
-## Before you start
+## Start here
 
-1. Read [GOVERNANCE.md](GOVERNANCE.md), [SECURITY.md](SECURITY.md), and
-   [docs/REPOSITORY_PUBLICATION.md](docs/REPOSITORY_PUBLICATION.md).
-2. Confirm the change does **not** authorize scientific performance claims
+1. Follow [START_HERE.md](START_HERE.md) — **Track A** (adapters / tool builders)
+   or **Track B** (scientist / lab pilots). Both are first-class.
+2. Pick a reading load from
+   [docs/CONTRIBUTING_TIERS.md](docs/CONTRIBUTING_TIERS.md) (typo/docs vs
+   adapters/runners vs schema/governance). Do not feel required to read all
+   governance docs for a Tier 1 change.
+3. Confirm the change does **not** authorize scientific performance claims
    (`performance_claims_authorized` stays false).
-3. Prefer a linked issue. External-validity work on issues #3–#7 and #14 stays
+4. Prefer a linked issue. External-validity work on issues #3–#7 and #14 stays
    blocked until hard DoD evidence lands; do not invent natural corpus or
    fabricate production adapter exports.
-4. Skim [docs/MILESTONES.md](docs/MILESTONES.md) for claim boundaries and the
-   runtime release checklist.
+5. Join discussion via [docs/COMMUNITY.md](docs/COMMUNITY.md). Security reports
+   go to [SECURITY.md](SECURITY.md), not public issues.
+
+Deep policy (when your tier requires it): [GOVERNANCE.md](GOVERNANCE.md),
+[docs/REPOSITORY_PUBLICATION.md](docs/REPOSITORY_PUBLICATION.md), and
+[docs/MILESTONES.md](docs/MILESTONES.md).
 
 ## Packages
 
@@ -88,10 +96,26 @@ Coarse, set `OPENCRITIQUE_BYOK_API_KEY` (or `OPENAI_API_KEY` as alias when BYOK
 is unset) and optionally `OPENCRITIQUE_BYOK_PROVIDER_ID`. If a key is exposed,
 rotate it with the provider. Do not print keys in logs, review JSON, or docs.
 
+### Working-tree hygiene
+
+Keep local residue **untracked** (covered by [`.gitignore`](.gitignore)):
+
+| Path / pattern | Why |
+|---|---|
+| `opencritique.db` / `*.db` / `*.sqlite*` | Local registry SQLite |
+| `runs/` | Private live / demo exports — not production fixtures |
+| `/issue[0-9]*.md` | Local scratch notes |
+| `.env`, `*.private.pem` | Secrets and signing material |
+| `.demo-e2e/`, `.runtime-live/`, `_inspect_wheel/` | Operator-local smoke artifacts |
+
+Do not add these to commits or PR branches. Private `runs/` never auto-promote
+to `fixtures/*/production/`.
+
 ### Golden path (sample vision)
 
-Follow the [README golden path](README.md#golden-path-sample-vision) for the
-documented newcomer sequence (still valid; offline fixtures only):
+Follow the [README golden path](README.md#golden-path-sample-vision) or
+[START_HERE.md](START_HERE.md) for the documented newcomer sequence (still
+valid; offline fixtures only):
 
 1. `pip install -e ".[dev]"` and `scripts/check.sh`
 2. Coarse synthetic convert → `opencritique evaluation run` → scorecard
@@ -141,7 +165,15 @@ Use the repository PR template. Every PR must:
 - include verification commands actually run;
 - keep scientific-performance claims disabled unless an authorized gate is met;
 - avoid committing transport residue (`.bootstrap/`, repair publish workflows,
-  `_inspect_wheel/`, private keys, local scratch `issue*.md` notes).
+  `_inspect_wheel/`, private keys, local scratch `issue*.md` notes,
+  `opencritique.db`, or `runs/` dumps).
+
+Newcomers: link [START_HERE.md](START_HERE.md). Adapter PRs: see also
+[docs/compatibility-checklist.md](docs/compatibility-checklist.md) and
+[docs/community-adapters.md](docs/community-adapters.md). Before opening an
+adapter PR, run
+`python scripts/check_adapter_compatibility.py` on the adapter path (or
+`--registry docs/community-adapters.json` when updating the registry).
 
 ## Architecture decisions
 

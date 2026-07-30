@@ -1,0 +1,61 @@
+name: Bug report
+description: Something broken in code, CLI, docs tooling, or CI.
+title: "[bug]: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Provide enough detail for an independent reviewer to reproduce the
+        failure. Do not attach secrets, private keys, or uncleared manuscript
+        text. This template does not authorize scientific performance claims.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong in one or two sentences?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands, OS, Python version, and package version (0.6.0a0).
+      placeholder: |
+        1. python -m pip install -e ".[dev]"
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include truncated logs if useful (no secrets).
+    validations:
+      required: true
+  - type: dropdown
+    id: track
+    attributes:
+      label: Contributor track (if known)
+      options:
+        - Unsure
+        - Track A — adapters / tool builders
+        - Track B — scientist / lab pilots
+        - Neither / infrastructure
+    validations:
+      required: false
+  - type: checkboxes
+    id: claim_boundary
+    attributes:
+      label: Claim boundary
+      options:
+        - label: This issue does not authorize precision/recall/comparative reviewer-quality claims.
+          required: true
+        - label: I will not treat sample fixtures or private runs/ as production authenticity or scientific performance evidence.
+          required: true

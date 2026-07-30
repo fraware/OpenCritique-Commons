@@ -3,3 +3,6 @@ contact_links:
   - name: Security report
     url: https://github.com/fraware/OpenCritique-Commons/blob/main/SECURITY.md
     about: Report security issues through the security policy, not a public issue.
+  - name: Community
+    url: https://github.com/fraware/OpenCritique-Commons/blob/main/docs/COMMUNITY.md
+    about: How to join discussion, office hours, and contribution norms.
