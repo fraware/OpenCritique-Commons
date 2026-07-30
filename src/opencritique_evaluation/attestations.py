@@ -46,7 +46,6 @@ class EvidenceAttestationBase(StrictModel):
     """Shared header for all scientific evidence attestations."""
 
     attestation_id: str = Field(min_length=1)
-    attestation_kind: EvidenceAttestationKind
     subject_hashes: dict[str, str] = Field(
         default_factory=dict,
         description="Named subject digests (sha256 hex) bound by this attestation.",
