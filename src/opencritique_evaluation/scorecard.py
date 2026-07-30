@@ -7,12 +7,19 @@ from pathlib import Path
 
 from opencritique_schema.canonical import canonical_json_bytes
 
-from .models import ClaimScope, EvaluationResult, PublicScorecard
+from .models import ClaimScope, EvaluationResult, PublicScorecard, ReferenceCompleteness
 
 _PUBLIC_SCOPES = frozenset(
     {
         ClaimScope.PUBLIC_DOMAIN_BOUNDED,
         ClaimScope.PUBLIC_COMPARATIVE,
+    }
+)
+
+_INCOMPLETE_REFERENCE = frozenset(
+    {
+        ReferenceCompleteness.PARTIAL_NATURAL,
+        ReferenceCompleteness.UNKNOWN,
     }
 )
 
@@ -71,7 +78,7 @@ def _metric(name: str, metric) -> str:
         note = metric.withheld_reason or "Unavailable"
     else:
         value = f"{metric.value:.4f}" if isinstance(metric.value, float) else str(metric.value)
-        note = ""
+        note = metric.withheld_reason or ""
     return (
         f"<tr><th>{html.escape(name)}</th><td>{html.escape(value)}</td>"
         f"<td>{html.escape(note)}</td></tr>"
@@ -81,15 +88,23 @@ def _metric(name: str, metric) -> str:
 def write_html(scorecard: PublicScorecard, path: Path) -> None:
     result = scorecard.result
     metrics = result.metrics
+    completeness = result.benchmark.reference_completeness
+    incomplete = completeness in _INCOMPLETE_REFERENCE
+    recall_label = "Reference recall" if incomplete else "Recall"
+    sw_recall_label = (
+        "Severity-weighted reference recall" if incomplete else "Severity-weighted recall"
+    )
     rows = "".join(
         [
             _metric("Anchor resolution rate", metrics.anchor_resolution_rate),
             _metric("Precision", metrics.precision),
-            _metric("Recall", metrics.recall),
+            _metric(recall_label, metrics.recall),
             _metric("Severity-weighted precision", metrics.severity_weighted_precision),
-            _metric("Severity-weighted recall", metrics.severity_weighted_recall),
+            _metric(sw_recall_label, metrics.severity_weighted_recall),
             _metric("False critical / manuscript", metrics.false_critical_per_manuscript),
-            _metric("Brier score", metrics.brier_score),
+            _metric(
+                "Reference-match Brier score", metrics.reference_match_brier_score
+            ),
         ]
     )
     scope = result.claim_authorization.claim_scope.value
@@ -100,14 +115,23 @@ def write_html(scorecard: PublicScorecard, path: Path) -> None:
     limitations = "".join(
         f"<li>{html.escape(item)}</li>" for item in result.benchmark.limitations
     )
+    if incomplete:
+        unmatched_line = (
+            "<li>Adjudication candidates (unmatched submitted): "
+            f"{metrics.novel_candidates_pending_adjudication}</li>"
+        )
+    else:
+        unmatched_line = (
+            f"<li>Unmatched submitted concerns: {metrics.unmatched_submitted}</li>"
+            "<li>Novel candidates pending adjudication: "
+            f"{metrics.novel_candidates_pending_adjudication}</li>"
+        )
     counts = (
         f"<li>Submitted concerns: {metrics.submitted_concerns}</li>"
         f"<li>Eligible reference concerns: {metrics.eligible_reference_concerns}</li>"
         f"<li>Matched concerns: {metrics.matched_concerns}</li>"
-        f"<li>Unmatched submitted concerns: {metrics.unmatched_submitted}</li>"
+        f"{unmatched_line}"
         f"<li>Missed reference concerns: {metrics.missed_reference}</li>"
-        "<li>Novel candidates pending adjudication: "
-        f"{metrics.novel_candidates_pending_adjudication}</li>"
     )
     style = (
         "body{font-family:system-ui,sans-serif;max-width:960px;margin:40px auto;"

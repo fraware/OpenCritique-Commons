@@ -94,7 +94,7 @@ def _result_for(manifest: BenchmarkManifest) -> EvaluationResult:
             severity_weighted_precision=_metric(),
             severity_weighted_recall=_metric(),
             false_critical_per_manuscript=_metric(),
-            brier_score=_metric(),
+            reference_match_brier_score=_metric(),
             novel_candidates_pending_adjudication=0,
         ),
         claim_authorization=auth,

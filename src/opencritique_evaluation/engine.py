@@ -21,10 +21,18 @@ from .models import (
     EvaluationSubmission,
     MatcherConfig,
     MetricValue,
+    ReferenceCompleteness,
     SubmittedConcern,
 )
 
 MATCHER_VERSION = "opencritique-matcher-v0.2"
+
+_INCOMPLETE_REFERENCE = frozenset(
+    {
+        ReferenceCompleteness.PARTIAL_NATURAL,
+        ReferenceCompleteness.UNKNOWN,
+    }
+)
 
 _SEVERITY_WEIGHT: dict[Severity, float] = {
     Severity.CRITICAL: 4.0,
@@ -79,6 +87,46 @@ def _metric(numerator: float, denominator: float) -> MetricValue:
         value=round(numerator / denominator, 6),
         numerator=numerator,
         denominator=denominator,
+    )
+
+
+def _incomplete_withhold_reason(completeness: ReferenceCompleteness) -> str:
+    return (
+        "withheld: reference set is incomplete "
+        f"({completeness.value}); unmatched submitted concerns are "
+        "adjudication candidates, not automatic false positives"
+    )
+
+
+def _reference_recall_disclosure(completeness: ReferenceCompleteness) -> str:
+    return (
+        "reference recall only: gold reference set is incomplete "
+        f"({completeness.value}); not true scientific recall"
+    )
+
+
+def _as_reference_recall(
+    metric: MetricValue, completeness: ReferenceCompleteness
+) -> MetricValue:
+    disclosure = _reference_recall_disclosure(completeness)
+    if metric.withheld_reason:
+        reason = f"{metric.withheld_reason}; {disclosure}"
+    else:
+        reason = disclosure
+    return metric.model_copy(update={"withheld_reason": reason})
+
+
+def _withheld(
+    reason: str,
+    *,
+    numerator: float | int | None = None,
+    denominator: float | int | None = None,
+) -> MetricValue:
+    return MetricValue(
+        value=None,
+        numerator=numerator,
+        denominator=denominator,
+        withheld_reason=reason,
     )
 
 
@@ -315,14 +363,17 @@ def evaluate(
         missed_reference += len(missed_ids)
 
         for submitted in case_submission.concerns:
+            # Precision-family and Brier only score against complete reference sets;
+            # on partial/unknown, unmatched submitted are adjudication candidates.
+            if benchmark.reference_completeness != ReferenceCompleteness.COMPLETE_SEEDED:
+                continue
             weight = _SEVERITY_WEIGHT[submitted.severity]
-            precision_weight_den += weight
             outcome = 1.0 if submitted.local_id in matched_submitted else 0.0
+            precision_weight_den += weight
             if submitted.local_id in matched_submitted:
                 precision_weight_num += weight
-            else:
-                if submitted.severity == Severity.CRITICAL:
-                    false_critical += 1
+            elif submitted.severity == Severity.CRITICAL:
+                false_critical += 1
             brier_sum += (submitted.confidence - outcome) ** 2
             brier_count += 1
 
@@ -348,25 +399,42 @@ def evaluate(
         )
 
     authorization = benchmark.claim_authorization()
-    metrics = EvaluationMetrics(
-        cases_total=len(benchmark.cases),
-        cases_completed=completed_cases,
-        cases_abstained=abstained_cases,
-        cases_failed=failed_cases,
-        submitted_concerns=submitted_concerns,
-        eligible_reference_concerns=eligible_reference_concerns,
-        matched_concerns=matched_concerns,
-        unmatched_submitted=unmatched_submitted,
-        missed_reference=missed_reference,
-        anchor_resolution_rate=_metric(float(anchor_resolved), float(anchor_total)),
-        precision=_metric(float(matched_concerns), float(submitted_concerns)),
-        recall=_metric(float(matched_concerns), float(eligible_reference_concerns)),
-        severity_weighted_precision=_metric(precision_weight_num, precision_weight_den),
-        severity_weighted_recall=_metric(recall_weight_num, recall_weight_den),
-        false_critical_per_manuscript=_metric(
+    completeness = benchmark.reference_completeness
+    incomplete = completeness in _INCOMPLETE_REFERENCE
+    withhold_reason = _incomplete_withhold_reason(completeness) if incomplete else None
+
+    if incomplete:
+        precision = _withheld(
+            withhold_reason or "",
+            numerator=float(matched_concerns),
+            denominator=float(submitted_concerns),
+        )
+        severity_weighted_precision = _withheld(
+            withhold_reason or "",
+            numerator=precision_weight_num,
+            denominator=precision_weight_den,
+        )
+        false_critical_metric = _withheld(
+            withhold_reason or "",
+            numerator=float(false_critical),
+            denominator=float(max(completed_cases, 0)),
+        )
+        brier_metric = _withheld(withhold_reason or "")
+        recall = _as_reference_recall(
+            _metric(float(matched_concerns), float(eligible_reference_concerns)),
+            completeness,
+        )
+        severity_weighted_recall = _as_reference_recall(
+            _metric(recall_weight_num, recall_weight_den),
+            completeness,
+        )
+    else:
+        precision = _metric(float(matched_concerns), float(submitted_concerns))
+        severity_weighted_precision = _metric(precision_weight_num, precision_weight_den)
+        false_critical_metric = _metric(
             float(false_critical), float(max(completed_cases, 0))
-        ),
-        brier_score=(
+        )
+        brier_metric = (
             MetricValue(
                 value=round(brier_sum / brier_count, 6),
                 numerator=brier_sum,
@@ -379,7 +447,27 @@ def evaluate(
                 denominator=0,
                 withheld_reason="undefined: no scored submitted concerns",
             )
-        ),
+        )
+        recall = _metric(float(matched_concerns), float(eligible_reference_concerns))
+        severity_weighted_recall = _metric(recall_weight_num, recall_weight_den)
+
+    metrics = EvaluationMetrics(
+        cases_total=len(benchmark.cases),
+        cases_completed=completed_cases,
+        cases_abstained=abstained_cases,
+        cases_failed=failed_cases,
+        submitted_concerns=submitted_concerns,
+        eligible_reference_concerns=eligible_reference_concerns,
+        matched_concerns=matched_concerns,
+        unmatched_submitted=unmatched_submitted,
+        missed_reference=missed_reference,
+        anchor_resolution_rate=_metric(float(anchor_resolved), float(anchor_total)),
+        precision=precision,
+        recall=recall,
+        severity_weighted_precision=severity_weighted_precision,
+        severity_weighted_recall=severity_weighted_recall,
+        false_critical_per_manuscript=false_critical_metric,
+        reference_match_brier_score=brier_metric,
         novel_candidates_pending_adjudication=unmatched_submitted,
     )
     return EvaluationResult(
