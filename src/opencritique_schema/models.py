@@ -252,6 +252,18 @@ class ConcernStatus(str, Enum):
     RESOLVED = "resolved"
 
 
+class ResolutionDisposition(str, Enum):
+    """Disposition for RESOLVED concerns used by gold-reference eligibility.
+
+    ``manuscript_correction`` marks an eligible historical defect. ``withdrawn``
+    and ``rejected`` are not gold. Absent disposition is fail-closed (non-gold).
+    """
+
+    MANUSCRIPT_CORRECTION = "manuscript_correction"
+    WITHDRAWN = "withdrawn"
+    REJECTED = "rejected"
+
+
 class UncertaintySource(StrictModel):
     type: str
     description: str
@@ -287,6 +299,7 @@ class Concern(RecordBase):
     status: ConcernStatus
     potential_consequence: str
     required_resolution: str | None = None
+    resolution_disposition: ResolutionDisposition | None = None
     uncertainty_sources: list[UncertaintySource] = Field(default_factory=list)
     origin: ConcernOrigin
 
@@ -299,6 +312,13 @@ class Concern(RecordBase):
             and not self.potential_consequence.strip()
         ):
             raise ValueError("major and critical concerns require potential_consequence")
+        if (
+            self.resolution_disposition is not None
+            and self.status != ConcernStatus.RESOLVED
+        ):
+            raise ValueError(
+                "resolution_disposition is only valid when status is resolved"
+            )
         return self
 
 

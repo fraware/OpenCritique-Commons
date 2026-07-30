@@ -323,7 +323,12 @@ def build_determination(
 
 
 def outcome_affects_precision_recall(outcome: NovelDeterminationOutcome) -> bool:
-    """Unresolved and rejected novel candidates do not enter the reference set."""
+    """Unresolved and rejected novel candidates do not enter the reference set.
+
+    Aligns with ``opencritique_evaluation.reference_policy`` gold positives
+    (CONFIRMED / QUALIFIED). Resolved historical-defect admission is handled
+    separately on live reference concerns via ``resolution_disposition``.
+    """
     return outcome in {
         NovelDeterminationOutcome.CONFIRMED,
         NovelDeterminationOutcome.QUALIFIED,

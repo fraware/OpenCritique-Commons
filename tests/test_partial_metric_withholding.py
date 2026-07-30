@@ -92,15 +92,17 @@ def test_unknown_synth_fixtures_withhold_precision_family() -> None:
         benchmark=benchmark, benchmark_root=bench, submission=submission
     )
     m = result.metrics
-    _assert_withheld(m.precision, substring="incomplete")
-    _assert_withheld(m.severity_weighted_precision, substring="incomplete")
-    _assert_withheld(m.false_critical_per_manuscript, substring="incomplete")
-    _assert_withheld(m.reference_match_brier_score, substring="incomplete")
-    assert "adjudication candidates" in (m.precision.withheld_reason or "")
+    # Synth fixtures have empty reference concern lists → empty eligible gold.
+    _assert_withheld(m.precision, substring="no eligible gold")
+    _assert_withheld(m.severity_weighted_precision, substring="no eligible gold")
+    _assert_withheld(m.false_critical_per_manuscript, substring="no eligible gold")
+    _assert_withheld(m.reference_match_brier_score, substring="no eligible gold")
+    assert m.eligible_reference_concerns == 0
     assert m.novel_candidates_pending_adjudication == m.unmatched_submitted
     assert m.unmatched_submitted >= 1
     _assert_reference_recall(m.recall)
     _assert_reference_recall(m.severity_weighted_recall)
+    assert "no eligible gold" in (m.recall.withheld_reason or "")
 
     scorecard = build_scorecard(result)
     with TemporaryDirectory() as tmp:
@@ -128,8 +130,9 @@ def test_openreviewer_unknown_withholds_brier_and_precision() -> None:
     result = evaluate(
         benchmark=benchmark, benchmark_root=bench, submission=submission
     )
-    _assert_withheld(result.metrics.precision, substring="incomplete")
-    _assert_withheld(result.metrics.reference_match_brier_score, substring="incomplete")
+    _assert_withheld(result.metrics.precision, substring="no eligible gold")
+    _assert_withheld(result.metrics.reference_match_brier_score, substring="no eligible gold")
+    assert result.metrics.eligible_reference_concerns == 0
     assert (
         result.metrics.novel_candidates_pending_adjudication
         == result.metrics.unmatched_submitted
