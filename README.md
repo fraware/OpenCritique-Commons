@@ -291,9 +291,9 @@ Contributions are welcome — code, docs, tests, adapters, and carefully sourced
 **Good first issues** (labeled
 [`good first issue`](https://github.com/fraware/OpenCritique-Commons/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)):
 
-- [#10](https://github.com/fraware/OpenCritique-Commons/issues/10) — newcomer walkthrough / START_HERE
 - [#11](https://github.com/fraware/OpenCritique-Commons/issues/11) — hashing edge cases
-- [#12](https://github.com/fraware/OpenCritique-Commons/issues/12) — starter engineering task
+- [#12](https://github.com/fraware/OpenCritique-Commons/issues/12) — Adjudication Studio accessibility pass
+- [#24](https://github.com/fraware/OpenCritique-Commons/issues/24)–[#30](https://github.com/fraware/OpenCritique-Commons/issues/30) — docs, demos, and bounded starter tasks
 
 Also browse
 [`help wanted`](https://github.com/fraware/OpenCritique-Commons/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22),

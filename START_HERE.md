@@ -15,9 +15,10 @@ about **30 minutes** on a clean clone after install.
   [docs/MILESTONES.md](docs/MILESTONES.md) are met. Do not invent production
   MANIFESTs, natural counts, or claim unlocks.
 - Prefer a linked issue. Open [good first issues](https://github.com/fraware/OpenCritique-Commons/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-  include [#10](https://github.com/fraware/OpenCritique-Commons/issues/10),
-  [#11](https://github.com/fraware/OpenCritique-Commons/issues/11), and
-  [#12](https://github.com/fraware/OpenCritique-Commons/issues/12).
+  include [#11](https://github.com/fraware/OpenCritique-Commons/issues/11),
+  [#12](https://github.com/fraware/OpenCritique-Commons/issues/12),
+  and newer labeled starters such as
+  [#24](https://github.com/fraware/OpenCritique-Commons/issues/24)–[#30](https://github.com/fraware/OpenCritique-Commons/issues/30).
 
 **Claim-boundary checkbox (copy into your PR or issue):**
 

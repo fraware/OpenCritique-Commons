@@ -76,6 +76,23 @@ When unsure, leave claims locked and ask the author to reword. Prefer linking
   Docs & pilots lanes — never “accuracy improved” without gates).
 - Optional all-contributors tooling may be added later; do not block merges on it.
 
+## Branch protection (required checks)
+
+On `main`, require these core CI jobs from
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) before merge:
+
+- `lint`
+- `test` (both Python 3.12 and 3.13 matrix legs)
+- `packaging`
+- `secret-scan`
+- `publication-audit`
+- `postgres`
+
+Do not block core green on optional GPU / OpenReviewer jobs until those prove
+stable. After merge, verify ancestry on `origin/main`
+(`git merge-base --is-ancestor <pr-head> origin/main`) rather than relying only
+on a PR having been “merged” into a feature branch.
+
 ## Security
 
 Security reports follow [SECURITY.md](../SECURITY.md). Do not discuss active
