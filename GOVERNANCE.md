@@ -58,6 +58,20 @@ Operational templates and versioned qualification thresholds for the expert prog
 - [docs/expert-attribution-policy.md](docs/expert-attribution-policy.md)
 - [governance/policies/expert-qualification-thresholds.v0.1.json](governance/policies/expert-qualification-thresholds.v0.1.json)
 
+## Repository review controls
+
+Operational path ownership and GitHub branch-protection settings live in
+[docs/MAINTAINERS.md](docs/MAINTAINERS.md) and [`.github/CODEOWNERS`](.github/CODEOWNERS).
+
+For claim-authorization, trust/signing, and scoring/scorecard changes:
+
+- author self-approval is forbidden;
+- at least two distinct human approvals are required before merge to `main`;
+- CODEOWNERS review is required once branch protection is enabled.
+
+These controls support evaluation independence and security administration
+separation above; they do not replace ADRs when constitutional semantics change.
+
 ## Changes
 
 Changes to constitutional requirements, calibration scoring, blinding rules, severity policy, qualification gates, or public-core licensing require a public decision record under `governance/decisions/`. Historical records are superseded, not edited after acceptance.

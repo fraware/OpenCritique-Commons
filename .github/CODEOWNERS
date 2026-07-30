@@ -1,0 +1,42 @@
+# Review ownership for OpenCritique Commons.
+# Role aliases and second-reviewer placeholders live in docs/MAINTAINERS.md.
+# Last matching pattern wins. Handles must be real GitHub accounts.
+# Until a broader team exists, @fraware is the interim owner for every role;
+# claim-boundary / trust / scoring paths still require ≥2 distinct approvals
+# (no author self-approval) via branch protection — see MAINTAINERS.md.
+
+# Default: repository owner / interim maintainer
+* @fraware
+
+# evaluation-method
+/src/opencritique_evaluation/ @fraware
+
+# scientific-schema
+/schemas/ @fraware
+
+# rights/governance
+/src/opencritique_acquisition/ @fraware
+/corpus/rights/ @fraware
+/docs/rights* @fraware
+
+# security (signing, trust store, trust module)
+/src/opencritique_evaluation/signing.py @fraware
+/src/opencritique_evaluation/trust.py @fraware
+/trust/ @fraware
+
+# evaluation + security (v0.9 gates)
+/scripts/check_v09*.py @fraware
+/scripts/v09_gate_lib.py @fraware
+
+# evaluation + security (claim-auth / attestation / scorecard crypto schemas)
+# Dual-role paths: CODEOWNERS lists the interim owner; branch protection still
+# requires a second distinct approval (external reviewer until team expands).
+/schemas/ClaimAuthorization.schema.json @fraware
+/schemas/*ClaimAuthorization*.schema.json @fraware
+/schemas/*Attestation*.schema.json @fraware
+/schemas/SignedScorecardEnvelope.schema.json @fraware
+/schemas/PublicScorecard.schema.json @fraware
+
+# claim-boundary / scoring integration (evaluation + security policy)
+/src/opencritique_evaluation/scorecard.py @fraware
+/src/opencritique_evaluation/models.py @fraware
