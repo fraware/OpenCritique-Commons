@@ -1,23 +1,33 @@
-"""Matcher-audit denominators and session manifests (issue #6)."""
+"""Matcher-audit denominators and completed adjudication accounting (issue #6 / PR 44)."""
 
 from __future__ import annotations
 
+import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
 from opencritique_evaluation.matcher_audit import (
     DEFAULT_PROTOCOL,
+    NATURAL_DOD_TARGET,
     AuditDecision,
     AuditEvidenceClass,
     AuditJudgment,
     DisagreementCategory,
     MatcherAuditSample,
     MatcherConfig,
+    agreement_report_path_for_manifest,
     analyze_audit_judgments,
     build_session_manifest,
+    discover_completed_matcher_audit,
+    discover_natural_decision_count,
+    is_candidate_adjudication_complete,
     load_session_manifest,
     measure_current_denominators,
+    natural_matcher_audit_dod_met,
+    natural_session_manifest_dir,
+    persist_agreement_report,
     persist_session_manifest,
     stratify_match_decisions,
 )
@@ -50,35 +60,7 @@ def _sample() -> MatcherAuditSample:
     )
 
 
-def test_current_denominators_honest() -> None:
-    account = measure_current_denominators(natural_decision_count=0, repo_root=ROOT)
-    assert account.natural_decisions_available == 0
-    assert account.natural_dod_met is False
-    assert account.performance_claims_authorized is False
-    assert account.sample_decisions_available >= 17  # 12 coarse + 5 openreviewer
-
-
-def test_discover_natural_decision_count_from_empty_sessions() -> None:
-    from opencritique_evaluation.matcher_audit import discover_natural_decision_count
-
-    count, detail = discover_natural_decision_count(ROOT)
-    assert count == 0
-    assert "matcher-audit/sessions" in detail
-    discovered = measure_current_denominators(repo_root=ROOT)
-    assert discovered.natural_decisions_available == 0
-    assert discovered.natural_dod_met is False
-
-
-def test_discover_natural_count_from_session_manifest(tmp_path: Path) -> None:
-    import json
-
-    from opencritique_evaluation.matcher_audit import (
-        discover_natural_decision_count,
-        natural_session_manifest_dir,
-    )
-
-    sessions = tmp_path / "corpus" / "matcher-audit" / "sessions"
-    sessions.mkdir(parents=True)
+def _natural_probe_manifest_payload() -> dict:
     sample = stratify_match_decisions(
         matches=[],
         unmatched_submitted=[],
@@ -94,16 +76,126 @@ def test_discover_natural_count_from_session_manifest(tmp_path: Path) -> None:
     )
     manifest = build_session_manifest(sample, session_id="ocmas_natural_probe")
     payload = manifest.model_dump(mode="json")
-    payload["population_denominator"] = 12
-    payload["sampled_count"] = 12
+    payload["population_denominator"] = 100
+    payload["sampled_count"] = 100
     payload["natural_dod_met"] = False
+    return payload
+
+
+def test_current_denominators_honest() -> None:
+    account = measure_current_denominators(natural_decision_count=0, repo_root=ROOT)
+    assert account.natural_decisions_available == 0
+    assert account.natural_dod_met is False
+    assert account.performance_claims_authorized is False
+    assert account.sample_decisions_available >= 17  # 12 coarse + 5 openreviewer
+
+
+def test_discover_natural_decision_count_from_empty_sessions() -> None:
+    count, detail = discover_natural_decision_count(ROOT)
+    assert count == 0
+    assert "matcher-audit/sessions" in detail
+    discovered = measure_current_denominators(repo_root=ROOT)
+    assert discovered.natural_decisions_available == 0
+    assert discovered.natural_dod_met is False
+
+
+def test_sampled_count_alone_does_not_count(tmp_path: Path) -> None:
+    """Session with sampled_count=100 and zero judgments does not satisfy DoD."""
+    sessions = tmp_path / "corpus" / "matcher-audit" / "sessions"
+    sessions.mkdir(parents=True)
+    payload = _natural_probe_manifest_payload()
+    assert payload["sampled_count"] == 100
     (sessions / "natural-probe.json").write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8"
     )
     count, detail = discover_natural_decision_count(tmp_path)
-    assert count == 12
-    assert "natural_sessions=1" in detail
+    assert count == 0
+    assert "completed_decisions=0" in detail
+    discovery = discover_completed_matcher_audit(tmp_path)
+    assert discovery.completed_decision_count == 0
+    assert discovery.natural_session_count == 1
+    assert natural_matcher_audit_dod_met(count) is False
+    assert NATURAL_DOD_TARGET == 100
+
+
+def test_completed_dual_judgment_counts(tmp_path: Path) -> None:
+    sessions = tmp_path / "corpus" / "matcher-audit" / "sessions"
+    sessions.mkdir(parents=True)
+    match = ConcernMatch(
+        submitted_local_id="s1",
+        reference_concern_id="occon_ref_1",
+        score=0.9,
+        anchor_score=0.9,
+        type_score=0.9,
+        lexical_score=0.9,
+    )
+    sample = stratify_match_decisions(
+        matches=[("occase_n", "1.0.0", "ml", match)],
+        unmatched_submitted=[],
+        unmatched_reference=[],
+        ambiguous_anchors=[],
+        type_disagreements=[],
+        severity_disagreements=[],
+        domain_by_case={("occase_n", "1.0.0"): "empirical_ml"},
+        config=MatcherConfig(),
+        seed=3,
+        target_size=5,
+        evidence_class=AuditEvidenceClass.NATURAL,
+        population_denominator=5,
+    )
+    manifest = build_session_manifest(sample, session_id="ocmas_completed")
+    manifest_path = persist_session_manifest(manifest, sessions / "completed.json")
+    cand = sample.candidates[0].candidate_id
+    now = datetime(2026, 7, 1, tzinfo=UTC)
+    judgments = [
+        AuditJudgment(
+            candidate_id=cand,
+            auditor_id="auditor-a",
+            decision=AuditDecision.CORRECT_MATCH,
+            decided_at=now,
+        ),
+        AuditJudgment(
+            candidate_id=cand,
+            auditor_id="auditor-b",
+            decision=AuditDecision.CORRECT_MATCH,
+            decided_at=now,
+        ),
+    ]
+    report = analyze_audit_judgments(sample, judgments)
+    persist_agreement_report(report, agreement_report_path_for_manifest(manifest_path))
+    discovery = discover_completed_matcher_audit(tmp_path)
+    assert discovery.completed_decision_count == 1
+    assert discovery.session_ids == ["ocmas_completed"]
+    assert len(discovery.judgment_set_hash) == 64
     assert natural_session_manifest_dir(tmp_path) == sessions
+
+
+def test_disagreement_requires_tie_break() -> None:
+    now = datetime(2026, 7, 1, tzinfo=UTC)
+    disagree = [
+        AuditJudgment(
+            candidate_id="c1",
+            auditor_id="a",
+            decision=AuditDecision.CORRECT_MATCH,
+            decided_at=now,
+        ),
+        AuditJudgment(
+            candidate_id="c1",
+            auditor_id="b",
+            decision=AuditDecision.INCORRECT_MATCH,
+            decided_at=now,
+        ),
+    ]
+    assert is_candidate_adjudication_complete(disagree) is False
+    disagree.append(
+        AuditJudgment(
+            candidate_id="c1",
+            auditor_id="tie",
+            decision=AuditDecision.CORRECT_MATCH,
+            decided_at=now,
+        )
+    )
+    assert is_candidate_adjudication_complete(disagree) is True
 
 
 def test_natural_empty_population_yields_empty_sample() -> None:
@@ -178,3 +270,5 @@ def test_denominator_doc_states_natural_zero() -> None:
     text = (ROOT / "docs" / "matcher-audit-denominators.md").read_text(encoding="utf-8")
     assert "**0**" in text or "natural | **0**" in text.lower() or "natural" in text.lower()
     assert "natural_dod_met" in text
+    assert "sampled_count" in text
+    assert "completed" in text.lower()

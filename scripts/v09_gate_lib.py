@@ -41,8 +41,10 @@ from opencritique_evaluation.evidence_verify import (  # noqa: E402
     verify_evidence_envelope,
 )
 from opencritique_evaluation.matcher_audit import (  # noqa: E402
-    discover_natural_decision_count,
+    NATURAL_DOD_TARGET,
+    discover_completed_matcher_audit,
     measure_current_denominators,
+    natural_matcher_audit_dod_met,
     natural_session_manifest_dir,
 )
 from opencritique_evaluation.models import (  # noqa: E402
@@ -464,19 +466,27 @@ def gate_expert_ops_policy(gate_id: int, *, blocking: bool = False) -> GateResul
 
 
 def gate_matcher_audit(gate_id: int, *, blocking: bool = True) -> GateResult:
-    natural_count, natural_detail = discover_natural_decision_count(ROOT)
+    """Scientific gate #6: attested completed adjudicated natural decisions ≥100.
+
+    ``sampled_count`` on session manifests does **not** satisfy this gate.
+    Requires a verified ``MatcherAuditCompletionAttestation`` bound to the
+    discovered session IDs, judgment-set hash, and completed decision count.
+    """
+    discovery = discover_completed_matcher_audit(ROOT)
     denominators = measure_current_denominators(
-        natural_decision_count=natural_count,
+        natural_decision_count=discovery.completed_decision_count,
         repo_root=ROOT,
     )
     sessions = relative(natural_session_manifest_dir(ROOT))
+    volume_ok = natural_matcher_audit_dod_met(discovery.completed_decision_count)
     volume_detail = (
-        f"{natural_detail}; "
-        f"natural={denominators.natural_decisions_available} "
+        f"{discovery.detail}; "
+        f"completed={discovery.completed_decision_count} "
+        f"target={NATURAL_DOD_TARGET} "
         f"sample_fixture_reviews={denominators.sample_decisions_available} "
-        f"dod_met={denominators.natural_dod_met}; "
+        f"dod_met={volume_ok}; "
         f"sessions_dir={sessions} "
-        f"(sampled_count alone is not attestation)"
+        f"(sampled_count alone never unlocks gate #6)"
     )
     path = ATTESTATION_ENVELOPE_PATHS[
         EvidenceAttestationKind.MATCHER_AUDIT_COMPLETION
@@ -484,14 +494,33 @@ def gate_matcher_audit(gate_id: int, *, blocking: bool = True) -> GateResult:
     report = _verify_attestation_file(
         path,
         kind=EvidenceAttestationKind.MATCHER_AUDIT_COMPLETION,
+        subject_binding_check={
+            "session_ids": discovery.session_ids,
+            "completed_decision_count": discovery.completed_decision_count,
+            "judgment_set_hash": discovery.judgment_set_hash,
+        },
     )
-    return _gate_from_attestation(
+    result = _gate_from_attestation(
         gate_id,
         "matcher_audit_natural_volume",
         report,
         blocking=blocking,
         extra_detail=volume_detail,
     )
+    if result.passed and not volume_ok:
+        return GateResult(
+            gate_id,
+            "matcher_audit_natural_volume",
+            False,
+            blocking,
+            (
+                f"{result.detail}; "
+                f"attested_completed_count_below_target:"
+                f"{discovery.completed_decision_count}<{NATURAL_DOD_TARGET}"
+            ),
+            verification_report=result.verification_report,
+        )
+    return result
 
 
 def gate_holdout_custody_documented(
