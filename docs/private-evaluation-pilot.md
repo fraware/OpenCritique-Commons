@@ -106,11 +106,17 @@ Public commons promotion path (rights + volume + ingest stage only):
 | Compensation terms | [expert-compensation-terms.md](expert-compensation-terms.md) |
 | v0.9 gates (stay NO-GO without evidence) | [v0.9-beta-go-no-go.md](v0.9-beta-go-no-go.md) |
 | Milestone / §12 claim matrix | [MILESTONES.md](MILESTONES.md) |
+| Fillable method report | [examples/method-pilot-report.md](examples/method-pilot-report.md) |
+| Examples index / demos | [examples/README.md](examples/README.md) |
+| Contributor roadmap themes | [ROADMAP.md](ROADMAP.md) |
+| Outreach one-pager | [outreach-one-pager.md](outreach-one-pager.md) |
 
 ## Negative-finding / pilot report outline
 
 Use this template for lab-internal or public **method** reports. Do not fill
-evidence cells with fabricated IDs or counts.
+evidence cells with fabricated IDs or counts. A fillable copy lives at
+[examples/method-pilot-report.md](examples/method-pilot-report.md); Studio sample
+steps at [examples/studio-walkthrough.md](examples/studio-walkthrough.md).
 
 ```markdown
 # Private OpenCritique pilot report
