@@ -1,0 +1,58 @@
+name: Adapter proposal
+description: Propose a third-party or community adapter (sample path).
+title: "[adapter]: "
+labels: ["needs-triage", "track-adapters"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For tool builders mapping an upstream reviewer system into OpenCritique
+        schemas. Start from [`templates/adapter-skeleton/`](https://github.com/fraware/OpenCritique-Commons/tree/main/templates/adapter-skeleton)
+        and [docs/adapter-authoring.md](https://github.com/fraware/OpenCritique-Commons/blob/main/docs/adapter-authoring.md).
+
+        Authenticity rules: [docs/adapter-authenticity.md](https://github.com/fraware/OpenCritique-Commons/blob/main/docs/adapter-authenticity.md).
+        Do **not** invent production MANIFEST readiness or unlock performance claims.
+  - type: input
+    id: upstream
+    attributes:
+      label: Upstream system
+      description: Name and public URL of the reviewer tool or export format.
+    validations:
+      required: true
+  - type: dropdown
+    id: status_intent
+    attributes:
+      label: Intended evidence class
+      options:
+        - sample (maintainer-owned / synthetic fixtures)
+        - private_live (operator-local runs/ only)
+        - production (rights-cleared — evidence required; do not claim ready yet)
+      description: Be honest. Compatibility is interchange, not quality endorsement.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Proposed scope
+      description: Convert path, map layout, loss report, CLI slug, tests.
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What this proposal explicitly does not authorize.
+      placeholder: e.g. no production MANIFEST ready; no §12 claim unlock; no leaderboard.
+    validations:
+      required: true
+  - type: checkboxes
+    id: claim_boundary
+    attributes:
+      label: Claim boundary
+      options:
+        - label: This issue does not authorize precision/recall/comparative reviewer-quality claims.
+          required: true
+        - label: I will keep performance_claims_authorized=false and will not fabricate production authenticity evidence.
+          required: true
+        - label: I have read (or will follow) the adapter skeleton + authenticity rules linked above.
+          required: true

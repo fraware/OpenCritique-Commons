@@ -5588,7 +5588,7 @@
   "info": {
     "description": "Immutable case registry, granular data-use authorization, and blinded scientific concern adjudication, expert calibration, rights-cleared intake, and claim reconstruction.",
     "title": "OpenCritique Registry and Adjudication API",
-    "version": "0.5.0-alpha"
+    "version": "0.6.0a0"
   },
   "openapi": "3.1.0",
   "paths": {

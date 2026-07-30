@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import json
 from pathlib import Path
 from unittest.mock import patch
@@ -12,6 +13,7 @@ from typer.testing import CliRunner
 from opencritique_adapters.production_errors import ProductionPackageUnauthorizedError
 from opencritique_runners.hf_local import (
     OpenReviewerHFUnavailableError,
+    _require_hf_stack,
     run_openreviewer_hf_local,
 )
 from opencritique_runners.openreviewer import (
@@ -148,6 +150,31 @@ def test_hf_local_unavailable_without_extra(tmp_path: Path) -> None:
     ):
         with pytest.raises(OpenReviewerHFUnavailableError, match="missing extra"):
             run_openreviewer_hf_local(manuscript)
+
+
+def test_require_hf_stack_raises_when_import_module_fails() -> None:
+    with patch(
+        "opencritique_runners.hf_local.importlib.import_module",
+        side_effect=ImportError("No module named 'torch'"),
+    ):
+        with pytest.raises(OpenReviewerHFUnavailableError, match="live-openreviewer"):
+            _require_hf_stack()
+
+
+def test_require_hf_stack_raises_when_transformers_missing() -> None:
+    real_import = importlib.import_module
+
+    def _fake_import(name: str, *args: object, **kwargs: object) -> object:
+        if name == "transformers":
+            raise ImportError("No module named 'transformers'")
+        return real_import(name, *args, **kwargs)  # type: ignore[arg-type]
+
+    with patch(
+        "opencritique_runners.hf_local.importlib.import_module",
+        side_effect=_fake_import,
+    ):
+        with pytest.raises(OpenReviewerHFUnavailableError, match="live-openreviewer"):
+            _require_hf_stack()
 
 
 def test_stage_intake_refuses_runs_tree(tmp_path: Path) -> None:

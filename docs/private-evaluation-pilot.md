@@ -106,11 +106,17 @@ Public commons promotion path (rights + volume + ingest stage only):
 | Compensation terms | [expert-compensation-terms.md](expert-compensation-terms.md) |
 | v0.9 gates (stay NO-GO without evidence) | [v0.9-beta-go-no-go.md](v0.9-beta-go-no-go.md) |
 | Milestone / §12 claim matrix | [MILESTONES.md](MILESTONES.md) |
+| Fillable method report | [examples/method-pilot-report.md](examples/method-pilot-report.md) |
+| Examples index / demos | [examples/README.md](examples/README.md) |
+| Contributor roadmap themes | [ROADMAP.md](ROADMAP.md) |
+| Outreach one-pager | [outreach-one-pager.md](outreach-one-pager.md) |
 
 ## Negative-finding / pilot report outline
 
 Use this template for lab-internal or public **method** reports. Do not fill
-evidence cells with fabricated IDs or counts.
+evidence cells with fabricated IDs or counts. A fillable copy lives at
+[examples/method-pilot-report.md](examples/method-pilot-report.md); Studio sample
+steps at [examples/studio-walkthrough.md](examples/studio-walkthrough.md).
 
 ```markdown
 # Private OpenCritique pilot report
@@ -140,12 +146,12 @@ evidence cells with fabricated IDs or counts.
 ## 6. Evidence not claimed
 - No production MANIFEST ready status asserted from this pilot
 - No natural matcher-audit DoD met unless real session manifests exist
-- Gates: `python scripts/check_v09_gates.py` expected NO-GO until external evidence lands
+- Gates: `python scripts/check_v09_scientific_gates.py` expected NO-GO until external evidence lands
 ```
 
 ## Gate honesty
 
-`python scripts/check_v09_gates.py` remains fail-closed: missing or blocked
+`python scripts/check_v09_scientific_gates.py` remains fail-closed: missing or blocked
 evidence artifacts → non-zero exit (NO-GO). Private pilots do not change that.
 The script never invents natural counts and never sets
 `performance_claims_authorized=true`.

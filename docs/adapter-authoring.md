@@ -99,7 +99,15 @@ opencritique adapters <slug> \
 ```
 
 Then evaluation / scorecard as in the README golden path. Scorecards must still
-show **NOT AUTHORIZED** for scientific performance.
+show **NOT AUTHORIZED** for scientific performance. Offline mirror of that path:
+[`scripts/demo_adapter_path.sh`](../scripts/demo_adapter_path.sh) /
+[`.ps1`](../scripts/demo_adapter_path.ps1).
+
+Before claiming interchange compatibility, see
+[compatibility-checklist.md](compatibility-checklist.md) and list external
+adapters via [community-adapters.md](community-adapters.md). Document without
+quality claims using
+[examples/adapter-integration-note.md](examples/adapter-integration-note.md).
 
 ## Optional live runner
 
@@ -114,3 +122,5 @@ under `runs/`; refuse `fixtures/*/production/` writes.
 - Unlocking §12 performance claims.
 - Hosted SaaS or expert scale (see deferred specs linked from
   [MILESTONES.md](MILESTONES.md)).
+
+More examples index: [examples/README.md](examples/README.md).

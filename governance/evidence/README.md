@@ -1,6 +1,8 @@
 # Authenticity evidence artifacts
 
-Machine-checkable inputs for `scripts/check_v09_gates.py`. Gates **fail closed**
+Machine-checkable inputs for `scripts/check_v09_scientific_gates.py`
+(engineering scaffolding is checked separately by
+`scripts/check_v09_engineering_gates.py`). Scientific gates **fail closed**
 when these artifacts are absent, blocked, or incomplete. Do **not** fabricate
 production exports, natural manuscripts, adjudicator IDs, or natural session
 counts to flip a gate.
@@ -11,10 +13,13 @@ counts to flip a gate.
 
 | Artifact | Path | Gate |
 |---|---|---|
-| Production Coarse MANIFEST | `fixtures/coarse/production/MANIFEST.json` | #2 |
-| Production OpenReviewer MANIFEST | `fixtures/openreviewer/production/MANIFEST.json` | #3 |
-| Natural matcher-audit sessions | `corpus/matcher-audit/sessions/*.json` | #6 |
-| Two-domain staffing roster | `governance/evidence/natural-adjudication-staffing.json` | #7 |
+| Acquisition ledger (natural imports) | `corpus/acquisition-ledger.json` | scientific #1 / #7 |
+| Production Coarse MANIFEST | `fixtures/coarse/production/MANIFEST.json` | scientific #2 |
+| Production OpenReviewer MANIFEST | `fixtures/openreviewer/production/MANIFEST.json` | scientific #3 |
+| Production signing trust store | `trust/scorecard-trust-store.json` | scientific #4 |
+| Two-domain staffing roster | `governance/evidence/natural-adjudication-staffing.json` | scientific #5 |
+| Natural matcher-audit sessions | `corpus/matcher-audit/sessions/*.json` | scientific #6 |
+| Expert-natural independent benchmarks | `benchmarks/*/manifest.json` | scientific #8 |
 
 ## Staffing roster
 

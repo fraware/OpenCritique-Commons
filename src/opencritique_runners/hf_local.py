@@ -7,9 +7,16 @@ practical inference. This path does **not** use ``OPENAI_API_KEY`` /
 
 from __future__ import annotations
 
+import importlib
 from pathlib import Path
-from typing import Any
+from typing import cast
 
+from .hf_stack_types import (
+    HFCausalLMFactory,
+    HFTokenizerFactory,
+    TorchModule,
+    TransformersModule,
+)
 from .openreviewer import (
     DEFAULT_VENUE_TEMPLATE,
     OPENREVIEWER_HF_MODEL_ID,
@@ -55,10 +62,12 @@ class OpenReviewerHFUnavailableError(RuntimeError):
     """Raised when the optional HF stack is missing or unusable."""
 
 
-def _require_hf_stack() -> tuple[Any, tuple[Any, Any]]:
+def _require_hf_stack() -> tuple[TorchModule, tuple[HFCausalLMFactory, HFTokenizerFactory]]:
     try:
-        import torch
-        from transformers import AutoModelForCausalLM, AutoTokenizer
+        torch_mod = cast(TorchModule, importlib.import_module("torch"))
+        transformers_mod = cast(
+            TransformersModule, importlib.import_module("transformers")
+        )
     except ImportError as exc:  # pragma: no cover - exercised via mocked tests
         raise OpenReviewerHFUnavailableError(
             "OpenReviewer HF local runner requires the [live-openreviewer] extra "
@@ -67,12 +76,14 @@ def _require_hf_stack() -> tuple[Any, tuple[Any, Any]]:
             "and use a GPU host, or import a Space export via "
             "`opencritique runners openreviewer --from-export`."
         ) from exc
-    return torch, (AutoModelForCausalLM, AutoTokenizer)
+    return torch_mod, (
+        transformers_mod.AutoModelForCausalLM,
+        transformers_mod.AutoTokenizer,
+    )
 
 
-def gpu_status_message(torch_mod: object) -> str:
-    cuda = bool(getattr(torch_mod, "cuda", None) and torch_mod.cuda.is_available())  # type: ignore[attr-defined]
-    if cuda:
+def gpu_status_message(torch_mod: TorchModule) -> str:
+    if torch_mod.cuda.is_available():
         return "CUDA available"
     return (
         "CUDA not available — Llama-OpenReviewer-8B local runs typically need a GPU; "

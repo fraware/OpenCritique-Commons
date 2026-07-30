@@ -50,8 +50,10 @@ natural denominators. Keep `performance_claims_authorized=false`.
 | **D** | Natural corpus | Rights-cleared natural cases | ≥40 natural adjudicated cases + holdout custody | Import, adjudicate, pilot scorecards with claims still locked |
 | **E** | Matcher-audit (#6) | Natural match population + auditors | ≥100 natural audited decisions; `natural_dod_met` from session manifests | Stratified natural sessions under `corpus/matcher-audit/sessions/` |
 
-Gate evaluator: `python scripts/check_v09_gates.py` (must exit **0** before
-v0.9-beta GO). Evidence paths: [../governance/evidence/README.md](../governance/evidence/README.md).
+Gate evaluator: `python scripts/check_v09_scientific_gates.py` (must exit **0** before
+v0.9-beta GO). Engineering scaffolding:
+`python scripts/check_v09_engineering_gates.py`. Evidence paths:
+[../governance/evidence/README.md](../governance/evidence/README.md).
 
 Milestone tracking: [MILESTONES.md](MILESTONES.md) / [v0.9-beta-go-no-go.md](v0.9-beta-go-no-go.md).
 §12 scientific performance claims stay locked until the claim-authorization matrix
@@ -149,7 +151,7 @@ import/HF-local) are **operator-local evidence**. They do not satisfy issues
                                     (staging from runs/ is refused)
                                                      │
                                                      ▼
-                                    check_v09_gates.py still fail-closed
+                                    check_v09_scientific_gates.py still fail-closed
                                     until all A–F evidence lands
 ```
 
@@ -163,7 +165,7 @@ import/HF-local) are **operator-local evidence**. They do not satisfy issues
 | 4 | **B/C Production** | After ≥10 / ≥5 **redistributable** exports + rights: assemble package **outside** `runs/`; `python scripts/ingest_production_adapter_exports.py validate --adapter … --package …` then `stage` | **Refuse auto-promote from `runs/`**; never invent `ready` |
 | 5 | **F Experts** | Rates + staffing evidence under `governance/evidence/` | Roster stays blocked until filled |
 | 6 | **D/E Corpus + matcher-audit** | Natural sessions under `corpus/matcher-audit/sessions/` | Gates read evidence; no fabricated counts |
-| 7 | Gate check | `python scripts/check_v09_gates.py` | Must exit **non-zero** (NO-GO) until real evidence lands; never sets `performance_claims_authorized=true` |
+| 7 | Gate check | `python scripts/check_v09_scientific_gates.py` | Must exit **non-zero** (NO-GO) until real evidence lands; never sets `performance_claims_authorized=true` |
 
 Hard engineering guards:
 
@@ -210,6 +212,6 @@ pilots: [private-evaluation-pilot.md](private-evaluation-pilot.md).
 Confirm gates still NO-GO without evidence:
 
 ```bash
-python scripts/check_v09_gates.py
+python scripts/check_v09_scientific_gates.py
 # expected: non-zero exit; performance_claims_authorized=false (enforced)
 ```
