@@ -1,0 +1,17 @@
+{
+  "attestation_id": "attest-holdout-custody-blocked",
+  "attestation_kind": "holdout_custody",
+  "subject_hashes": {},
+  "authority_id": "pending-evidence-authority",
+  "issued_at": "2026-01-01T00:00:00+00:00",
+  "not_after": "2027-01-01T00:00:00+00:00",
+  "predecessor_id": null,
+  "verification_status": "blocked",
+  "blocked_reason": "No holdout custody attestation has been issued; ledger IMPORTED count plus protocol markdown alone do not unlock scientific gate #7 (full custody model lands in a follow-on PR)",
+  "notes": "Minimal placeholder schema. Required envelope: holdout-custody.envelope.json.",
+  "holdout_id": null,
+  "holdout_manifest_hash": null,
+  "natural_case_count": 0,
+  "freeze_time": null,
+  "custodian_id": null
+}

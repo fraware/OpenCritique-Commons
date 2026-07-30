@@ -91,6 +91,7 @@ Enforcement hooks already present:
 - Derived transitional `performance_claim_authorized` (true only for verified `public_domain_bounded` / `public_comparative`)
 - `EvaluationResult` coerces crafted public scopes without an attached verified envelope to `none`
 - `build_scorecard` scientific headline only after successful `verify_claim_authorization` (default: no envelope ⇒ non-performance)
+- `SignedEvidenceEnvelope` attestation kinds + `verify_evidence_envelope` (scientific gates fail closed on `missing_attestation` until real evidence is issued)
 - `AcquisitionLedger.performance_claims_authorized` (false)
 - Rights memorandum + case-level rights records
 

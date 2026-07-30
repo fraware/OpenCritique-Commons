@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Shared primitives for v0.9 engineering and scientific gate evaluators."""
+"""Shared primitives for v0.9 engineering and scientific gate evaluators.
+
+Scientific blocking gates (PR 42) require cryptographically verified
+``SignedEvidenceEnvelope`` artifacts under ``governance/evidence/attestations/``.
+Boolean JSON, roster status flags, ledger counts, and MANIFEST presence alone
+do **not** flip a scientific gate to PASS.
+"""
 
 from __future__ import annotations
 
@@ -22,9 +28,17 @@ from opencritique_adapters.production_fixtures import (  # noqa: E402
     ADAPTER_READY_MINIMA,
     COARSE_PRODUCTION,
     OPENREVIEWER_PRODUCTION,
-    ProductionIntakeStatus,
     load_production_manifest,
     production_section_for,
+)
+from opencritique_evaluation.attestations import (  # noqa: E402
+    EvidenceAttestationKind,
+)
+from opencritique_evaluation.evidence_verify import (  # noqa: E402
+    EvidenceVerificationReport,
+    load_evidence_envelope,
+    missing_attestation_report,
+    verify_evidence_envelope,
 )
 from opencritique_evaluation.matcher_audit import (  # noqa: E402
     discover_natural_decision_count,
@@ -34,6 +48,10 @@ from opencritique_evaluation.matcher_audit import (  # noqa: E402
 from opencritique_evaluation.models import (  # noqa: E402
     BenchmarkEvidenceClass,
     BenchmarkManifest,
+)
+from opencritique_evaluation.trust import (  # noqa: E402
+    TrustPolicyMode,
+    VerificationFailureReason,
 )
 from opencritique_registry.expert_policy import (  # noqa: E402
     assert_calibration_seeds_resolvable,
@@ -50,8 +68,28 @@ STAFFING_EVIDENCE_PATH = (
     ROOT / "governance" / "evidence" / "natural-adjudication-staffing.json"
 )
 ACQUISITION_LEDGER_PATH = ROOT / "corpus" / "acquisition-ledger.json"
+ATTESTATIONS_DIR = ROOT / "governance" / "evidence" / "attestations"
+DEFAULT_EVIDENCE_TRUST_STORE = ROOT / "trust" / "scorecard-trust-store.json"
 SAMPLE_SOURCE_IDS = frozenset({"maintainer-owned-sample-corpus"})
 NATURAL_HOLDOUT_MINIMUM = 40
+
+ATTESTATION_ENVELOPE_PATHS: dict[EvidenceAttestationKind, Path] = {
+    EvidenceAttestationKind.NATURAL_CORPUS: (
+        ATTESTATIONS_DIR / "natural-corpus.envelope.json"
+    ),
+    EvidenceAttestationKind.EXPERT_STAFFING: (
+        ATTESTATIONS_DIR / "expert-staffing.envelope.json"
+    ),
+    EvidenceAttestationKind.MATCHER_AUDIT_COMPLETION: (
+        ATTESTATIONS_DIR / "matcher-audit-completion.envelope.json"
+    ),
+    EvidenceAttestationKind.HOLDOUT_CUSTODY: (
+        ATTESTATIONS_DIR / "holdout-custody.envelope.json"
+    ),
+    EvidenceAttestationKind.INDEPENDENT_EVALUATION: (
+        ATTESTATIONS_DIR / "independent-evaluation.envelope.json"
+    ),
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -61,6 +99,7 @@ class GateResult:
     passed: bool
     blocking: bool
     detail: str
+    verification_report: dict[str, Any] | None = None
 
 
 class StrictModel(BaseModel):
@@ -121,32 +160,82 @@ def relative(path: Path) -> str:
         return path.as_posix()
 
 
-def gate_production(adapter: str, root: Path, gate_id: int, name: str) -> GateResult:
-    evidence = relative(root / "MANIFEST.json")
-    min_count = ADAPTER_READY_MINIMA.get(adapter, 10)
-    try:
-        section = production_section_for(adapter, root)
-        manifest = load_production_manifest(root / "MANIFEST.json")
-    except Exception as exc:  # noqa: BLE001
-        return GateResult(
-            gate_id,
-            name,
-            False,
-            True,
-            f"evidence={evidence} error: {exc}",
+def reviewer_export_envelope_path(adapter: str) -> Path:
+    return ATTESTATIONS_DIR / f"reviewer-export-{adapter}.envelope.json"
+
+
+def _report_dict(report: EvidenceVerificationReport) -> dict[str, Any]:
+    return report.model_dump(mode="json")
+
+
+def _verify_attestation_file(
+    path: Path,
+    *,
+    kind: EvidenceAttestationKind,
+    subject_binding_check: dict[str, Any] | None = None,
+    expected_bindings: dict[str, str] | None = None,
+    trust_store_path: Path = DEFAULT_EVIDENCE_TRUST_STORE,
+    policy_mode: TrustPolicyMode = TrustPolicyMode.PRODUCTION,
+) -> EvidenceVerificationReport:
+    rel = relative(path)
+    if not path.is_file():
+        return missing_attestation_report(
+            expected_path=rel,
+            attestation_kind=kind,
+            policy_mode=policy_mode,
         )
-    ready = (
-        section.status == ProductionIntakeStatus.READY
-        and section.export_count >= min_count
-        and manifest.performance_claims_authorized is False
+    try:
+        envelope = load_evidence_envelope(path)
+    except Exception as exc:  # noqa: BLE001
+        return EvidenceVerificationReport(
+            ok=False,
+            reason=VerificationFailureReason.MISSING_ATTESTATION,
+            detail=f"missing_attestation: envelope at {rel} failed to parse: {exc}",
+            artifact_path=rel,
+            signature_status="invalid",
+            attestation_kind=kind,
+            policy_mode=policy_mode,
+        )
+    return verify_evidence_envelope(
+        envelope,
+        expected_kind=kind,
+        trust_store_path=trust_store_path if trust_store_path.is_file() else None,
+        policy_mode=policy_mode,
+        artifact_path=rel,
+        expected_bindings=expected_bindings,
+        subject_binding_check=subject_binding_check,
     )
+
+
+def _gate_from_attestation(
+    gate_id: int,
+    name: str,
+    report: EvidenceVerificationReport,
+    *,
+    blocking: bool = True,
+    extra_detail: str = "",
+) -> GateResult:
+    reason = report.reason.value if report.reason else ("ok" if report.ok else "failed")
     detail = (
-        f"evidence={evidence} status={section.status.value} "
-        f"exports={section.export_count} (minimum {min_count})"
+        f"attestation={report.artifact_path or 'missing'} "
+        f"signature_status={report.signature_status} "
+        f"reason={reason} "
+        f"authority={report.authority_id or '-'} "
+        f"revocation={report.revocation_status} "
+        f"binding_ok={report.binding_ok}"
     )
-    if section.blocked_reason:
-        detail = f"{detail}; blocked_reason={section.blocked_reason}"
-    return GateResult(gate_id, name, ready, True, detail)
+    if report.detail:
+        detail = f"{detail}; {report.detail}"
+    if extra_detail:
+        detail = f"{detail}; {extra_detail}"
+    return GateResult(
+        gate_id,
+        name,
+        report.ok,
+        blocking,
+        detail,
+        verification_report=_report_dict(report),
+    )
 
 
 def load_staffing_roster(
@@ -163,39 +252,14 @@ def load_staffing_roster(
     return roster, f"evidence={relative(path)}"
 
 
-def gate_staffing(gate_id: int, *, blocking: bool = True) -> GateResult:
-    roster, detail_prefix = load_staffing_roster(STAFFING_EVIDENCE_PATH)
-    name = "qualified_expert_staffing"
-    if roster is None:
-        return GateResult(gate_id, name, False, blocking, detail_prefix)
-    staffed = [
-        domain.domain_profile
-        for domain in roster.domains
-        if len(set(domain.independent_adjudicator_ids))
-        >= roster.min_independent_adjudicators_per_domain
-    ]
-    passed = (
-        roster.status == "ready"
-        and len(staffed) >= roster.minimum_domains_required
-        and roster.performance_claims_authorized is False
-    )
-    detail = (
-        f"{detail_prefix} status={roster.status} "
-        f"staffed_domains={len(staffed)}/{roster.minimum_domains_required}"
-    )
-    if roster.blocked_reason:
-        detail = f"{detail}; blocked_reason={roster.blocked_reason}"
-    return GateResult(gate_id, name, passed, blocking, detail)
-
-
-def count_natural_rights_cleared_cases() -> tuple[int, str]:
+def count_natural_rights_cleared_cases() -> tuple[int, str, list[str]]:
     """Count non-sample imported cases with evaluation-use authorization."""
     if not ACQUISITION_LEDGER_PATH.is_file():
-        return 0, f"evidence missing: {relative(ACQUISITION_LEDGER_PATH)}"
+        return 0, f"evidence missing: {relative(ACQUISITION_LEDGER_PATH)}", []
     try:
         ledger = load_ledger(ACQUISITION_LEDGER_PATH)
     except Exception as exc:  # noqa: BLE001
-        return 0, f"evidence={relative(ACQUISITION_LEDGER_PATH)} invalid: {exc}"
+        return 0, f"evidence={relative(ACQUISITION_LEDGER_PATH)} invalid: {exc}", []
     natural = [
         source
         for source in ledger.sources
@@ -203,33 +267,131 @@ def count_natural_rights_cleared_cases() -> tuple[int, str]:
         and source.source_id not in SAMPLE_SOURCE_IDS
         and source.evaluation_use_authorized
     ]
+    case_ids: list[str] = []
+    for source in natural:
+        # Ledger sources may expose case id lists in later schemas; fall back to
+        # synthetic placeholders from counts only when no ids are present.
+        source_case_ids = getattr(source, "imported_case_ids", None)
+        if isinstance(source_case_ids, list) and source_case_ids:
+            case_ids.extend(str(item) for item in source_case_ids)
+        else:
+            case_ids.extend(
+                f"{source.source_id}:case:{i}"
+                for i in range(source.imported_case_count)
+            )
     count = sum(source.imported_case_count for source in natural)
     detail = (
         f"evidence={relative(ACQUISITION_LEDGER_PATH)} "
         f"natural_rights_cleared_cases={count} "
         f"(sample sources excluded)"
     )
-    return count, detail
+    return count, detail, case_ids
 
 
 def gate_natural_rights_cleared(gate_id: int, *, blocking: bool = True) -> GateResult:
-    count, detail = count_natural_rights_cleared_cases()
-    seeds_detail = ""
-    seeds_ready = False
-    try:
-        seeds = load_calibration_seeds_policy()
-        assert_natural_calibration_seeds_cleared(seeds)
-        seeds_ready = True
-        seeds_detail = "; natural calibration seed slots cleared"
-    except Exception as exc:  # noqa: BLE001
-        seeds_detail = f"; natural calibration seeds blocked ({exc})"
-    passed = count >= 1 or seeds_ready
-    return GateResult(
+    count, ledger_detail, case_ids = count_natural_rights_cleared_cases()
+    path = ATTESTATION_ENVELOPE_PATHS[EvidenceAttestationKind.NATURAL_CORPUS]
+    report = _verify_attestation_file(
+        path,
+        kind=EvidenceAttestationKind.NATURAL_CORPUS,
+        subject_binding_check={
+            "natural_case_ids": case_ids,
+            "natural_case_count": count,
+        }
+        if count > 0
+        else None,
+    )
+    return _gate_from_attestation(
         gate_id,
         "natural_rights_cleared_cases",
-        passed,
-        blocking,
-        f"{detail}{seeds_detail}",
+        report,
+        blocking=blocking,
+        extra_detail=ledger_detail,
+    )
+
+
+def gate_production(adapter: str, root: Path, gate_id: int, name: str) -> GateResult:
+    evidence = relative(root / "MANIFEST.json")
+    min_count = ADAPTER_READY_MINIMA.get(adapter, 10)
+    artifact_hashes: list[str] = []
+    export_count = 0
+    section_detail = ""
+    try:
+        section = production_section_for(adapter, root)
+        manifest = load_production_manifest(root / "MANIFEST.json")
+        export_count = section.export_count
+        artifact_hashes = [item.content_sha256 for item in manifest.artifacts]
+        section_detail = (
+            f"evidence={evidence} status={section.status.value} "
+            f"exports={export_count} (minimum {min_count})"
+        )
+        if section.blocked_reason:
+            section_detail = f"{section_detail}; blocked_reason={section.blocked_reason}"
+    except Exception as exc:  # noqa: BLE001
+        section_detail = f"evidence={evidence} error: {exc}"
+
+    path = reviewer_export_envelope_path(adapter)
+    binding = None
+    if artifact_hashes:
+        binding = {
+            "adapter": adapter,
+            "artifact_content_hashes": artifact_hashes,
+            "export_count": export_count,
+        }
+    report = _verify_attestation_file(
+        path,
+        kind=EvidenceAttestationKind.REVIEWER_EXPORT_AUTHENTICITY,
+        subject_binding_check=binding,
+    )
+    return _gate_from_attestation(
+        gate_id,
+        name,
+        report,
+        blocking=True,
+        extra_detail=section_detail,
+    )
+
+
+def gate_staffing(gate_id: int, *, blocking: bool = True) -> GateResult:
+    roster, detail_prefix = load_staffing_roster(STAFFING_EVIDENCE_PATH)
+    binding = None
+    roster_detail = detail_prefix
+    if roster is not None:
+        staffed = [
+            domain.domain_profile
+            for domain in roster.domains
+            if len(set(domain.independent_adjudicator_ids))
+            >= roster.min_independent_adjudicators_per_domain
+        ]
+        adjudicator_ids = [
+            adj_id
+            for domain in roster.domains
+            for adj_id in domain.independent_adjudicator_ids
+        ]
+        roster_detail = (
+            f"{detail_prefix} status={roster.status} "
+            f"staffed_domains={len(staffed)}/{roster.minimum_domains_required}"
+        )
+        if roster.blocked_reason:
+            roster_detail = f"{roster_detail}; blocked_reason={roster.blocked_reason}"
+        if adjudicator_ids:
+            binding = {
+                "independent_adjudicator_ids": adjudicator_ids,
+                "domain_profiles": [d.domain_profile for d in roster.domains],
+            }
+
+    path = ATTESTATION_ENVELOPE_PATHS[EvidenceAttestationKind.EXPERT_STAFFING]
+    report = _verify_attestation_file(
+        path,
+        kind=EvidenceAttestationKind.EXPERT_STAFFING,
+        subject_binding_check=binding,
+    )
+    return _gate_from_attestation(
+        gate_id,
+        "qualified_expert_staffing",
+        report,
+        blocking=blocking,
+        extra_detail=roster_detail,
     )
 
 
@@ -263,7 +425,8 @@ def gate_production_signing(gate_id: int, *, blocking: bool) -> GateResult:
         prod_keys_ok,
         blocking,
         f"evidence={relative(trust)}; production public keys present; "
-        "private keys must stay offline",
+        "private keys must stay offline; evidence_authority attestations "
+        "verified separately per scientific gate",
     )
 
 
@@ -307,18 +470,27 @@ def gate_matcher_audit(gate_id: int, *, blocking: bool = True) -> GateResult:
         repo_root=ROOT,
     )
     sessions = relative(natural_session_manifest_dir(ROOT))
-    return GateResult(
+    volume_detail = (
+        f"{natural_detail}; "
+        f"natural={denominators.natural_decisions_available} "
+        f"sample_fixture_reviews={denominators.sample_decisions_available} "
+        f"dod_met={denominators.natural_dod_met}; "
+        f"sessions_dir={sessions} "
+        f"(sampled_count alone is not attestation)"
+    )
+    path = ATTESTATION_ENVELOPE_PATHS[
+        EvidenceAttestationKind.MATCHER_AUDIT_COMPLETION
+    ]
+    report = _verify_attestation_file(
+        path,
+        kind=EvidenceAttestationKind.MATCHER_AUDIT_COMPLETION,
+    )
+    return _gate_from_attestation(
         gate_id,
         "matcher_audit_natural_volume",
-        denominators.natural_dod_met,
-        blocking,
-        (
-            f"{natural_detail}; "
-            f"natural={denominators.natural_decisions_available} "
-            f"sample_fixture_reviews={denominators.sample_decisions_available} "
-            f"dod_met={denominators.natural_dod_met}; "
-            f"sessions_dir={sessions}"
-        ),
+        report,
+        blocking=blocking,
+        extra_detail=volume_detail,
     )
 
 
@@ -339,24 +511,34 @@ def gate_holdout_custody_documented(
 def gate_holdout_custody_scientific(
     gate_id: int, *, blocking: bool = True
 ) -> GateResult:
-    """Scientific: natural holdout population + custody docs (fail closed)."""
+    """Scientific: verified holdout custody attestation (fail closed)."""
     protocol = ROOT / "docs" / "matcher-audit-protocol.md"
     protocol_ok = protocol.is_file()
-    count, ledger_detail = count_natural_rights_cleared_cases()
-    passed = protocol_ok and count >= NATURAL_HOLDOUT_MINIMUM
-    detail = (
+    count, ledger_detail, _case_ids = count_natural_rights_cleared_cases()
+    path = ATTESTATION_ENVELOPE_PATHS[EvidenceAttestationKind.HOLDOUT_CUSTODY]
+    report = _verify_attestation_file(
+        path,
+        kind=EvidenceAttestationKind.HOLDOUT_CUSTODY,
+        subject_binding_check={"natural_case_count": count} if count > 0 else None,
+    )
+    extra = (
         f"{ledger_detail}; protocol={relative(protocol)} present={protocol_ok}; "
         f"natural_holdout_minimum={NATURAL_HOLDOUT_MINIMUM}"
     )
-    if not passed:
-        detail = f"{detail}; natural holdout custody unmet"
-    return GateResult(gate_id, "holdout_custody", passed, blocking, detail)
+    return _gate_from_attestation(
+        gate_id,
+        "holdout_custody",
+        report,
+        blocking=blocking,
+        extra_detail=extra,
+    )
 
 
 def gate_independent_evaluation(gate_id: int, *, blocking: bool = True) -> GateResult:
-    """Scientific: expert-natural benchmark with independent_evaluation=true."""
+    """Scientific: verified independent-evaluation attestation."""
     benchmarks_root = ROOT / "benchmarks"
     independent: list[str] = []
+    benchmark_ids: list[str] = []
     scan_errors = 0
     if benchmarks_root.is_dir():
         for path in sorted(benchmarks_root.rglob("manifest.json")):
@@ -372,19 +554,40 @@ def gate_independent_evaluation(gate_id: int, *, blocking: bool = True) -> GateR
                 and manifest.independent_evaluation
             ):
                 independent.append(relative(path))
-    passed = len(independent) >= 1
-    detail = (
+                benchmark_ids.append(manifest.benchmark_id)
+    scan_detail = (
         f"expert_natural_independent_benchmarks={len(independent)} "
         f"scan_errors={scan_errors}"
     )
     if independent:
-        detail = f"{detail}; evidence={independent[0]}"
+        scan_detail = f"{scan_detail}; evidence={independent[0]}"
     else:
-        detail = (
-            f"{detail}; no expert_natural benchmark with "
+        scan_detail = (
+            f"{scan_detail}; no expert_natural benchmark with "
             "independent_evaluation=true"
         )
-    return GateResult(gate_id, "independent_evaluation", passed, blocking, detail)
+
+    path = ATTESTATION_ENVELOPE_PATHS[
+        EvidenceAttestationKind.INDEPENDENT_EVALUATION
+    ]
+    binding = None
+    if benchmark_ids:
+        binding = {
+            "benchmark_ids": benchmark_ids,
+            "require_independent": True,
+        }
+    report = _verify_attestation_file(
+        path,
+        kind=EvidenceAttestationKind.INDEPENDENT_EVALUATION,
+        subject_binding_check=binding,
+    )
+    return _gate_from_attestation(
+        gate_id,
+        "independent_evaluation",
+        report,
+        blocking=blocking,
+        extra_detail=scan_detail,
+    )
 
 
 def gate_performance_claims_locked(
@@ -434,6 +637,18 @@ def report_gates(
         mark = "PASS" if item.passed else "FAIL"
         block = "blocking" if item.blocking else "informational"
         print(f"  [{mark}] #{item.gate_id} {item.name} ({block}): {item.detail}")
+        if item.verification_report:
+            vr = item.verification_report
+            print(
+                "    verification_report: "
+                f"path={vr.get('artifact_path')} "
+                f"content_hash={vr.get('content_hash')} "
+                f"signature_status={vr.get('signature_status')} "
+                f"authority={vr.get('authority_id')} "
+                f"bindings={vr.get('bindings')} "
+                f"reason={vr.get('reason')} "
+                f"revocation={vr.get('revocation_status')}"
+            )
     if blocking_failures:
         print(no_go_message.format(count=len(blocking_failures)))
         return 1
@@ -442,6 +657,8 @@ def report_gates(
 
 
 __all__ = [
+    "ATTESTATIONS_DIR",
+    "ATTESTATION_ENVELOPE_PATHS",
     "COARSE_PRODUCTION",
     "OPENREVIEWER_PRODUCTION",
     "ROOT",
@@ -461,4 +678,5 @@ __all__ = [
     "gate_rights_process_or_negative_finding",
     "gate_staffing",
     "report_gates",
+    "reviewer_export_envelope_path",
 ]

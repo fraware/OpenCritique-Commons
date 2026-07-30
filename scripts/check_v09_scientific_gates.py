@@ -4,9 +4,11 @@
 Exits non-zero while consequential scientific authenticity gates remain unmet.
 Does not unlock performance claims.
 
-Blocking failures point at missing or blocked **evidence artifacts**
-(session manifests, staffing roster, production MANIFESTs, natural imports) —
-never invents counts or sets ``performance_claims_authorized=true``.
+Blocking failures require verified ``SignedEvidenceEnvelope`` artifacts under
+``governance/evidence/attestations/`` (or explicit ``missing_attestation`` /
+signature / binding failure reasons). Boolean JSON, roster flags, ledger counts,
+and MANIFEST presence alone never invent a PASS or set
+``performance_claims_authorized=true``.
 
 Scientific blockers:
   natural rights-cleared cases; authentic reviewer outputs; qualified expert

@@ -1,5 +1,9 @@
 """Deterministic matching, scoring, sensitivity analysis, and signed scorecards."""
 
+from .attestations import (
+    EvidenceAttestationKind,
+    SignedEvidenceEnvelope,
+)
 from .engine import MATCHER_VERSION, evaluate, load_case, load_manifest
 from .models import (
     BenchmarkManifest,
@@ -31,10 +35,12 @@ __all__ = [
     "ClaimScope",
     "EvaluationResult",
     "EvaluationSubmission",
+    "EvidenceAttestationKind",
     "MatcherConfig",
     "NovelConcernDetermination",
     "PublicScorecard",
     "SignedClaimAuthorizationEnvelope",
+    "SignedEvidenceEnvelope",
     "SignedScorecardEnvelope",
     "build_novel_queue",
     "build_scorecard",

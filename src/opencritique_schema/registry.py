@@ -120,6 +120,15 @@ def load_extended_registry() -> dict[str, SchemaEntry]:
     """Assemble the full v0.5 freeze inventory across packages."""
     from opencritique_acquisition.models import AcquisitionLedger
     from opencritique_adapters.coarse import CoarseBenchmarkMap, CoarseReview
+    from opencritique_evaluation.attestations import (
+        ExpertStaffingAttestation,
+        HoldoutCustodyAttestation,
+        IndependentEvaluationAttestation,
+        MatcherAuditCompletionAttestation,
+        NaturalCorpusAttestation,
+        ReviewerExportAuthenticityAttestation,
+        SignedEvidenceEnvelope,
+    )
     from opencritique_evaluation.models import (
         BenchmarkManifest,
         ClaimAuthorization,
@@ -151,6 +160,41 @@ def load_extended_registry() -> dict[str, SchemaEntry]:
                 "SignedClaimAuthorizationEnvelope",
                 SignedClaimAuthorizationEnvelope,
                 "Signed claim-authorization envelope",
+            ),
+            (
+                "NaturalCorpusAttestation",
+                NaturalCorpusAttestation,
+                "Signed natural-corpus evidence attestation payload",
+            ),
+            (
+                "ReviewerExportAuthenticityAttestation",
+                ReviewerExportAuthenticityAttestation,
+                "Signed reviewer-export authenticity attestation payload",
+            ),
+            (
+                "ExpertStaffingAttestation",
+                ExpertStaffingAttestation,
+                "Signed expert-staffing evidence attestation payload",
+            ),
+            (
+                "MatcherAuditCompletionAttestation",
+                MatcherAuditCompletionAttestation,
+                "Signed matcher-audit completion attestation payload",
+            ),
+            (
+                "HoldoutCustodyAttestation",
+                HoldoutCustodyAttestation,
+                "Signed holdout-custody evidence attestation payload",
+            ),
+            (
+                "IndependentEvaluationAttestation",
+                IndependentEvaluationAttestation,
+                "Signed independent-evaluation evidence attestation payload",
+            ),
+            (
+                "SignedEvidenceEnvelope",
+                SignedEvidenceEnvelope,
+                "Ed25519-signed scientific evidence attestation envelope",
             ),
             ("PublicScorecard", PublicScorecard, "Public scorecard"),
             ("MatcherSensitivityReport", MatcherSensitivityReport, "Matcher sensitivity"),

@@ -1,0 +1,15 @@
+{
+  "attestation_id": "attest-independent-evaluation-blocked",
+  "attestation_kind": "independent_evaluation",
+  "subject_hashes": {},
+  "authority_id": "pending-evidence-authority",
+  "issued_at": "2026-01-01T00:00:00+00:00",
+  "not_after": "2027-01-01T00:00:00+00:00",
+  "predecessor_id": null,
+  "verification_status": "blocked",
+  "blocked_reason": "No independent-evaluation attestation has been issued; scanning for independent_evaluation=true on manifests alone does not unlock scientific gate #8",
+  "notes": "Placeholder only. Required envelope: independent-evaluation.envelope.json binding benchmark_ids and manifest hashes.",
+  "benchmark_ids": [],
+  "benchmark_manifest_hashes": [],
+  "independent_evaluation": true
+}

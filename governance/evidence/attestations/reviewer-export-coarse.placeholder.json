@@ -1,0 +1,16 @@
+{
+  "attestation_id": "attest-reviewer-export-coarse-blocked",
+  "attestation_kind": "reviewer_export_authenticity",
+  "subject_hashes": {},
+  "authority_id": "pending-evidence-authority",
+  "issued_at": "2026-01-01T00:00:00+00:00",
+  "not_after": "2027-01-01T00:00:00+00:00",
+  "predecessor_id": null,
+  "verification_status": "blocked",
+  "blocked_reason": "No authentic Coarse production export attestation has been issued; MANIFEST presence alone does not unlock scientific gate #2",
+  "notes": "Placeholder only. Required envelope: reviewer-export-coarse.envelope.json binding adapter=coarse and MANIFEST artifact content hashes.",
+  "adapter": "coarse",
+  "manifest_path": "fixtures/coarse/production/MANIFEST.json",
+  "artifact_content_hashes": [],
+  "export_count": 0
+}

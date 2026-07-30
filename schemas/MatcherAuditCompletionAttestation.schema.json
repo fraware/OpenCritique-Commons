@@ -1,0 +1,124 @@
+{
+  "$defs": {
+    "AttestationRecordStatus": {
+      "description": "Issuer-declared status of the attestation payload (not crypto verify).",
+      "enum": [
+        "blocked",
+        "pending",
+        "attested"
+      ],
+      "title": "AttestationRecordStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Attests completed matcher-audit accounting (volume rules in PR 44).",
+  "properties": {
+    "attestation_id": {
+      "minLength": 1,
+      "title": "Attestation Id",
+      "type": "string"
+    },
+    "attestation_kind": {
+      "const": "matcher_audit_completion",
+      "default": "matcher_audit_completion",
+      "title": "Attestation Kind",
+      "type": "string"
+    },
+    "authority_id": {
+      "minLength": 1,
+      "title": "Authority Id",
+      "type": "string"
+    },
+    "blocked_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Blocked Reason"
+    },
+    "completed_decision_count": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Completed Decision Count",
+      "type": "integer"
+    },
+    "evidence_class": {
+      "default": "NATURAL",
+      "title": "Evidence Class",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "judgment_set_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Judgment Set Hash"
+    },
+    "not_after": {
+      "format": "date-time",
+      "title": "Not After",
+      "type": "string"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    },
+    "predecessor_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Id"
+    },
+    "session_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Session Ids",
+      "type": "array"
+    },
+    "subject_hashes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Named subject digests (sha256 hex) bound by this attestation.",
+      "title": "Subject Hashes",
+      "type": "object"
+    },
+    "verification_status": {
+      "$ref": "#/$defs/AttestationRecordStatus",
+      "default": "blocked"
+    }
+  },
+  "required": [
+    "attestation_id",
+    "authority_id",
+    "issued_at",
+    "not_after"
+  ],
+  "title": "MatcherAuditCompletionAttestation",
+  "type": "object"
+}

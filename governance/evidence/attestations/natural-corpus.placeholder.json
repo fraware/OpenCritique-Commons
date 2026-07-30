@@ -1,0 +1,15 @@
+{
+  "attestation_id": "attest-natural-corpus-blocked",
+  "attestation_kind": "natural_corpus",
+  "subject_hashes": {},
+  "authority_id": "pending-evidence-authority",
+  "issued_at": "2026-01-01T00:00:00+00:00",
+  "not_after": "2027-01-01T00:00:00+00:00",
+  "predecessor_id": null,
+  "verification_status": "blocked",
+  "blocked_reason": "No rights-cleared natural corpus attestation has been issued; ledger counts alone do not unlock scientific gate #1",
+  "notes": "Placeholder only. Replace with SignedEvidenceEnvelope at natural-corpus.envelope.json after evidence_authority signs an attested payload.",
+  "ledger_path": "corpus/acquisition-ledger.json",
+  "natural_case_ids": [],
+  "natural_case_count": 0
+}
