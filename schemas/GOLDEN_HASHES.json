@@ -31,11 +31,7 @@
   "ReviewerExportAuthenticityAttestation.schema.json": "3f4921ac241a8fa0bb40d1722c456968f5b34e172677593d2c580c7a7d381daa",
   "RunManifest.schema.json": "869e3e0c131b750c6cdf7f1f7610d9b3dba36925b0943cfc39bdb3789799376e",
   "SignedClaimAuthorizationEnvelope.schema.json": "a378ac6e00d1ac4281629c7b750e7ef49b4551db0a4998043e0fa58867b2fa50",
-<<<<<<< HEAD
-  "SignedEvidenceEnvelope.schema.json": "674d58dbc84a1bec0d793cca785a80a9a919af68c60d844cb423d511a2f8645d",
-=======
-  "SignedEvidenceEnvelope.schema.json": "58a1c8afe3f0f0d9cd5dd326a460a9eaee2f01a23ffd107e22f0c73b19177aa4",
->>>>>>> origin/main
+  "SignedEvidenceEnvelope.schema.json": "e93c614e522f55faec5261e68a7d719e141edfa25255355f4ef5d9dcf1f2cf36",
   "SignedScorecardEnvelope.schema.json": "bceda2af71f38b374bba822f22f365df17c9df93a2f43cc270ea678ba1dbf802",
   "SystemManifest.schema.json": "5528d18ae759b6e3bdbaaace33589618cca8b1f2f10e70ace8603c5994c530b2",
   "inventory.json": "49264397d0e9c655e3c5204cc8755fa0abd696cbbb2c9ab397aaa9f3df6d90bc"
