@@ -62,9 +62,14 @@ decision tree; evidence promotion checklist) and the README live-upstream track.
 Engineering surface supports **private, rights-owned pilots** and descriptive
 method reports. It does **not** authorize public performance claims or reviewer
 rankings. Labs: [private-evaluation-pilot.md](private-evaluation-pilot.md)
-(publish / do-not-publish boundary + negative-finding outline). README
-“For scientists” summarizes citation of limitations. Gates stay **NO-GO** until
-real A–F evidence lands — never fabricate exports or flip claims.
+(publish / do-not-publish boundary + negative-finding outline). Fillable
+method template: [examples/method-pilot-report.md](examples/method-pilot-report.md).
+README "For scientists" summarizes citation of limitations. Gates stay **NO-GO**
+until real A–F evidence lands — never fabricate exports or flip claims.
+
+Contributor-facing themes (no invented GO status): [ROADMAP.md](ROADMAP.md).
+Claim-safe demos and case-study templates: [examples/README.md](examples/README.md).
+Outreach packet: [outreach-one-pager.md](outreach-one-pager.md).
 
 ## §12 Claim-authorization matrix
 
