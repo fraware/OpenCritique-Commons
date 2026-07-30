@@ -107,6 +107,27 @@
       "schema_version": "0.1.0"
     },
     {
+      "description": "Signed expert-staffing evidence attestation payload",
+      "model": "ExpertStaffingAttestation",
+      "persistent": true,
+      "schema_id": "opencritique.ExpertStaffingAttestation",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Signed holdout-custody evidence attestation payload",
+      "model": "HoldoutCustodyAttestation",
+      "persistent": true,
+      "schema_id": "opencritique.HoldoutCustodyAttestation",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Signed independent-evaluation evidence attestation payload",
+      "model": "IndependentEvaluationAttestation",
+      "persistent": true,
+      "schema_id": "opencritique.IndependentEvaluationAttestation",
+      "schema_version": "0.1"
+    },
+    {
       "description": "Manuscript identity and rights metadata",
       "model": "Manuscript",
       "persistent": true,
@@ -121,10 +142,24 @@
       "schema_version": "0.1.0"
     },
     {
+      "description": "Signed matcher-audit completion attestation payload",
+      "model": "MatcherAuditCompletionAttestation",
+      "persistent": true,
+      "schema_id": "opencritique.MatcherAuditCompletionAttestation",
+      "schema_version": "0.1"
+    },
+    {
       "description": "Matcher sensitivity",
       "model": "MatcherSensitivityReport",
       "persistent": true,
       "schema_id": "opencritique.MatcherSensitivityReport",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Signed natural-corpus evidence attestation payload",
+      "model": "NaturalCorpusAttestation",
+      "persistent": true,
+      "schema_id": "opencritique.NaturalCorpusAttestation",
       "schema_version": "0.1"
     },
     {
@@ -156,6 +191,13 @@
       "schema_version": "0.1.0"
     },
     {
+      "description": "Signed reviewer-export authenticity attestation payload",
+      "model": "ReviewerExportAuthenticityAttestation",
+      "persistent": true,
+      "schema_id": "opencritique.ReviewerExportAuthenticityAttestation",
+      "schema_version": "0.1"
+    },
+    {
       "description": "OpenCritique RunManifest schema",
       "model": "RunManifest",
       "persistent": true,
@@ -167,6 +209,13 @@
       "model": "SignedClaimAuthorizationEnvelope",
       "persistent": true,
       "schema_id": "opencritique.SignedClaimAuthorizationEnvelope",
+      "schema_version": "0.1"
+    },
+    {
+      "description": "Ed25519-signed scientific evidence attestation envelope",
+      "model": "SignedEvidenceEnvelope",
+      "persistent": true,
+      "schema_id": "opencritique.SignedEvidenceEnvelope",
       "schema_version": "0.1"
     },
     {

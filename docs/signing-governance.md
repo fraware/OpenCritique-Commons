@@ -27,14 +27,15 @@ repository.
 | `offline_root` | Offline root of trust; publishes and revokes release keys; may also sign claim-authorization envelopes | Rare / ceremony |
 | `online_release` | Signs public scorecard envelopes for published releases | Yes (production channel only) |
 | `claim_authority` | Signs `SignedClaimAuthorizationEnvelope` decisions that unlock public claim scopes | Yes (claim envelopes only) |
-| `evidence_authority` | Reserved for signed scientific evidence attestations (follow-on) | Not yet used for scorecards |
+| `evidence_authority` | Signs `SignedEvidenceEnvelope` scientific evidence attestations consumed by authenticity gates | Yes (evidence envelopes only) |
 | `test` | Ephemeral CI / developer keys; unmistakably marked | **Rejected** |
 
 Separation of duties: root operators must not routinely hold online release private
 keys on networked build hosts. Scorecard integrity signatures (`online_release`) do
 **not** authorize scientific performance claims. Public claim scopes require a
 separately verified claim-authorization envelope signed by `claim_authority` or
-`offline_root`.
+`offline_root`. Scientific authenticity gates additionally require verified
+evidence attestations signed by `evidence_authority` or `offline_root`.
 
 ## Claim-authorization envelopes
 
@@ -55,6 +56,26 @@ A non-empty 64-hex `signed_authorization_manifest_digest` alone is **not**
 authorization. `BenchmarkManifest.claim_authorization()`, `EvaluationResult`, and
 `build_scorecard` fail closed without a verified envelope. Scorecard signing still
 proves artifact integrity only; it does not bypass claim authorization.
+
+## Scientific evidence attestations
+
+Blocking scientific gates (`scripts/check_v09_scientific_gates.py`) verify
+`SignedEvidenceEnvelope` artifacts under `governance/evidence/attestations/`:
+
+| Kind | Gate subject examples |
+|---|---|
+| `natural_corpus` | Rights-cleared natural case IDs / ledger bindings |
+| `reviewer_export_authenticity` | Production MANIFEST artifact content hashes |
+| `expert_staffing` | Independent adjudicator IDs per domain |
+| `matcher_audit_completion` | Completed audit session / judgment-set binding (volume rules follow-on) |
+| `holdout_custody` | Holdout freeze / custody binding (full model follow-on) |
+| `independent_evaluation` | Expert-natural benchmark IDs with independent evaluation |
+
+Verification (`verify_evidence_envelope`) mirrors claim-authorization checks and
+emits a structured verification report (artifact path, content hash, signature
+status, authority, bindings, failure reason, revocation status). Until real
+envelopes exist, gates remain NO-GO with `missing_attestation` — not a false green
+from Boolean JSON, roster status, or `sampled_count` alone.
 
 ## Development ceremony
 

@@ -1,0 +1,17 @@
+{
+  "attestation_id": "attest-expert-staffing-blocked",
+  "attestation_kind": "expert_staffing",
+  "subject_hashes": {},
+  "authority_id": "pending-evidence-authority",
+  "issued_at": "2026-01-01T00:00:00+00:00",
+  "not_after": "2027-01-01T00:00:00+00:00",
+  "predecessor_id": null,
+  "verification_status": "blocked",
+  "blocked_reason": "No expert staffing attestation has been issued; roster status=ready alone does not unlock scientific gate #5",
+  "notes": "Placeholder only. Required envelope: expert-staffing.envelope.json binding independent adjudicator IDs to the staffing roster.",
+  "roster_path": "governance/evidence/natural-adjudication-staffing.json",
+  "domain_profiles": [],
+  "independent_adjudicator_ids": [],
+  "min_domains_required": 2,
+  "min_adjudicators_per_domain": 2
+}

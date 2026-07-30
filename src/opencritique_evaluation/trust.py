@@ -36,6 +36,11 @@ CLAIM_AUTHORITY_SIGNING_ROLES: frozenset[KeyRole] = frozenset(
     {KeyRole.CLAIM_AUTHORITY, KeyRole.OFFLINE_ROOT}
 )
 
+# Roles permitted to sign scientific evidence attestation envelopes.
+EVIDENCE_AUTHORITY_SIGNING_ROLES: frozenset[KeyRole] = frozenset(
+    {KeyRole.EVIDENCE_AUTHORITY, KeyRole.OFFLINE_ROOT}
+)
+
 
 class KeyStatus(str, Enum):
     ACTIVE = "active"
@@ -70,6 +75,8 @@ class VerificationFailureReason(str, Enum):
     DECISION_EXPIRED = "decision_expired"
     DIGEST_MISMATCH = "digest_mismatch"
     SCOPE_NOT_PUBLIC = "scope_not_public"
+    MISSING_ATTESTATION = "missing_attestation"
+    ATTESTATION_BLOCKED = "attestation_blocked"
 
 
 class TrustedKeyRecord(StrictModel):

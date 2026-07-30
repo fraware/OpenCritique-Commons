@@ -1,0 +1,16 @@
+{
+  "attestation_id": "attest-matcher-audit-completion-blocked",
+  "attestation_kind": "matcher_audit_completion",
+  "subject_hashes": {},
+  "authority_id": "pending-evidence-authority",
+  "issued_at": "2026-01-01T00:00:00+00:00",
+  "not_after": "2027-01-01T00:00:00+00:00",
+  "predecessor_id": null,
+  "verification_status": "blocked",
+  "blocked_reason": "No matcher-audit completion attestation has been issued; sampled_count session volume alone does not unlock scientific gate #6 (completed accounting lands in a follow-on PR)",
+  "notes": "Placeholder schema for SignedEvidenceEnvelope at matcher-audit-completion.envelope.json. Volume/completion rules are enforced later; this PR freezes the attestation type and fail-closed gate.",
+  "session_ids": [],
+  "judgment_set_hash": null,
+  "completed_decision_count": 0,
+  "evidence_class": "NATURAL"
+}

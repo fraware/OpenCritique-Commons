@@ -1,0 +1,121 @@
+{
+  "$defs": {
+    "AttestationRecordStatus": {
+      "description": "Issuer-declared status of the attestation payload (not crypto verify).",
+      "enum": [
+        "blocked",
+        "pending",
+        "attested"
+      ],
+      "title": "AttestationRecordStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Attests authentic production reviewer-export packages.",
+  "properties": {
+    "adapter": {
+      "enum": [
+        "coarse",
+        "openreviewer"
+      ],
+      "title": "Adapter",
+      "type": "string"
+    },
+    "artifact_content_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Content Hashes",
+      "type": "array"
+    },
+    "attestation_id": {
+      "minLength": 1,
+      "title": "Attestation Id",
+      "type": "string"
+    },
+    "attestation_kind": {
+      "const": "reviewer_export_authenticity",
+      "default": "reviewer_export_authenticity",
+      "title": "Attestation Kind",
+      "type": "string"
+    },
+    "authority_id": {
+      "minLength": 1,
+      "title": "Authority Id",
+      "type": "string"
+    },
+    "blocked_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Blocked Reason"
+    },
+    "export_count": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Export Count",
+      "type": "integer"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "manifest_path": {
+      "minLength": 1,
+      "title": "Manifest Path",
+      "type": "string"
+    },
+    "not_after": {
+      "format": "date-time",
+      "title": "Not After",
+      "type": "string"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    },
+    "predecessor_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Id"
+    },
+    "subject_hashes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Named subject digests (sha256 hex) bound by this attestation.",
+      "title": "Subject Hashes",
+      "type": "object"
+    },
+    "verification_status": {
+      "$ref": "#/$defs/AttestationRecordStatus",
+      "default": "blocked"
+    }
+  },
+  "required": [
+    "attestation_id",
+    "authority_id",
+    "issued_at",
+    "not_after",
+    "adapter",
+    "manifest_path"
+  ],
+  "title": "ReviewerExportAuthenticityAttestation",
+  "type": "object"
+}

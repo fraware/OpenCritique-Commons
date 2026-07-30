@@ -1,0 +1,112 @@
+{
+  "$defs": {
+    "AttestationRecordStatus": {
+      "description": "Issuer-declared status of the attestation payload (not crypto verify).",
+      "enum": [
+        "blocked",
+        "pending",
+        "attested"
+      ],
+      "title": "AttestationRecordStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Attests independent evaluation of expert-natural benchmarks.",
+  "properties": {
+    "attestation_id": {
+      "minLength": 1,
+      "title": "Attestation Id",
+      "type": "string"
+    },
+    "attestation_kind": {
+      "const": "independent_evaluation",
+      "default": "independent_evaluation",
+      "title": "Attestation Kind",
+      "type": "string"
+    },
+    "authority_id": {
+      "minLength": 1,
+      "title": "Authority Id",
+      "type": "string"
+    },
+    "benchmark_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Benchmark Ids",
+      "type": "array"
+    },
+    "benchmark_manifest_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Benchmark Manifest Hashes",
+      "type": "array"
+    },
+    "blocked_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Blocked Reason"
+    },
+    "independent_evaluation": {
+      "default": true,
+      "title": "Independent Evaluation",
+      "type": "boolean"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "not_after": {
+      "format": "date-time",
+      "title": "Not After",
+      "type": "string"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    },
+    "predecessor_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Id"
+    },
+    "subject_hashes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Named subject digests (sha256 hex) bound by this attestation.",
+      "title": "Subject Hashes",
+      "type": "object"
+    },
+    "verification_status": {
+      "$ref": "#/$defs/AttestationRecordStatus",
+      "default": "blocked"
+    }
+  },
+  "required": [
+    "attestation_id",
+    "authority_id",
+    "issued_at",
+    "not_after"
+  ],
+  "title": "IndependentEvaluationAttestation",
+  "type": "object"
+}
