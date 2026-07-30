@@ -76,22 +76,80 @@ When unsure, leave claims locked and ask the author to reword. Prefer linking
   Docs & pilots lanes — never “accuracy improved” without gates).
 - Optional all-contributors tooling may be added later; do not block merges on it.
 
-## Branch protection (required checks)
+## Review ownership matrix
 
-On `main`, require these core CI jobs from
-[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) before merge:
+Path → role mapping is enforced in [`.github/CODEOWNERS`](../.github/CODEOWNERS).
+Until a broader maintainer team exists, the repository owner `@fraware` is the
+**interim** owner for every role. Second reviewers are named placeholders until
+real GitHub handles are assigned; do not invent `@` handles in CODEOWNERS.
+
+| Role | Paths (summary) | Interim owner | Second reviewer (placeholder) |
+|---|---|---|---|
+| evaluation-method | `src/opencritique_evaluation/` | `@fraware` | `TBD-external-evaluation` |
+| scientific-schema | `schemas/` | `@fraware` | `TBD-external-schema` |
+| rights/governance | `src/opencritique_acquisition/`, `corpus/rights/`, `docs/rights*` | `@fraware` | `TBD-external-rights` |
+| security | `signing.py`, `trust.py`, `trust/` | `@fraware` | `TBD-external-security` |
+| evaluation + security | `scripts/check_v09*`, `v09_gate_lib.py`, claim-auth / attestation / signed scorecard schemas, `scorecard.py`, `models.py` | `@fraware` | `TBD-external-security` (or evaluation) |
+
+Replace each `TBD-*` placeholder with a real GitHub username or team in both this
+table and CODEOWNERS when that reviewer joins. Until then, the PR author must
+name a distinct human reviewer in the PR body for dual-role paths.
+
+### Dual approval (claim-boundary / trust / scoring)
+
+For PRs that touch **claim authorization**, **trust / signing**, or **scoring /
+scorecard** surfaces (the “evaluation + security” rows above, plus related
+schemas and gates):
+
+1. **No author self-approval** — the author’s own review does not count.
+2. **At least two distinct approvals** before merge (CODEOWNERS review plus one
+   other maintainer or designated external reviewer).
+3. If the only CODEOWNER is also the author, require an explicitly designated
+   external reviewer in the PR body and wait for that approval.
+
+Routine Tier 1–2 docs/adapter PRs outside those paths follow normal single
+CODEOWNERS review once branch protection is enabled.
+
+## Branch protection (GitHub settings checklist)
+
+Configure on `main` (Settings → Branches → Branch protection rule). Status at
+docs time: protection may not yet be enabled; treat this list as the required
+maintainer action.
+
+### Required status checks
+
+From [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), require these
+**core** jobs before merge:
 
 - `lint`
-- `test` (both Python 3.12 and 3.13 matrix legs)
+- `test (3.12)` and `test (3.13)` (matrix legs)
 - `packaging`
 - `secret-scan`
 - `publication-audit`
 - `postgres`
 
-Do not block core green on optional GPU / OpenReviewer jobs until those prove
-stable. After merge, verify ancestry on `origin/main`
+Do **not** require `optional-openreviewer` until that job is stable.
+
+Also enable:
+
+- [ ] Require a pull request before merging
+- [ ] Require approvals — **minimum 1** for ordinary paths; **minimum 2** for
+      claim-boundary / trust / scoring (use rulesets or always require 2 while
+      the team is thin)
+- [ ] Dismiss stale pull request approvals when new commits are pushed
+- [ ] Require review from Code Owners
+- [ ] Require conversation resolution before merging
+- [ ] Do not allow bypassing the above settings (restrict admin bypass)
+- [ ] Require signed commits (or Vigilant mode for maintainers) for merge to
+      `main`
+- [ ] Include administrators (no silent force-push / unprotected merge)
+
+After merge, verify ancestry on `origin/main`
 (`git merge-base --is-ancestor <pr-head> origin/main`) rather than relying only
 on a PR having been “merged” into a feature branch.
+
+Constitutional overlap (separation of powers, ADR triggers) is summarized in
+[GOVERNANCE.md](../GOVERNANCE.md).
 
 ## Security
 
