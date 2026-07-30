@@ -3284,6 +3284,16 @@
             ],
             "title": "Required Resolution"
           },
+          "resolution_disposition": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResolutionDisposition"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "schema_version": {
             "default": "0.1.0",
             "title": "Schema Version",
@@ -4859,6 +4869,16 @@
         ],
         "title": "Resolution",
         "type": "object"
+      },
+      "ResolutionDisposition": {
+        "description": "Disposition for RESOLVED concerns used by gold-reference eligibility.\n\n``manuscript_correction`` marks an eligible historical defect. ``withdrawn``\nand ``rejected`` are not gold. Absent disposition is fail-closed (non-gold).",
+        "enum": [
+          "manuscript_correction",
+          "withdrawn",
+          "rejected"
+        ],
+        "title": "ResolutionDisposition",
+        "type": "string"
       },
       "ResolutionType": {
         "enum": [

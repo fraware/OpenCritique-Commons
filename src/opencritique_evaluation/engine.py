@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from opencritique_schema.models import Anchor, CaseBundle, Concern, ConcernStatus, Severity
+from opencritique_schema.models import Anchor, CaseBundle, Concern, Severity
 
 from .matching import greedy_match, resolve_anchor
 from .models import (
@@ -23,6 +23,11 @@ from .models import (
     MetricValue,
     ReferenceCompleteness,
     SubmittedConcern,
+)
+from .reference_policy import (
+    EMPTY_GOLD_WITHHOLD_REASON,
+    eligible_references,
+    gold_weight,
 )
 
 MATCHER_VERSION = "opencritique-matcher-v0.2"
@@ -42,17 +47,6 @@ _SEVERITY_WEIGHT: dict[Severity, float] = {
     Severity.INFORMATIONAL: 0.5,
 }
 
-_ELIGIBLE_STATUSES = frozenset(
-    {
-        ConcernStatus.PROPOSED,
-        ConcernStatus.UNDER_REVIEW,
-        ConcernStatus.CONFIRMED,
-        ConcernStatus.QUALIFIED,
-        ConcernStatus.UNRESOLVED,
-        ConcernStatus.RESOLVED,
-    }
-)
-
 
 def load_manifest(path: Path) -> BenchmarkManifest:
     """Load and validate a frozen benchmark manifest."""
@@ -71,8 +65,12 @@ def load_case(benchmark_root: Path, relative_path: str) -> CaseBundle:
 
 
 def _eligible_references(concerns: list[Concern]) -> list[Concern]:
-    eligible = [item for item in concerns if item.status in _ELIGIBLE_STATUSES]
-    return eligible if eligible else list(concerns)
+    """Return gold-eligible references; empty stays empty (no non-gold fallback)."""
+    return eligible_references(concerns)
+
+
+def _severity_gold_weight(concern: Concern) -> float:
+    return _SEVERITY_WEIGHT[concern.severity] * gold_weight(concern)
 
 
 def _metric(numerator: float, denominator: float) -> MetricValue:
@@ -291,7 +289,7 @@ def evaluate(
             abstained_cases += 1
             eligible_reference_concerns += len(eligible)
             missed_reference += len(eligible)
-            recall_weight_den += sum(_SEVERITY_WEIGHT[item.severity] for item in eligible)
+            recall_weight_den += sum(_severity_gold_weight(item) for item in eligible)
             case_evaluations.append(
                 CaseEvaluation(
                     case_id=ref.case_id,
@@ -312,7 +310,7 @@ def evaluate(
             failed_cases += 1
             eligible_reference_concerns += len(eligible)
             missed_reference += len(eligible)
-            recall_weight_den += sum(_SEVERITY_WEIGHT[item.severity] for item in eligible)
+            recall_weight_den += sum(_severity_gold_weight(item) for item in eligible)
             case_evaluations.append(
                 CaseEvaluation(
                     case_id=ref.case_id,
@@ -378,7 +376,7 @@ def evaluate(
             brier_count += 1
 
         for concern in eligible:
-            weight = _SEVERITY_WEIGHT[concern.severity]
+            weight = _severity_gold_weight(concern)
             recall_weight_den += weight
             if concern.concern_id in matched_reference:
                 recall_weight_num += weight
@@ -401,9 +399,43 @@ def evaluate(
     authorization = benchmark.claim_authorization()
     completeness = benchmark.reference_completeness
     incomplete = completeness in _INCOMPLETE_REFERENCE
+    empty_gold = eligible_reference_concerns == 0
     withhold_reason = _incomplete_withhold_reason(completeness) if incomplete else None
 
-    if incomplete:
+    if empty_gold:
+        # Fail-closed: never fall back to non-gold concerns for denominators.
+        precision = _withheld(
+            EMPTY_GOLD_WITHHOLD_REASON,
+            numerator=float(matched_concerns),
+            denominator=float(submitted_concerns),
+        )
+        severity_weighted_precision = _withheld(
+            EMPTY_GOLD_WITHHOLD_REASON,
+            numerator=precision_weight_num,
+            denominator=precision_weight_den,
+        )
+        false_critical_metric = _withheld(
+            EMPTY_GOLD_WITHHOLD_REASON,
+            numerator=float(false_critical),
+            denominator=float(max(completed_cases, 0)),
+        )
+        brier_metric = _withheld(EMPTY_GOLD_WITHHOLD_REASON)
+        recall = _withheld(
+            EMPTY_GOLD_WITHHOLD_REASON,
+            numerator=float(matched_concerns),
+            denominator=float(eligible_reference_concerns),
+        )
+        severity_weighted_recall = _withheld(
+            EMPTY_GOLD_WITHHOLD_REASON,
+            numerator=recall_weight_num,
+            denominator=recall_weight_den,
+        )
+        if incomplete:
+            recall = _as_reference_recall(recall, completeness)
+            severity_weighted_recall = _as_reference_recall(
+                severity_weighted_recall, completeness
+            )
+    elif incomplete:
         precision = _withheld(
             withhold_reason or "",
             numerator=float(matched_concerns),

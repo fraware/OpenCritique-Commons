@@ -155,6 +155,7 @@ def convert_coarse_review(
                 feedback if severity in {Severity.CRITICAL, Severity.MAJOR} else ""
             ),
             "required_resolution": None,
+            "resolution_disposition": None,
             "uncertainty_sources": [],
             "origin": ConcernOrigin(
                 origin_type=ConcernOriginType.REVIEWER_SYSTEM,
