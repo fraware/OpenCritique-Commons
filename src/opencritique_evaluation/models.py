@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from enum import Enum
-from typing import Literal
+from pathlib import Path
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import (
     BaseModel,
@@ -14,6 +15,9 @@ from pydantic import (
 )
 
 from opencritique_schema.models import Severity
+
+if TYPE_CHECKING:
+    from .trust import TrustPolicyMode, TrustStore
 
 
 class StrictModel(BaseModel):
@@ -50,8 +54,50 @@ _PUBLIC_CLAIM_SCOPES = frozenset(
 )
 
 
+class ClaimAuthorizationDecision(StrictModel):
+    """Immutable claim-authorization decision payload (signed inside an envelope)."""
+
+    claim_scope: ClaimScope
+    authorized_metrics: list[str] = Field(default_factory=list)
+    benchmark_id: str
+    benchmark_version: str
+    case_set_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    benchmark_manifest_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    scoring_policy_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    matcher_version: str
+    matcher_config_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    domain_scope: str = Field(min_length=1)
+    use_scope: str = Field(min_length=1)
+    issued_at: datetime
+    not_after: datetime
+    authority_id: str = Field(min_length=1)
+    predecessor_id: str | None = None
+
+    @model_validator(mode="after")
+    def validity_interval(self) -> ClaimAuthorizationDecision:
+        if self.not_after <= self.issued_at:
+            raise ValueError("not_after must be after issued_at")
+        return self
+
+
+class SignedClaimAuthorizationEnvelope(StrictModel):
+    """Ed25519-signed claim authorization decision."""
+
+    envelope_version: str = "0.1"
+    decision: ClaimAuthorizationDecision
+    payload_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    signature: str = Field(min_length=1, description="Ed25519 signature (base64)")
+    key_id: str = Field(min_length=1)
+    signed_at: datetime
+    algorithm: Literal["Ed25519"] = "Ed25519"
+
+
 class ClaimAuthorization(StrictModel):
-    """Structured claim authorization; prefer ``claim_scope`` over the bool."""
+    """Structured claim authorization; prefer ``claim_scope`` over the bool.
+
+    Public scopes are a derived view of a successfully verified
+    ``SignedClaimAuthorizationEnvelope``. Digest strings alone do not authorize.
+    """
 
     claim_scope: ClaimScope
     expert_natural_evidence: bool = False
@@ -66,6 +112,10 @@ class ClaimAuthorization(StrictModel):
     signed_authorization_manifest_path: str | None = None
     domain_scope: str | None = None
     use_scope: str | None = None
+    authorization_verified: bool = False
+    verification_report_digest: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$"
+    )
 
     @model_validator(mode="before")
     @classmethod
@@ -79,8 +129,10 @@ class ClaimAuthorization(StrictModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def performance_claim_authorized(self) -> bool:
-        """Transitional: true only for public scientific scopes."""
-        return self.claim_scope in _PUBLIC_CLAIM_SCOPES
+        """Transitional: true only for verified public scientific scopes."""
+        return (
+            self.claim_scope in _PUBLIC_CLAIM_SCOPES and self.authorization_verified
+        )
 
     @classmethod
     def none(cls) -> ClaimAuthorization:
@@ -129,11 +181,34 @@ class BenchmarkManifest(StrictModel):
             raise ValueError("benchmark case references must be unique")
         return self
 
-    def claim_authorization(self) -> ClaimAuthorization:
-        """Resolve structured authorization; LIVE_PRIVATE never yields public_*."""
+    def claim_authorization(
+        self,
+        *,
+        envelope: SignedClaimAuthorizationEnvelope | None = None,
+        trust_store: TrustStore | None = None,
+        trust_store_path: Path | None = None,
+        policy_mode: TrustPolicyMode | None = None,
+        at: datetime | None = None,
+        matcher_version: str | None = None,
+        matcher_config: MatcherConfig | None = None,
+        scoring_policy_version: str = "scoring-policy-v0.1",
+        base_path: Path | None = None,
+    ) -> ClaimAuthorization:
+        """Resolve structured authorization; LIVE_PRIVATE never yields public_*.
+
+        Public scopes require a **cryptographically verified** claim-authorization
+        envelope bound to this benchmark. A non-empty 64-hex digest alone is not
+        sufficient (fail closed).
+        """
+        from .claim_auth_verify import (
+            DEFAULT_MATCHER_VERSION,
+            derived_claim_authorization,
+            load_claim_authorization_envelope,
+            verify_claim_authorization,
+        )
+
         expert_natural = self.evidence_class == BenchmarkEvidenceClass.EXPERT_NATURAL
         live_private = self.evidence_class == BenchmarkEvidenceClass.LIVE_PRIVATE
-        has_manifest = bool(self.signed_authorization_manifest_digest)
         has_scopes = bool(
             (self.domain_scope or "").strip() and (self.use_scope or "").strip()
         )
@@ -145,34 +220,82 @@ class BenchmarkManifest(StrictModel):
             and self.protected_holdout
             and self.matcher_audit_complete
             and self.frozen_scoring_policy
-            and has_manifest
             and has_scopes
             and len(self.cases) >= self.minimum_public_claim_cases
         )
+
         if live_private:
-            scope = ClaimScope.PRIVATE_METHOD_REPORT
-        elif public_prereqs and self.comparative_authorization:
-            scope = ClaimScope.PUBLIC_COMPARATIVE
-        elif public_prereqs:
-            scope = ClaimScope.PUBLIC_DOMAIN_BOUNDED
-        else:
-            scope = ClaimScope.NONE
-        return ClaimAuthorization(
-            claim_scope=scope,
-            expert_natural_evidence=expert_natural,
-            rights_cleared_cases=self.rights_cleared_cases,
-            protected_holdout=self.protected_holdout,
-            independent_evaluation=self.independent_evaluation,
-            matcher_audit_complete=self.matcher_audit_complete,
-            frozen_scoring_policy=self.frozen_scoring_policy,
-            signed_authorization_manifest_digest=self.signed_authorization_manifest_digest,
-            signed_authorization_manifest_path=self.signed_authorization_manifest_path,
-            domain_scope=self.domain_scope,
-            use_scope=self.use_scope,
+            return ClaimAuthorization(
+                claim_scope=ClaimScope.PRIVATE_METHOD_REPORT,
+                expert_natural_evidence=expert_natural,
+                rights_cleared_cases=self.rights_cleared_cases,
+                protected_holdout=self.protected_holdout,
+                independent_evaluation=self.independent_evaluation,
+                matcher_audit_complete=self.matcher_audit_complete,
+                frozen_scoring_policy=self.frozen_scoring_policy,
+                signed_authorization_manifest_digest=(
+                    self.signed_authorization_manifest_digest
+                ),
+                signed_authorization_manifest_path=(
+                    self.signed_authorization_manifest_path
+                ),
+                domain_scope=self.domain_scope,
+                use_scope=self.use_scope,
+                authorization_verified=False,
+            )
+
+        loaded = envelope
+        if loaded is None and self.signed_authorization_manifest_path:
+            path = Path(self.signed_authorization_manifest_path)
+            if not path.is_absolute() and base_path is not None:
+                path = base_path / path
+            if path.is_file():
+                try:
+                    loaded = load_claim_authorization_envelope(path)
+                except (OSError, ValueError):
+                    loaded = None
+
+        if not public_prereqs or loaded is None:
+            return ClaimAuthorization(
+                claim_scope=ClaimScope.NONE,
+                expert_natural_evidence=expert_natural,
+                rights_cleared_cases=self.rights_cleared_cases,
+                protected_holdout=self.protected_holdout,
+                independent_evaluation=self.independent_evaluation,
+                matcher_audit_complete=self.matcher_audit_complete,
+                frozen_scoring_policy=self.frozen_scoring_policy,
+                signed_authorization_manifest_digest=(
+                    self.signed_authorization_manifest_digest
+                ),
+                signed_authorization_manifest_path=(
+                    self.signed_authorization_manifest_path
+                ),
+                domain_scope=self.domain_scope,
+                use_scope=self.use_scope,
+                authorization_verified=False,
+            )
+
+        report = verify_claim_authorization(
+            loaded,
+            benchmark=self,
+            matcher_version=matcher_version or DEFAULT_MATCHER_VERSION,
+            matcher_config=matcher_config or MatcherConfig(),
+            scoring_policy_version=scoring_policy_version,
+            trust_store=trust_store,
+            trust_store_path=trust_store_path,
+            policy_mode=policy_mode,
+            at=at,
+            expected_digest=self.signed_authorization_manifest_digest,
+        )
+        return derived_claim_authorization(
+            self,
+            envelope=loaded,
+            report=report,
+            comparative_authorized=self.comparative_authorization,
         )
 
     def performance_claim_authorized(self) -> bool:
-        """Transitional bool: public scopes only (never LIVE_PRIVATE)."""
+        """Transitional bool: verified public scopes only (never LIVE_PRIVATE)."""
         return self.claim_authorization().performance_claim_authorized
 
 
@@ -504,6 +627,7 @@ class EvaluationResult(StrictModel):
     case_evaluations: list[CaseEvaluation]
     metrics: EvaluationMetrics
     claim_authorization: ClaimAuthorization = Field(default_factory=ClaimAuthorization.none)
+    claim_authorization_envelope: SignedClaimAuthorizationEnvelope | None = None
     performance_claim_authorized: bool = False
     claim_boundary: str
     generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -512,7 +636,39 @@ class EvaluationResult(StrictModel):
 
     @model_validator(mode="after")
     def sync_performance_claim_flag(self) -> EvaluationResult:
-        """Derive transitional bool from claim_scope (public scopes only)."""
+        """Fail closed: public scopes require an attached verified envelope."""
+        auth = self.claim_authorization
+        scope = auth.claim_scope
+        has_envelope = self.claim_authorization_envelope is not None
+        if scope in _PUBLIC_CLAIM_SCOPES and (
+            not has_envelope or not auth.authorization_verified
+        ):
+            # Crafted public scopes without a verified envelope coerce to NONE.
+            object.__setattr__(
+                self,
+                "claim_authorization",
+                ClaimAuthorization(
+                    claim_scope=ClaimScope.NONE,
+                    expert_natural_evidence=auth.expert_natural_evidence,
+                    rights_cleared_cases=auth.rights_cleared_cases,
+                    protected_holdout=auth.protected_holdout,
+                    independent_evaluation=auth.independent_evaluation,
+                    matcher_audit_complete=auth.matcher_audit_complete,
+                    frozen_scoring_policy=auth.frozen_scoring_policy,
+                    signed_authorization_manifest_digest=(
+                        auth.signed_authorization_manifest_digest
+                    ),
+                    signed_authorization_manifest_path=(
+                        auth.signed_authorization_manifest_path
+                    ),
+                    domain_scope=auth.domain_scope,
+                    use_scope=auth.use_scope,
+                    authorization_verified=False,
+                    verification_report_digest=auth.verification_report_digest,
+                ),
+            )
+            object.__setattr__(self, "performance_claim_authorized", False)
+            return self
         expected = self.claim_authorization.performance_claim_authorized
         if self.performance_claim_authorized != expected:
             object.__setattr__(self, "performance_claim_authorized", expected)

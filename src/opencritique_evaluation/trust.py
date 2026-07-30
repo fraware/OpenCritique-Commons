@@ -21,7 +21,20 @@ class StrictModel(BaseModel):
 class KeyRole(str, Enum):
     OFFLINE_ROOT = "offline_root"
     ONLINE_RELEASE = "online_release"
+    CLAIM_AUTHORITY = "claim_authority"
+    EVIDENCE_AUTHORITY = "evidence_authority"
     TEST = "test"
+
+
+# Default roles permitted to sign public scorecard envelopes.
+SCORECARD_SIGNING_ROLES: frozenset[KeyRole] = frozenset(
+    {KeyRole.OFFLINE_ROOT, KeyRole.ONLINE_RELEASE}
+)
+
+# Roles permitted to sign claim-authorization envelopes under production policy.
+CLAIM_AUTHORITY_SIGNING_ROLES: frozenset[KeyRole] = frozenset(
+    {KeyRole.CLAIM_AUTHORITY, KeyRole.OFFLINE_ROOT}
+)
 
 
 class KeyStatus(str, Enum):
@@ -51,6 +64,12 @@ class VerificationFailureReason(str, Enum):
     PUBLIC_KEY_MISMATCH = "public_key_mismatch"
     NOT_YET_VALID = "not_yet_valid"
     SUPERSEDED_WITHOUT_HISTORICAL = "superseded_without_historical"
+    ENVELOPE_MISSING = "envelope_missing"
+    BINDING_MISMATCH = "binding_mismatch"
+    DECISION_NOT_YET_VALID = "decision_not_yet_valid"
+    DECISION_EXPIRED = "decision_expired"
+    DIGEST_MISMATCH = "digest_mismatch"
+    SCOPE_NOT_PUBLIC = "scope_not_public"
 
 
 class TrustedKeyRecord(StrictModel):
@@ -207,7 +226,9 @@ def evaluate_key_policy(
     policy_mode: TrustPolicyMode,
     at: datetime,
     store: TrustStore,
+    permitted_roles: frozenset[KeyRole] | None = None,
 ) -> VerificationResult:
+    allowed = permitted_roles if permitted_roles is not None else SCORECARD_SIGNING_ROLES
     if record is None:
         return VerificationResult(
             ok=False,
@@ -296,26 +317,17 @@ def evaluate_key_policy(
                 key_role=record.role,
                 policy_mode=policy_mode,
             )
-    if policy_mode == TrustPolicyMode.PRODUCTION and record.role not in {
-        KeyRole.OFFLINE_ROOT,
-        KeyRole.ONLINE_RELEASE,
-    }:
+    if policy_mode in {
+        TrustPolicyMode.PRODUCTION,
+        TrustPolicyMode.DEVELOPMENT,
+    } and record.role not in allowed:
         return VerificationResult(
             ok=False,
             reason=VerificationFailureReason.ROLE_NOT_PERMITTED,
-            detail=f"role {record.role.value} cannot sign under production policy",
-            key_id=key_id,
-            key_role=record.role,
-            policy_mode=policy_mode,
-        )
-    if policy_mode == TrustPolicyMode.DEVELOPMENT and record.role not in {
-        KeyRole.OFFLINE_ROOT,
-        KeyRole.ONLINE_RELEASE,
-    }:
-        return VerificationResult(
-            ok=False,
-            reason=VerificationFailureReason.ROLE_NOT_PERMITTED,
-            detail=f"role {record.role.value} cannot sign under development policy",
+            detail=(
+                f"role {record.role.value} cannot sign under "
+                f"{policy_mode.value} policy for this artifact class"
+            ),
             key_id=key_id,
             key_role=record.role,
             policy_mode=policy_mode,

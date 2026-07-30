@@ -24,12 +24,37 @@ repository.
 
 | Role | Purpose | Production signing |
 |---|---|---|
-| `offline_root` | Offline root of trust; publishes and revokes release keys | Rare / ceremony |
+| `offline_root` | Offline root of trust; publishes and revokes release keys; may also sign claim-authorization envelopes | Rare / ceremony |
 | `online_release` | Signs public scorecard envelopes for published releases | Yes (production channel only) |
+| `claim_authority` | Signs `SignedClaimAuthorizationEnvelope` decisions that unlock public claim scopes | Yes (claim envelopes only) |
+| `evidence_authority` | Reserved for signed scientific evidence attestations (follow-on) | Not yet used for scorecards |
 | `test` | Ephemeral CI / developer keys; unmistakably marked | **Rejected** |
 
 Separation of duties: root operators must not routinely hold online release private
-keys on networked build hosts.
+keys on networked build hosts. Scorecard integrity signatures (`online_release`) do
+**not** authorize scientific performance claims. Public claim scopes require a
+separately verified claim-authorization envelope signed by `claim_authority` or
+`offline_root`.
+
+## Claim-authorization envelopes
+
+Public scientific scopes (`public_domain_bounded`, `public_comparative`) unlock only
+after `verify_claim_authorization` succeeds against the production (or explicit
+development/test) trust store:
+
+1. Canonical decision bytes must match `payload_sha256`.
+2. `key_id` must resolve in the trust store with an allowed role, active status,
+   validity interval, and no revocation.
+3. Ed25519 signature must verify.
+4. Decision fields must bind to the live benchmark (`benchmark_id` / `version`,
+   `case_set_hash`, recomputed manifest content hash, scoring-policy hash, matcher
+   version/config hash, `domain_scope` / `use_scope`).
+5. Wall-clock time must fall in `[issued_at, not_after]`.
+
+A non-empty 64-hex `signed_authorization_manifest_digest` alone is **not**
+authorization. `BenchmarkManifest.claim_authorization()`, `EvaluationResult`, and
+`build_scorecard` fail closed without a verified envelope. Scorecard signing still
+proves artifact integrity only; it does not bypass claim authorization.
 
 ## Development ceremony
 

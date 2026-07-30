@@ -123,12 +123,14 @@ def load_extended_registry() -> dict[str, SchemaEntry]:
     from opencritique_evaluation.models import (
         BenchmarkManifest,
         ClaimAuthorization,
+        ClaimAuthorizationDecision,
         EvaluationResult,
         EvaluationSubmission,
         MatcherSensitivityReport,
         NovelConcernDetermination,
         NovelConcernQueue,
         PublicScorecard,
+        SignedClaimAuthorizationEnvelope,
         SignedScorecardEnvelope,
         SystemManifest,
     )
@@ -140,6 +142,16 @@ def load_extended_registry() -> dict[str, SchemaEntry]:
             ("EvaluationSubmission", EvaluationSubmission, "Evaluation submission"),
             ("EvaluationResult", EvaluationResult, "Evaluation result"),
             ("ClaimAuthorization", ClaimAuthorization, "Structured claim authorization"),
+            (
+                "ClaimAuthorizationDecision",
+                ClaimAuthorizationDecision,
+                "Immutable claim-authorization decision payload",
+            ),
+            (
+                "SignedClaimAuthorizationEnvelope",
+                SignedClaimAuthorizationEnvelope,
+                "Signed claim-authorization envelope",
+            ),
             ("PublicScorecard", PublicScorecard, "Public scorecard"),
             ("MatcherSensitivityReport", MatcherSensitivityReport, "Matcher sensitivity"),
             ("NovelConcernQueue", NovelConcernQueue, "Novel concern queue"),

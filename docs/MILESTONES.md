@@ -80,16 +80,18 @@ Outreach packet: [outreach-one-pager.md](outreach-one-pager.md).
 | Infrastructure / schema / adapter conformance | Yes (descriptive) | Fixtures + tests; must not be framed as reviewer quality |
 | Synthetic matching / conversion demos | Yes (descriptive only) | Explicit non-performance disclosure |
 | Private live method reports (`claim_scope=private_method_report`) | Method-report only | `LIVE_PRIVATE` / private live provenance; **never** authorizes `public_*` scientific claims |
-| Precision / recall / severity-weighted metrics as scientific results (`public_domain_bounded`) | **No** | `EXPERT_NATURAL` + rights-cleared cases + protected holdout + independent evaluation + matcher-audit complete + frozen scoring policy + signed authorization manifest + explicit `domain_scope` / `use_scope` |
-| Comparative reviewer ranking / leaderboard claims (`public_comparative`) | **No** | Same public prerequisites + comparative authorization |
+| Precision / recall / severity-weighted metrics as scientific results (`public_domain_bounded`) | **No** | `EXPERT_NATURAL` + rights-cleared cases + protected holdout + independent evaluation + matcher-audit complete + frozen scoring policy + **cryptographically verified** `SignedClaimAuthorizationEnvelope` (trust-store `claim_authority` / `offline_root`; self-attested digests do not count) + explicit `domain_scope` / `use_scope` |
+| Comparative reviewer ranking / leaderboard claims (`public_comparative`) | **No** | Same public prerequisites + comparative authorization + verified envelope |
 | “Production Coarse compatibility” as quality endorsement | **No** | Compatibility ≠ correctness; genuine exports still pending |
 
 Enforcement hooks already present:
 
-- `BenchmarkManifest.claim_authorization()` / structured `ClaimAuthorization.claim_scope`
-- Derived transitional `performance_claim_authorized` (true only for `public_domain_bounded` / `public_comparative`)
+- `ClaimAuthorizationDecision` / `SignedClaimAuthorizationEnvelope` + `verify_claim_authorization`
+- `BenchmarkManifest.claim_authorization()` derives public scopes only from successful envelope verification
+- Derived transitional `performance_claim_authorized` (true only for verified `public_domain_bounded` / `public_comparative`)
+- `EvaluationResult` coerces crafted public scopes without an attached verified envelope to `none`
+- `build_scorecard` scientific headline only after successful `verify_claim_authorization` (default: no envelope ⇒ non-performance)
 - `AcquisitionLedger.performance_claims_authorized` (false)
-- Scorecard scientific headline only for public scopes; private method reports stay non-performance language
 - Rights memorandum + case-level rights records
 
 ## Runtime release checklist
