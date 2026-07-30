@@ -146,12 +146,12 @@ steps at [examples/studio-walkthrough.md](examples/studio-walkthrough.md).
 ## 6. Evidence not claimed
 - No production MANIFEST ready status asserted from this pilot
 - No natural matcher-audit DoD met unless real session manifests exist
-- Gates: `python scripts/check_v09_gates.py` expected NO-GO until external evidence lands
+- Gates: `python scripts/check_v09_scientific_gates.py` expected NO-GO until external evidence lands
 ```
 
 ## Gate honesty
 
-`python scripts/check_v09_gates.py` remains fail-closed: missing or blocked
+`python scripts/check_v09_scientific_gates.py` remains fail-closed: missing or blocked
 evidence artifacts → non-zero exit (NO-GO). Private pilots do not change that.
 The script never invents natural counts and never sets
 `performance_claims_authorized=true`.

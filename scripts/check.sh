@@ -224,6 +224,9 @@ required = [
     "governance/policies/expert-attribution-policy.v0.1.json",
     "scripts/ingest_production_adapter_exports.py",
     "scripts/check_v09_gates.py",
+    "scripts/check_v09_engineering_gates.py",
+    "scripts/check_v09_scientific_gates.py",
+    "scripts/v09_gate_lib.py",
     "schemas/inventory.json",
     "schemas/GOLDEN_HASHES.json",
     "openapi/registry.openapi.json",
@@ -249,17 +252,20 @@ assert not present, present
 print("publication paths OK")
 PY
 
-echo "==> v0.9 gate evaluator (must report NO-GO while authenticity gates unmet)"
+echo "==> v0.9 engineering gates (scaffolding; expected OK)"
+$PYTHON scripts/check_v09_engineering_gates.py
+
+echo "==> v0.9 scientific gates (must report NO-GO while authenticity gates unmet)"
 set +e
-$PYTHON scripts/check_v09_gates.py
+$PYTHON scripts/check_v09_scientific_gates.py
 v09_status=$?
 set -e
 if [ "$v09_status" -eq 0 ]; then
-  echo "v0.9 gates unexpectedly passed; authenticity scaffolding may be wrong" >&2
+  echo "v0.9 scientific gates unexpectedly passed; authenticity scaffolding may be wrong" >&2
   exit 1
 fi
 if [ "$v09_status" -ne 1 ]; then
-  echo "v0.9 gate evaluator crashed with status $v09_status" >&2
+  echo "v0.9 scientific gate evaluator crashed with status $v09_status" >&2
   exit 1
 fi
 

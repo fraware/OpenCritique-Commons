@@ -24,7 +24,7 @@ Recompute programmatically (never invents natural volume). Natural counts are
 python -c "from opencritique_evaluation.matcher_audit import measure_current_denominators, discover_natural_decision_count; print(discover_natural_decision_count()); print(measure_current_denominators())"
 ```
 
-`scripts/check_v09_gates.py` gate #6 uses the same discovery path.
+`scripts/check_v09_scientific_gates.py` matcher-audit gate uses the same discovery path.
 
 ## Session manifests
 

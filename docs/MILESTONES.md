@@ -28,14 +28,16 @@ hard definitions of done.
 | 1 | `v0.6-alpha` | Durable kernel: schema freeze, OpenAPI freeze, Alembic-only init, novel determinations, Coarse sample-conformance report, CLI | **Engineering met** — genuine Coarse production exports remain blocked (issue #3) |
 | 2 | `v0.7-alpha` | Second adapter, signing governance, matcher-audit protocol, document graph alpha | **Engineering met with external blockers** — sample OpenReviewer adapter, matcher-audit, and ingestion/verifiers present; authentic OpenReviewer outputs remain blocked (issue #5). **Production public signing keys are published** in `trust/scorecard-trust-store.json` (issue #4); private keys stay offline |
 | 3 | `v0.8-alpha` | Rights path, sample cases, expert/studio maturity; **no performance claims** | **Mostly met for sample conformance** — owned sample corpus, import paths, appeals records, studio baseline, and deployment runbooks present; natural external rights path remains blocked (issue #7 negative finding archived) |
-| 4 | `v0.9-beta` | 40 natural cases, 2 profiles, independent adjudication, holdout, pilot scorecards | **Not met / NO-GO** — `scripts/check_v09_gates.py` must exit **0** before GO; evidence-driven (production MANIFESTs, natural session manifests, staffing roster). See [v0.9-beta-go-no-go.md](v0.9-beta-go-no-go.md) and [adapter-authenticity.md](adapter-authenticity.md) workstreams A–F |
+| 4 | `v0.9-beta` | 40 natural cases, 2 profiles, independent adjudication, holdout, pilot scorecards | **Not met / NO-GO** — `scripts/check_v09_scientific_gates.py` must exit **0** before GO; engineering scaffolding is separate (`check_v09_engineering_gates.py`). Evidence-driven (production MANIFESTs, natural session manifests, staffing roster, rights-cleared cases, holdout, independent evaluation, signing). See [v0.9-beta-go-no-go.md](v0.9-beta-go-no-go.md) and [adapter-authenticity.md](adapter-authenticity.md) workstreams A–F |
 | 5 | `v1.0` | Full §14 gate | **Not met** |
 
 **v0.9-beta GO rule:** cut the authenticity checklist only when
-`python scripts/check_v09_gates.py` exits 0. Gates discover evidence artifacts;
-they never invent natural counts or production readiness. **§12 claims stay
-locked** until the matrix below is satisfied — a green gate script alone does
-not authorize precision/recall or leaderboard language.
+`python scripts/check_v09_scientific_gates.py` exits 0. Engineering gates
+(`check_v09_engineering_gates.py`) confirm process scaffolding only.
+Gates discover evidence artifacts; they never invent natural counts or
+production readiness. **§12 claims stay locked** until the matrix below is
+satisfied — a green scientific gate script alone does not authorize
+precision/recall or leaderboard language.
 
 ### Live upstream runners (engineering depth only)
 
