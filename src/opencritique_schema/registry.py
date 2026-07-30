@@ -129,6 +129,10 @@ def load_extended_registry() -> dict[str, SchemaEntry]:
         ReviewerExportAuthenticityAttestation,
         SignedEvidenceEnvelope,
     )
+    from opencritique_evaluation.holdout_custody import (
+        HoldoutAccessLog,
+        HoldoutSetManifest,
+    )
     from opencritique_evaluation.models import (
         BenchmarkManifest,
         ClaimAuthorization,
@@ -180,6 +184,16 @@ def load_extended_registry() -> dict[str, SchemaEntry]:
                 "MatcherAuditCompletionAttestation",
                 MatcherAuditCompletionAttestation,
                 "Signed matcher-audit completion attestation payload",
+            ),
+            (
+                "HoldoutSetManifest",
+                HoldoutSetManifest,
+                "Frozen holdout set manifest (case digests + custody metadata)",
+            ),
+            (
+                "HoldoutAccessLog",
+                HoldoutAccessLog,
+                "Append-only holdout custody access log",
             ),
             (
                 "HoldoutCustodyAttestation",

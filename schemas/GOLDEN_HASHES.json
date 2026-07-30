@@ -15,7 +15,9 @@
   "EvaluationSubmission.schema.json": "ce38ccd496775fc4da4f45831cb31bffe572be9f0f20093da6a34edabaea9654",
   "EvidenceItem.schema.json": "5f9fdbe0f15c9579afc837910abede91e46639dfc1221c547270e0f9b0aee1c4",
   "ExpertStaffingAttestation.schema.json": "4f95a15d67e356213bde3a518f86f732b9fefed0e7e760620b6261888c51e226",
-  "HoldoutCustodyAttestation.schema.json": "da0244cda7c0bdf4ce635cde3239e92f238007abb8d0453fafd7f88c1a752e3b",
+  "HoldoutAccessLog.schema.json": "bd073ff2af53d16504b71f13e094836a5d068fdaedbb0f59721bec8d10769443",
+  "HoldoutCustodyAttestation.schema.json": "626f0c02b48c2ecc4490562905982b8c199b3977017a9af74a8ac0e442ecf54e",
+  "HoldoutSetManifest.schema.json": "ec4fe5ce66d84a70fab525d62b00437e444c621770c789155386e06c05e1bf7c",
   "IndependentEvaluationAttestation.schema.json": "d09b04961b3b1b25004fca8938ad12415cc24f629b6ebe7f2aa5f986dc27e1a9",
   "Manuscript.schema.json": "fc82c7bcc0d83dc2a776225de5cf707cbf99b517c3924d568200fd979880239e",
   "ManuscriptVersion.schema.json": "d8565ddd227bdbbbb8857e6ad8b476e30aae263a1a3a42974afba45b384cc6f2",
@@ -28,9 +30,15 @@
   "Resolution.schema.json": "9a1ad04b6ef77b5564e3ece8fc63a2e039b8778bb2250dafd67ffb97954e334d",
   "ReviewerExportAuthenticityAttestation.schema.json": "3f4921ac241a8fa0bb40d1722c456968f5b34e172677593d2c580c7a7d381daa",
   "RunManifest.schema.json": "869e3e0c131b750c6cdf7f1f7610d9b3dba36925b0943cfc39bdb3789799376e",
+<<<<<<< HEAD
   "SignedClaimAuthorizationEnvelope.schema.json": "7484ba345d4c62eebd85fe2b1fb7b43a73d159cb0ec85023c497d21821d5dbab",
   "SignedEvidenceEnvelope.schema.json": "b23dae142bf763d895162c334c4e7dbfc963302caa47747818cf5bcc2873bf09",
   "SignedScorecardEnvelope.schema.json": "83a63e316d0a16d1e4ad83c16c2f28276fcfeef42c0a074fac8688957a1bf974",
+=======
+  "SignedClaimAuthorizationEnvelope.schema.json": "a378ac6e00d1ac4281629c7b750e7ef49b4551db0a4998043e0fa58867b2fa50",
+  "SignedEvidenceEnvelope.schema.json": "58a1c8afe3f0f0d9cd5dd326a460a9eaee2f01a23ffd107e22f0c73b19177aa4",
+  "SignedScorecardEnvelope.schema.json": "bceda2af71f38b374bba822f22f365df17c9df93a2f43cc270ea678ba1dbf802",
+>>>>>>> origin/main
   "SystemManifest.schema.json": "5528d18ae759b6e3bdbaaace33589618cca8b1f2f10e70ace8603c5994c530b2",
-  "inventory.json": "d0e6677ad80f1aebb32f82ce6894e7ce1bbc1ff9067bb53448fda4a8a226d9a2"
+  "inventory.json": "49264397d0e9c655e3c5204cc8755fa0abd696cbbb2c9ab397aaa9f3df6d90bc"
 }
