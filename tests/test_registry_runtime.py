@@ -59,17 +59,23 @@ def test_byok_requires_provider_and_api_key(tmp_path: Path, monkeypatch) -> None
 
 
 def test_readyz_reports_database_and_artifact_status(tmp_path: Path) -> None:
+    from opencritique_registry.api import PACKAGE_VERSION
+
     settings = RegistrySettings(
         database_url=f"sqlite:///{(tmp_path / 'ready.db').as_posix()}",
         artifact_root=tmp_path / "artifacts",
     )
     with TestClient(create_app(settings, initialize=True)) as client:
         response = client.get("/readyz")
+        health = client.get("/healthz")
     assert response.status_code == 200
     payload = response.json()
     assert payload["status"] == "ok"
+    assert payload["version"] == PACKAGE_VERSION
     assert payload["checks"]["database"] == "ok"
     assert str(tmp_path / "artifacts") in payload["checks"]["artifact_root"]
+    assert health.status_code == 200
+    assert health.json() == {"status": "ok", "version": PACKAGE_VERSION}
 
 
 def test_byok_secrets_are_not_persisted_in_registry_rows(tmp_path: Path, monkeypatch) -> None:

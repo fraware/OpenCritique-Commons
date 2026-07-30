@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from importlib.metadata import version
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from sqlalchemy import select, text
@@ -55,6 +56,8 @@ from .service import RegistryService
 from .studio import install_studio_routes
 from .timeutils import as_utc
 
+PACKAGE_VERSION = version("opencritique-commons")
+
 
 def create_app(settings: RegistrySettings | None = None, *, initialize: bool = False) -> FastAPI:
     settings = (settings or RegistrySettings.from_env()).validated()
@@ -85,7 +88,7 @@ def create_app(settings: RegistrySettings | None = None, *, initialize: bool = F
             ready = False
         return {
             "status": "ok" if ready else "error",
-            "version": "0.5.0-alpha",
+            "version": PACKAGE_VERSION,
             "checks": checks,
         }, ready
 
@@ -98,7 +101,7 @@ def create_app(settings: RegistrySettings | None = None, *, initialize: bool = F
 
     app = FastAPI(
         title="OpenCritique Registry and Adjudication API",
-        version="0.5.0-alpha",
+        version=PACKAGE_VERSION,
         lifespan=lifespan,
         description=(
             "Immutable case registry, granular data-use authorization, and blinded scientific "
@@ -116,7 +119,7 @@ def create_app(settings: RegistrySettings | None = None, *, initialize: bool = F
 
     @app.get("/healthz")
     def health() -> dict[str, str]:
-        return {"status": "ok", "version": "0.5.0-alpha"}
+        return {"status": "ok", "version": PACKAGE_VERSION}
 
     @app.get("/readyz")
     def readyz(response: Response) -> dict[str, object]:
