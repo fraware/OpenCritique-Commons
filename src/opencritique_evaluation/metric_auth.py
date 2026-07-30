@@ -207,10 +207,6 @@ def default_authorized_metrics_for_completeness(
     system_version: str | None = None,
 ) -> list[AuthorizedMetric]:
     """Convenience builder for tests / ceremony tooling (not auto-granted)."""
-    common = {
-        "domain_scope": domain_scope,
-        "system_version": system_version,
-    }
     if completeness in COMPLETE_FOR_PRECISION:
         req = (
             CompletenessRequirement.COMPLETE_SEEDED
@@ -222,101 +218,108 @@ def default_authorized_metrics_for_completeness(
                 metric_id=ClaimMetricId.ANCHOR_INTEGRITY,
                 status=MetricAuthStatus.AUTHORIZED,
                 completeness_requirement=req,
-                **common,
+                domain_scope=domain_scope,
+                system_version=system_version,
             ),
             AuthorizedMetric(
                 metric_id=ClaimMetricId.SEEDED_DEFECT_RECALL,
                 status=MetricAuthStatus.AUTHORIZED,
                 completeness_requirement=req,
-                **common,
+                domain_scope=domain_scope,
+                system_version=system_version,
             ),
             AuthorizedMetric(
                 metric_id=ClaimMetricId.CRITICAL_PRECISION,
                 status=MetricAuthStatus.AUTHORIZED,
                 completeness_requirement=req,
-                **common,
+                domain_scope=domain_scope,
+                system_version=system_version,
             ),
             AuthorizedMetric(
                 metric_id=ClaimMetricId.MAJOR_PRECISION,
                 status=MetricAuthStatus.AUTHORIZED,
                 completeness_requirement=req,
-                **common,
+                domain_scope=domain_scope,
+                system_version=system_version,
             ),
             AuthorizedMetric(
                 metric_id=ClaimMetricId.CALIBRATION,
                 status=MetricAuthStatus.AUTHORIZED,
                 completeness_requirement=req,
-                **common,
+                domain_scope=domain_scope,
+                system_version=system_version,
             ),
             AuthorizedMetric(
                 metric_id=ClaimMetricId.FALSE_CRITICAL_RATE,
                 status=MetricAuthStatus.AUTHORIZED,
                 completeness_requirement=req,
-                **common,
+                domain_scope=domain_scope,
+                system_version=system_version,
             ),
             AuthorizedMetric(
                 metric_id=ClaimMetricId.REFERENCE_RECALL,
                 status=MetricAuthStatus.NOT_APPLICABLE,
                 completeness_requirement=CompletenessRequirement.PARTIAL_NATURAL,
                 limitations=["not applicable on complete reference sets"],
-                **common,
+                domain_scope=domain_scope,
+                system_version=system_version,
             ),
         ]
     # Incomplete: recall-family only; precision/calibration withheld.
+    withheld_limit = [f"withheld under reference_completeness={completeness.value}"]
     return [
         AuthorizedMetric(
             metric_id=ClaimMetricId.ANCHOR_INTEGRITY,
             status=MetricAuthStatus.AUTHORIZED,
             completeness_requirement=CompletenessRequirement.ANY,
-            **common,
+            domain_scope=domain_scope,
+            system_version=system_version,
         ),
         AuthorizedMetric(
             metric_id=ClaimMetricId.REFERENCE_RECALL,
             status=MetricAuthStatus.AUTHORIZED,
             completeness_requirement=CompletenessRequirement.PARTIAL_NATURAL,
-            **common,
+            domain_scope=domain_scope,
+            system_version=system_version,
         ),
         AuthorizedMetric(
             metric_id=ClaimMetricId.SEEDED_DEFECT_RECALL,
             status=MetricAuthStatus.NOT_APPLICABLE,
             completeness_requirement=CompletenessRequirement.COMPLETE_SEEDED,
             limitations=["seeded defect recall requires a complete seeded set"],
-            **common,
+            domain_scope=domain_scope,
+            system_version=system_version,
         ),
         AuthorizedMetric(
             metric_id=ClaimMetricId.CRITICAL_PRECISION,
             status=MetricAuthStatus.WITHHELD,
             completeness_requirement=CompletenessRequirement.ADJUDICATED_OUTPUT_COMPLETE,
-            limitations=[
-                f"withheld under reference_completeness={completeness.value}"
-            ],
-            **common,
+            limitations=withheld_limit,
+            domain_scope=domain_scope,
+            system_version=system_version,
         ),
         AuthorizedMetric(
             metric_id=ClaimMetricId.MAJOR_PRECISION,
             status=MetricAuthStatus.WITHHELD,
             completeness_requirement=CompletenessRequirement.ADJUDICATED_OUTPUT_COMPLETE,
-            limitations=[
-                f"withheld under reference_completeness={completeness.value}"
-            ],
-            **common,
+            limitations=withheld_limit,
+            domain_scope=domain_scope,
+            system_version=system_version,
         ),
         AuthorizedMetric(
             metric_id=ClaimMetricId.CALIBRATION,
             status=MetricAuthStatus.WITHHELD,
             completeness_requirement=CompletenessRequirement.ADJUDICATED_OUTPUT_COMPLETE,
-            limitations=[
-                f"withheld under reference_completeness={completeness.value}"
-            ],
-            **common,
+            limitations=withheld_limit,
+            domain_scope=domain_scope,
+            system_version=system_version,
         ),
         AuthorizedMetric(
             metric_id=ClaimMetricId.FALSE_CRITICAL_RATE,
             status=MetricAuthStatus.WITHHELD,
             completeness_requirement=CompletenessRequirement.ADJUDICATED_OUTPUT_COMPLETE,
-            limitations=[
-                f"withheld under reference_completeness={completeness.value}"
-            ],
-            **common,
+            limitations=withheld_limit,
+            domain_scope=domain_scope,
+            system_version=system_version,
         ),
     ]
