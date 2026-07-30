@@ -63,6 +63,11 @@
       "title": "Cases",
       "type": "array"
     },
+    "comparative_authorization": {
+      "default": false,
+      "title": "Comparative Authorization",
+      "type": "boolean"
+    },
     "created_at": {
       "format": "date-time",
       "title": "Created At",
@@ -80,12 +85,29 @@
       "title": "Domain Profiles",
       "type": "array"
     },
+    "domain_scope": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Domain Scope"
+    },
     "evidence_class": {
       "$ref": "#/$defs/BenchmarkEvidenceClass"
     },
     "expert_adjudicated": {
       "default": false,
       "title": "Expert Adjudicated",
+      "type": "boolean"
+    },
+    "frozen_scoring_policy": {
+      "default": false,
+      "title": "Frozen Scoring Policy",
       "type": "boolean"
     },
     "independent_evaluation": {
@@ -104,14 +126,54 @@
       "title": "Limitations",
       "type": "array"
     },
+    "matcher_audit_complete": {
+      "default": false,
+      "title": "Matcher Audit Complete",
+      "type": "boolean"
+    },
     "minimum_public_claim_cases": {
       "default": 40,
       "minimum": 1,
       "title": "Minimum Public Claim Cases",
       "type": "integer"
     },
+    "protected_holdout": {
+      "default": false,
+      "title": "Protected Holdout",
+      "type": "boolean"
+    },
     "reference_completeness": {
       "$ref": "#/$defs/ReferenceCompleteness"
+    },
+    "rights_cleared_cases": {
+      "default": false,
+      "title": "Rights Cleared Cases",
+      "type": "boolean"
+    },
+    "signed_authorization_manifest_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Signed Authorization Manifest Digest"
+    },
+    "signed_authorization_manifest_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Signed Authorization Manifest Path"
     },
     "source_url": {
       "anyOf": [
@@ -131,6 +193,18 @@
     "title": {
       "title": "Title",
       "type": "string"
+    },
+    "use_scope": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Use Scope"
     },
     "version": {
       "title": "Version",

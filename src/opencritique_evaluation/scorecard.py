@@ -7,7 +7,14 @@ from pathlib import Path
 
 from opencritique_schema.canonical import canonical_json_bytes
 
-from .models import EvaluationResult, PublicScorecard
+from .models import ClaimScope, EvaluationResult, PublicScorecard
+
+_PUBLIC_SCOPES = frozenset(
+    {
+        ClaimScope.PUBLIC_DOMAIN_BOUNDED,
+        ClaimScope.PUBLIC_COMPARATIVE,
+    }
+)
 
 
 def build_scorecard(
@@ -16,9 +23,19 @@ def build_scorecard(
     predecessor_scorecard_id: str | None = None,
     predecessor_scorecard_hash: str | None = None,
 ) -> PublicScorecard:
-    if result.performance_claim_authorized:
-        headline = f"{result.system.display_name} — independently evaluated scientific scorecard"
+    scope = result.claim_authorization.claim_scope
+    if scope in _PUBLIC_SCOPES:
+        headline = (
+            f"{result.system.display_name} — independently evaluated scientific scorecard"
+        )
         disclosure = result.claim_boundary
+    elif scope == ClaimScope.PRIVATE_METHOD_REPORT:
+        headline = f"{result.system.display_name} — private method report"
+        disclosure = (
+            "This scorecard is a private method report only and does not authorize "
+            "public scientific performance claims. "
+            + result.claim_boundary
+        )
     else:
         headline = f"{result.system.display_name} — non-performance evaluation record"
         disclosure = (
@@ -75,7 +92,11 @@ def write_html(scorecard: PublicScorecard, path: Path) -> None:
             _metric("Brier score", metrics.brier_score),
         ]
     )
-    authorization = "AUTHORIZED" if result.performance_claim_authorized else "NOT AUTHORIZED"
+    scope = result.claim_authorization.claim_scope.value
+    if result.performance_claim_authorized:
+        authorization = f"AUTHORIZED ({scope})"
+    else:
+        authorization = f"NOT AUTHORIZED ({scope})"
     limitations = "".join(
         f"<li>{html.escape(item)}</li>" for item in result.benchmark.limitations
     )

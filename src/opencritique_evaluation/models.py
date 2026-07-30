@@ -4,7 +4,14 @@ from datetime import UTC, datetime
 from enum import Enum
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    HttpUrl,
+    computed_field,
+    model_validator,
+)
 
 from opencritique_schema.models import Severity
 
@@ -26,6 +33,60 @@ class ReferenceCompleteness(str, Enum):
     UNKNOWN = "unknown"
 
 
+class ClaimScope(str, Enum):
+    """Signed authorization scope for scientific performance language."""
+
+    NONE = "none"
+    PRIVATE_METHOD_REPORT = "private_method_report"
+    PUBLIC_DOMAIN_BOUNDED = "public_domain_bounded"
+    PUBLIC_COMPARATIVE = "public_comparative"
+
+
+_PUBLIC_CLAIM_SCOPES = frozenset(
+    {
+        ClaimScope.PUBLIC_DOMAIN_BOUNDED,
+        ClaimScope.PUBLIC_COMPARATIVE,
+    }
+)
+
+
+class ClaimAuthorization(StrictModel):
+    """Structured claim authorization; prefer ``claim_scope`` over the bool."""
+
+    claim_scope: ClaimScope
+    expert_natural_evidence: bool = False
+    rights_cleared_cases: bool = False
+    protected_holdout: bool = False
+    independent_evaluation: bool = False
+    matcher_audit_complete: bool = False
+    frozen_scoring_policy: bool = False
+    signed_authorization_manifest_digest: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$"
+    )
+    signed_authorization_manifest_path: str | None = None
+    domain_scope: str | None = None
+    use_scope: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def drop_derived_performance_flag(cls, data: object) -> object:
+        """Ignore transitional bool on input so JSON round-trips stay valid."""
+        if isinstance(data, dict) and "performance_claim_authorized" in data:
+            data = dict(data)
+            data.pop("performance_claim_authorized", None)
+        return data
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def performance_claim_authorized(self) -> bool:
+        """Transitional: true only for public scientific scopes."""
+        return self.claim_scope in _PUBLIC_CLAIM_SCOPES
+
+    @classmethod
+    def none(cls) -> ClaimAuthorization:
+        return cls(claim_scope=ClaimScope.NONE)
+
+
 class BenchmarkCaseRef(StrictModel):
     case_id: str
     case_version: str
@@ -44,6 +105,17 @@ class BenchmarkManifest(StrictModel):
     independent_evaluation: bool = False
     expert_adjudicated: bool = False
     minimum_public_claim_cases: int = Field(default=40, ge=1)
+    rights_cleared_cases: bool = False
+    protected_holdout: bool = False
+    matcher_audit_complete: bool = False
+    frozen_scoring_policy: bool = False
+    signed_authorization_manifest_digest: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$"
+    )
+    signed_authorization_manifest_path: str | None = None
+    domain_scope: str | None = None
+    use_scope: str | None = None
+    comparative_authorization: bool = False
     license: str
     source_url: HttpUrl | None = None
     case_set_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -57,16 +129,51 @@ class BenchmarkManifest(StrictModel):
             raise ValueError("benchmark case references must be unique")
         return self
 
-    def performance_claim_authorized(self) -> bool:
-        return (
-            self.evidence_class in {
-                BenchmarkEvidenceClass.EXPERT_NATURAL,
-                BenchmarkEvidenceClass.LIVE_PRIVATE,
-            }
+    def claim_authorization(self) -> ClaimAuthorization:
+        """Resolve structured authorization; LIVE_PRIVATE never yields public_*."""
+        expert_natural = self.evidence_class == BenchmarkEvidenceClass.EXPERT_NATURAL
+        live_private = self.evidence_class == BenchmarkEvidenceClass.LIVE_PRIVATE
+        has_manifest = bool(self.signed_authorization_manifest_digest)
+        has_scopes = bool(
+            (self.domain_scope or "").strip() and (self.use_scope or "").strip()
+        )
+        public_prereqs = (
+            expert_natural
             and self.expert_adjudicated
             and self.independent_evaluation
+            and self.rights_cleared_cases
+            and self.protected_holdout
+            and self.matcher_audit_complete
+            and self.frozen_scoring_policy
+            and has_manifest
+            and has_scopes
             and len(self.cases) >= self.minimum_public_claim_cases
         )
+        if live_private:
+            scope = ClaimScope.PRIVATE_METHOD_REPORT
+        elif public_prereqs and self.comparative_authorization:
+            scope = ClaimScope.PUBLIC_COMPARATIVE
+        elif public_prereqs:
+            scope = ClaimScope.PUBLIC_DOMAIN_BOUNDED
+        else:
+            scope = ClaimScope.NONE
+        return ClaimAuthorization(
+            claim_scope=scope,
+            expert_natural_evidence=expert_natural,
+            rights_cleared_cases=self.rights_cleared_cases,
+            protected_holdout=self.protected_holdout,
+            independent_evaluation=self.independent_evaluation,
+            matcher_audit_complete=self.matcher_audit_complete,
+            frozen_scoring_policy=self.frozen_scoring_policy,
+            signed_authorization_manifest_digest=self.signed_authorization_manifest_digest,
+            signed_authorization_manifest_path=self.signed_authorization_manifest_path,
+            domain_scope=self.domain_scope,
+            use_scope=self.use_scope,
+        )
+
+    def performance_claim_authorized(self) -> bool:
+        """Transitional bool: public scopes only (never LIVE_PRIVATE)."""
+        return self.claim_authorization().performance_claim_authorized
 
 
 class ByokConfig(StrictModel):
@@ -396,11 +503,20 @@ class EvaluationResult(StrictModel):
     matcher_config: MatcherConfig = Field(default_factory=MatcherConfig)
     case_evaluations: list[CaseEvaluation]
     metrics: EvaluationMetrics
-    performance_claim_authorized: bool
+    claim_authorization: ClaimAuthorization = Field(default_factory=ClaimAuthorization.none)
+    performance_claim_authorized: bool = False
     claim_boundary: str
     generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     predecessor_result_id: str | None = None
     scoring_policy_version: str = "scoring-policy-v0.1"
+
+    @model_validator(mode="after")
+    def sync_performance_claim_flag(self) -> EvaluationResult:
+        """Derive transitional bool from claim_scope (public scopes only)."""
+        expected = self.claim_authorization.performance_claim_authorized
+        if self.performance_claim_authorized != expected:
+            object.__setattr__(self, "performance_claim_authorized", expected)
+        return self
 
 
 class PublicScorecard(StrictModel):

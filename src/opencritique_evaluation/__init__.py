@@ -3,6 +3,8 @@
 from .engine import MATCHER_VERSION, evaluate, load_case, load_manifest
 from .models import (
     BenchmarkManifest,
+    ClaimAuthorization,
+    ClaimScope,
     EvaluationResult,
     EvaluationSubmission,
     MatcherConfig,
@@ -22,6 +24,8 @@ __all__ = [
     "MATCHER_VERSION",
     "NOVEL_POLICY_VERSION",
     "BenchmarkManifest",
+    "ClaimAuthorization",
+    "ClaimScope",
     "EvaluationResult",
     "EvaluationSubmission",
     "MatcherConfig",

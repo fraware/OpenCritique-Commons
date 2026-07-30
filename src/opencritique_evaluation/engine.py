@@ -14,6 +14,8 @@ from .models import (
     AnchorResolutionStatus,
     BenchmarkManifest,
     CaseEvaluation,
+    ClaimAuthorization,
+    ClaimScope,
     EvaluationMetrics,
     EvaluationResult,
     EvaluationSubmission,
@@ -131,19 +133,36 @@ def _resolved_count(resolutions: list[AnchorResolution]) -> tuple[int, int]:
     return resolved, total
 
 
-def _claim_boundary(benchmark: BenchmarkManifest, authorized: bool) -> str:
-    if authorized:
+def _claim_boundary(
+    benchmark: BenchmarkManifest, authorization: ClaimAuthorization
+) -> str:
+    scope = authorization.claim_scope
+    if scope in {
+        ClaimScope.PUBLIC_DOMAIN_BOUNDED,
+        ClaimScope.PUBLIC_COMPARATIVE,
+    }:
         return (
-            "Performance claims are authorized by benchmark metadata: evidence class "
-            f"{benchmark.evidence_class.value}, expert adjudication="
-            f"{benchmark.expert_adjudicated}, independent evaluation="
-            f"{benchmark.independent_evaluation}, case count={len(benchmark.cases)}."
+            "Performance claims are authorized under claim_scope="
+            f"{scope.value}: evidence class {benchmark.evidence_class.value}, "
+            f"domain_scope={authorization.domain_scope!r}, "
+            f"use_scope={authorization.use_scope!r}, "
+            f"independent evaluation={authorization.independent_evaluation}, "
+            f"matcher_audit_complete={authorization.matcher_audit_complete}, "
+            f"case count={len(benchmark.cases)}."
+        )
+    if scope == ClaimScope.PRIVATE_METHOD_REPORT:
+        return (
+            "Claim scope is private_method_report only. Private live / method-report "
+            "evidence must not be framed as public scientific performance, precision, "
+            "recall, or comparative reviewer-quality claims."
         )
     return (
         "Performance claims are not authorized. This record is an infrastructure or "
         "conformance evaluation only. Authorizing precision, recall, or comparative "
-        "reviewer-quality statements requires rights-cleared natural cases, independent "
-        "expert adjudication, frozen evaluation configuration, and published limitations."
+        "reviewer-quality statements requires EXPERT_NATURAL evidence, rights-cleared "
+        "cases, protected holdout, independent evaluation, matcher-audit completion, "
+        "frozen scoring policy, a signed authorization manifest, and explicit "
+        "domain_scope and use_scope."
     )
 
 
@@ -328,7 +347,7 @@ def evaluate(
             )
         )
 
-    authorized = benchmark.performance_claim_authorized()
+    authorization = benchmark.claim_authorization()
     metrics = EvaluationMetrics(
         cases_total=len(benchmark.cases),
         cases_completed=completed_cases,
@@ -374,6 +393,7 @@ def evaluate(
         matcher_config=config,
         case_evaluations=case_evaluations,
         metrics=metrics,
-        performance_claim_authorized=authorized,
-        claim_boundary=_claim_boundary(benchmark, authorized),
+        claim_authorization=authorization,
+        performance_claim_authorized=authorization.performance_claim_authorized,
+        claim_boundary=_claim_boundary(benchmark, authorization),
     )

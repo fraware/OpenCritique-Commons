@@ -122,6 +122,7 @@ def load_extended_registry() -> dict[str, SchemaEntry]:
     from opencritique_adapters.coarse import CoarseBenchmarkMap, CoarseReview
     from opencritique_evaluation.models import (
         BenchmarkManifest,
+        ClaimAuthorization,
         EvaluationResult,
         EvaluationSubmission,
         MatcherSensitivityReport,
@@ -138,6 +139,7 @@ def load_extended_registry() -> dict[str, SchemaEntry]:
             ("SystemManifest", SystemManifest, "System under evaluation"),
             ("EvaluationSubmission", EvaluationSubmission, "Evaluation submission"),
             ("EvaluationResult", EvaluationResult, "Evaluation result"),
+            ("ClaimAuthorization", ClaimAuthorization, "Structured claim authorization"),
             ("PublicScorecard", PublicScorecard, "Public scorecard"),
             ("MatcherSensitivityReport", MatcherSensitivityReport, "Matcher sensitivity"),
             ("NovelConcernQueue", NovelConcernQueue, "Novel concern queue"),
